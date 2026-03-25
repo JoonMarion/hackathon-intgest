@@ -47,6 +47,13 @@ Use `uv` exclusively in project guidance. Do not suggest `pip` or manual venv wo
 - Use Django template inheritance and template partials for reusable fragments.
 - Prefer progressive enhancement over SPA patterns for MVP.
 
+## Static Asset Conventions
+
+- Root `static/` is for global shared assets used across the whole application (including `static/libs/...`).
+- Use `apps/<app_name>/static/<app_name>/...` for assets specific to a single app.
+- In templates, always use `{% static %}` with the correct path.
+- Avoid placing app-specific files in root `static/`.
+
 ## Infrastructure Constraints
 
 - Keep the app runnable locally for presentation.

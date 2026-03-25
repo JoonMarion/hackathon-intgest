@@ -48,6 +48,10 @@ Do not suggest `pip` or manual venv workflows.
 - Keep API-related applyTo coverage as inherited compatibility metadata only.
 - Split tests under `apps/<app_name>/tests/unit/` and `apps/<app_name>/tests/integrations/`.
 - Keep templates app-local using duck pattern under `apps/<app_name>/templates/<app_name>/...`.
+- Root `static/` is for global shared assets used across the whole application (including `static/libs/...`).
+- Keep app-specific assets under `apps/<app_name>/static/<app_name>/...`.
+- In templates, always reference assets with `{% static %}` using the correct path.
+- Avoid placing app-specific assets in root `static/`.
 - Do not treat flat modules (`views.py`, `urls.py`, `tests.py`) as the primary structure for new scaffolding.
 
 ## Import flow
