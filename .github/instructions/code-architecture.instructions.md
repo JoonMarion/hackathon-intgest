@@ -43,7 +43,8 @@ Do not suggest `pip` or manual venv workflows.
 
 ## Canonical app structure
 
-- Use package-first app layout under `apps/<app_name>/` with `models/`, `http/`, and `api/`.
+- Use package-first app layout under `apps/<app_name>/` with `models/` and `http/` as the default MVP structure.
+- Create `api/` only when explicitly requested by scope.
 - Split tests under `apps/<app_name>/tests/unit/` and `apps/<app_name>/tests/integrations/`.
 - Keep templates app-local using duck pattern under `apps/<app_name>/templates/<app_name>/...`.
 - Do not treat flat modules (`views.py`, `urls.py`, `tests.py`) as the primary structure for new scaffolding.
@@ -53,7 +54,7 @@ Do not suggest `pip` or manual venv workflows.
 Prefer one-way dependencies:
 
 ```
-utils → services (optional) → models/forms → (http/views or api/views) → (http/urls or api/urls)
+utils → services (optional) → models/forms → http/views → http/urls
 ```
 
 ## Type hints
@@ -66,6 +67,14 @@ utils → services (optional) → models/forms → (http/views or api/views) →
 
 - Never use `float` for persisted monetary values.
 - Use `DecimalField` in models and `Decimal` in Python logic.
+
+## Model-layer conventions
+
+- Keep shared `Kind` enums in `config/models/choices.py`.
+- Keep shared abstract `BaseModel` in `config/models/base.py` with `created_at` and `updated_at`.
+- Use `config/models/__init__.py` as the canonical import surface for shared model primitives.
+- Require explicit `class Meta` in all domain models.
+- Keep model guidance aligned with project stack: Django 6, Python 3.13, and `uv`.
 
 ## Frontend integration awareness
 

@@ -90,6 +90,14 @@ For small and isolated changes, direct implementation is acceptable.
 - Keep forms and validation explicit and predictable.
 - Favor readability and maintainability over framework-heavy abstractions.
 
+## Model Layer Conventions
+
+- Keep shared `Kind` enums in `config/models/choices.py`.
+- Keep abstract shared `BaseModel` in `config/models/base.py` with `created_at` and `updated_at`.
+- Use `config/models/__init__.py` as canonical import surface for shared model primitives.
+- Require explicit `class Meta` in domain models.
+- Maintain wording and implementation guidance consistent with Django 6, Python 3.13, and `uv`.
+
 ## Testing and Validation
 
 - Prioritize smoke reliability of mandatory flows.

@@ -5,6 +5,14 @@
 
 Detailed examples and patterns for IntGestPED code architecture. For rules and conventions, see [.github/instructions/code-architecture.instructions.md](../.github/instructions/code-architecture.instructions.md).
 
+## Current model-layer pattern (MVP)
+
+- Keep shared `Kind` enums in `config/models/choices.py`.
+- Keep abstract timestamp base in `config/models/base.py` with `created_at` and `updated_at`.
+- Expose shared model primitives through `config/models/__init__.py` for canonical imports.
+- Require explicit `class Meta` in domain models.
+- Follow project stack conventions: Django 6, Python 3.13, and `uv` commands.
+
 ## Type Hints Examples
 
 ```python
@@ -238,7 +246,7 @@ def send_file_to_sign_task(user_pk: int, file_uuid: str):
 
 ### Task Locking Pattern
 
-> **Note**: The raw `cache.get`/`cache.set` pattern below is legacy. For new code, prefer `redis_lock` from `sso_integration.utils.redis` — see [sso-integration.instructions.md](../.github/instructions/sso-integration.instructions.md).
+> **Note**: The raw `cache.get`/`cache.set` pattern below is legacy. Keep this section as historical reference only for inherited code.
 
 ```python
 # Preferred pattern (use this for new code):
