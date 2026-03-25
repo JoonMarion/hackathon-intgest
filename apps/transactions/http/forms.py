@@ -9,6 +9,9 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ["category", "kind", "amount", "transaction_date", "description"]
+        widgets = {
+            "transaction_date": forms.DateInput(attrs={"type": "date"}),
+        }
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}Editar lançamento{% else %}Novo lançamento{% endif %} - Personal Financie
+{% endblock title %}
+
+{% block content %}
+<div class="mx-auto w-full max-w-2xl space-y-7">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                {% if object %}Editar lançamento{% else %}Novo lançamento{% endif %}
+            </h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {% if object %}Atualize os dados do lançamento selecionado.{% else %}Cadastre uma nova receita ou despesa.{% endif %}
+            </p>
+        </div>
+        <a href="{% url 'transactions_http:index' %}" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Voltar</a>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="space-y-1.5">
+                <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoria</label>
+                <div class="[&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:px-3 [&_select]:py-2.5 [&_select]:text-sm [&_select]:text-gray-900 [&_select]:shadow-sm [&_select]:transition [&_select]:hover:border-gray-400 [&_select]:focus:border-gray-500 [&_select]:focus:outline-none [&_select]:focus:ring-2 [&_select]:focus:ring-gray-400/30 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-900/70 dark:[&_select]:text-gray-100 dark:[&_select]:hover:border-gray-500 dark:[&_select]:focus:border-gray-400 dark:[&_select]:focus:ring-gray-500/30">
+                    {{ form.category }}
+                </div>
+                {% if form.category.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.category.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="space-y-1.5">
+                <label for="{{ form.kind.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
+                <div class="[&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:px-3 [&_select]:py-2.5 [&_select]:text-sm [&_select]:text-gray-900 [&_select]:shadow-sm [&_select]:transition [&_select]:hover:border-gray-400 [&_select]:focus:border-gray-500 [&_select]:focus:outline-none [&_select]:focus:ring-2 [&_select]:focus:ring-gray-400/30 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-900/70 dark:[&_select]:text-gray-100 dark:[&_select]:hover:border-gray-500 dark:[&_select]:focus:border-gray-400 dark:[&_select]:focus:ring-gray-500/30">
+                    {{ form.kind }}
+                </div>
+                {% if form.kind.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.kind.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="space-y-1.5">
+                <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valor</label>
+                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
+                    {{ form.amount }}
+                </div>
+                {% if form.amount.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.amount.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="space-y-1.5">
+                <label for="{{ form.transaction_date.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data</label>
+                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
+                    {{ form.transaction_date }}
+                </div>
+                {% if form.transaction_date.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.transaction_date.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="space-y-1.5">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição</label>
+                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
+                    {{ form.description }}
+                </div>
+                {% if form.description.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                    Salvar
+                </button>
+                <a href="{% url 'transactions_http:index' %}" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
