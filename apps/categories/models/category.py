@@ -2,11 +2,11 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from config.models import BaseModel, CategoryKind
+from config.models import BaseModel, Kind as TypeKind
 
 
 class Category(BaseModel):
-    Kind = CategoryKind
+    Kind = TypeKind
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -19,7 +19,7 @@ class Category(BaseModel):
     kind = models.CharField(
         _("Tipo"),
         max_length=20,
-        choices=CategoryKind.choices,
+        choices=TypeKind.choices,
     )
 
     class Meta:
