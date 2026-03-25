@@ -5,9 +5,14 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "autopep8>=2.3.2",
     "django>=6,<7",
+    "django-filter>=25.2",
     "factory-boy>=3.3.3",
     "Faker>=37.12.0",
+    "pylint>=3.3.8",
+    "pylint-django>=2.6.1",
+    "python-decouple>=3.8",
     "pytest>=9.0.2",
     "pytest-django>=4.12.0",
 ]

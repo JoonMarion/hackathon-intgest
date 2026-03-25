@@ -15,6 +15,14 @@ uv init -p 3.13
 uv sync
 ```
 
+Create a `.env` file at the project root for local development:
+
+```env
+SECRET_KEY=unsafe-dev-secret-key-change-me
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
+
 When adding dependencies, use:
 
 ```bash

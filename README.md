@@ -23,6 +23,20 @@ Este projeto utiliza o helper `uv` para gerenciamento do ambiente virtual e exec
 uv sync
 ```
 
+1.1. Criar arquivo `.env` na raiz do projeto (mínimo para desenvolvimento local):
+
+```env
+SECRET_KEY=unsafe-dev-secret-key-change-me
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
+
+Notas rápidas de ambiente:
+
+- Desenvolvimento (`config.settings.development`): usa defaults locais seguros para facilitar bootstrap.
+- Produção (`config.settings.production`): requer `SECRET_KEY` e `ALLOWED_HOSTS` definidos no ambiente.
+- Testes (`config.settings.test`): usa fallback de `SECRET_KEY` e hosts de teste, podendo ser sobrescrito por env vars.
+
 2. Aplicar migrações:
 
 ```bash

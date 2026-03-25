@@ -1,12 +1,17 @@
 from pathlib import Path
 
+from decouple import Csv, config
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = "django-insecure-@1=d)$99kj@z9(i)n0-t2t9@+_x2sx3rw%kc7vd%^0x*ney8bk"
+SECRET_KEY = config(
+    "SECRET_KEY",
+    default="unsafe-dev-secret-key-change-me",
+)
 
-DEBUG = True
+DEBUG = config("DEBUG", default=True, cast=bool)
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", default="", cast=Csv())
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -15,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
     "apps.accounts",
     "apps.transactions",
     "apps.categories",
