@@ -4,11 +4,95 @@
 {% block title %}Dashboard - Personal Financie{% endblock title %}
 
 {% block content %}
+<style>
+    .chart-section {
+        overflow: hidden;
+        max-height: 600px;
+        opacity: 1;
+        transform: translateY(0);
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity 0.3s ease,
+                    transform 0.3s ease,
+                    margin 0.4s ease,
+                    padding 0.4s ease;
+    }
+    .chart-section.chart-hidden {
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-10px);
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        pointer-events: none;
+    }
+    #chart-settings-popup {
+        transform-origin: top right;
+    }
+    #chart-settings-popup.popup-animate-in {
+        animation: popupIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    #chart-settings-popup.popup-animate-out {
+        animation: popupOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes popupIn {
+        from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes popupOut {
+        from { opacity: 1; transform: scale(1) translateY(0); }
+        to { opacity: 0; transform: scale(0.95) translateY(-5px); }
+    }
+</style>
+
 <div class="space-y-7">
-    <!-- Header -->
-    <div>
-        <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Dashboard</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Visão geral das suas finanças</p>
+    <!-- Header with gear button -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Dashboard</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Visão geral das suas finanças</p>
+        </div>
+        <div class="relative">
+            <button id="chart-settings-btn" type="button" class="rounded-xl p-2.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700/60 dark:hover:text-gray-300 transition-colors" aria-label="Configurar gráficos">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Chart Settings Popup -->
+    <div id="chart-settings-popup" class="hidden rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 transition-all duration-300">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Configurar Gráficos</h3>
+            <button id="chart-settings-close" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="evolution-line" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Evolução Receitas/Despesas (Linha)
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="evolution-bar" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Evolução Receitas/Despesas (Barras)
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="expense-doughnut" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Despesas por Categoria
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="income-doughnut" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Receitas por Categoria
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="balance-area" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Saldo Acumulado (Área)
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="category-hbar" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Receitas vs Despesas por Categoria
+            </label>
+            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                <input type="checkbox" data-chart-toggle="top-expenses" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Top 5 Maiores Despesas
+            </label>
+        </div>
     </div>
 
     <!-- Date Range Filter -->
@@ -80,29 +164,73 @@
     </div>
 
     <!-- Line Chart: Evolução de Receitas e Despesas -->
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas</h2>
-        <div class="mt-4" style="position: relative; height: 300px;">
-            <canvas id="evolutionChart"></canvas>
+    <div data-chart-section="evolution-line" class="chart-section">
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas</h2>
+            <div class="mt-4" style="position: relative; height: 300px;">
+                <canvas id="evolutionLineChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bar Chart: Evolução de Receitas e Despesas (Barras) -->
+    <div data-chart-section="evolution-bar" class="chart-section chart-hidden">
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas (Barras)</h2>
+            <div class="mt-4" style="position: relative; height: 300px;">
+                <canvas id="evolutionBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance Area Chart -->
+    <div data-chart-section="balance-area" class="chart-section chart-hidden">
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução do Saldo Acumulado</h2>
+            <div class="mt-4" style="position: relative; height: 300px;">
+                <canvas id="balanceAreaChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- Donut Charts -->
-    <div class="grid gap-5 lg:grid-cols-2">
+    <div id="doughnut-grid" class="grid gap-5 lg:grid-cols-2">
         <!-- Despesas por Categoria -->
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Despesas por Categoria</h2>
-            <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
-                <canvas id="expenseDoughnutChart"></canvas>
+        <div data-chart-section="expense-doughnut" class="chart-section">
+            <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Despesas por Categoria</h2>
+                <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
+                    <canvas id="expenseDoughnutChart"></canvas>
+                </div>
             </div>
         </div>
 
         <!-- Receitas por Categoria -->
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas por Categoria</h2>
-            <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
-                <canvas id="incomeDoughnutChart"></canvas>
+        <div data-chart-section="income-doughnut" class="chart-section">
+            <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas por Categoria</h2>
+                <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
+                    <canvas id="incomeDoughnutChart"></canvas>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Category Horizontal Bar Chart -->
+    <div data-chart-section="category-hbar" class="chart-section chart-hidden">
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas vs Despesas por Categoria</h2>
+            <div class="mt-4" style="position: relative; height: 300px;">
+                <canvas id="categoryHBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 5 Expenses -->
+    <div data-chart-section="top-expenses" class="chart-section chart-hidden">
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Top 5 Maiores Despesas</h2>
+            <div id="top-expenses-container" class="mt-4 divide-y divide-gray-200/70 dark:divide-gray-700/70"></div>
         </div>
     </div>
 
@@ -134,6 +262,7 @@
 {{ expense_categories_data|json_script:"expense-categories-data" }}
 {{ income_categories_labels|json_script:"income-categories-labels-data" }}
 {{ income_categories_data|json_script:"income-categories-data" }}
+{{ top_expenses|json_script:"top-expenses-data" }}
 
 <script src="{% static 'core/js/dashboard-charts.js' %}"></script>
 {% endblock content %}

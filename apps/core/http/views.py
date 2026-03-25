@@ -1,4 +1,5 @@
 import json
+from dataclasses import asdict
 from datetime import date
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -44,5 +45,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             "date_from": date_from.isoformat() if date_from else "",
             "date_to": date_to.isoformat() if date_to else "",
         }
+        context["top_expenses"] = json.dumps([asdict(e) for e in data.top_expenses])
 
         return context

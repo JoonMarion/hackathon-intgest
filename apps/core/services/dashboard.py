@@ -47,12 +47,21 @@ class CategoryBreakdown:
 
 
 @dataclass(frozen=True)
+class TopExpense:
+    description: str
+    amount: float
+    category_name: str
+    date: str  # ISO format string
+
+
+@dataclass(frozen=True)
 class DashboardData:
     summary: DashboardSummary
     chart: ChartData
     expense_breakdown: CategoryBreakdown
     income_breakdown: CategoryBreakdown
     recent_transactions: list
+    top_expenses: list[TopExpense]
 
 
 class DashboardService:
@@ -173,6 +182,23 @@ class DashboardService:
             .order_by("-transaction_date", "-created_at")[:limit]
         )
 
+    def get_top_expenses(self, limit: int = 5) -> list[TopExpense]:
+        qs = (
+            self._base_queryset()
+            .filter(kind="expense")
+            .select_related("category")
+            .order_by("-amount")[:limit]
+        )
+        return [
+            TopExpense(
+                description=t.description or "Sem descrição",
+                amount=float(t.amount),
+                category_name=t.category.name,
+                date=t.transaction_date.isoformat(),
+            )
+            for t in qs
+        ]
+
     def get_dashboard_data(self) -> DashboardData:
         return DashboardData(
             summary=self.get_summary(),
@@ -180,4 +206,5 @@ class DashboardService:
             expense_breakdown=self.get_category_breakdown("expense"),
             income_breakdown=self.get_category_breakdown("income"),
             recent_transactions=list(self.get_recent_transactions()),
+            top_expenses=self.get_top_expenses(),
         )
