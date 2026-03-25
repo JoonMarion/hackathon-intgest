@@ -1,9 +1,109 @@
 {% if messages %}
-    <div class="fixed right-4 top-4 z-50 space-y-2" role="status" aria-live="polite">
+    <div class="fixed right-6 bottom-6 z-50 w-full max-w-sm space-y-2" role="status" aria-live="polite" aria-atomic="true" data-toast-region>
         {% for message in messages %}
-            <div class="rounded border border-gray-300 bg-white px-4 py-3 text-sm shadow dark:border-gray-600 dark:bg-gray-800">
-                {{ message }}
+            <div
+                class="overflow-hidden rounded border bg-white text-sm shadow transition-opacity duration-200 dark:bg-gray-800 {% if 'error' in message.tags %}border-red-300 text-red-900 dark:border-red-700 dark:text-red-100{% elif 'success' in message.tags %}border-green-300 text-green-900 dark:border-green-700 dark:text-green-100{% else %}border-gray-300 text-gray-900 dark:border-gray-600 dark:text-gray-100{% endif %}"
+                {% if 'error' in message.tags %}role="alert"{% else %}role="status"{% endif %}
+                data-toast
+                data-toast-duration="5000"
+                tabindex="0"
+            >
+                <button type="button" class="block w-full cursor-pointer px-4 py-3 text-left" data-toast-close aria-label="Dismiss notification">
+                    {{ message }}
+                </button>
+                <div
+                    class="h-1 origin-left {% if 'error' in message.tags %}bg-red-500 dark:bg-red-400{% elif 'success' in message.tags %}bg-green-500 dark:bg-green-400{% else %}bg-gray-500 dark:bg-gray-400{% endif %}"
+                    data-toast-progress
+                ></div>
             </div>
         {% endfor %}
     </div>
+
+    <script>
+        (function () {
+            const toasts = document.querySelectorAll("[data-toast]");
+
+            function dismissToast(toast) {
+                if (!toast || toast.dataset.toastDismissed === "true") {
+                    return;
+                }
+
+                toast.dataset.toastDismissed = "true";
+                toast.classList.add("pointer-events-none", "opacity-0");
+                window.setTimeout(function () {
+                    toast.remove();
+                }, 220);
+            }
+
+            function startToast(toast) {
+                const progress = toast.querySelector("[data-toast-progress]");
+                const duration = Number(toast.dataset.toastDuration || 5000);
+
+                let startedAt = Date.now();
+                let remaining = duration;
+                let timeoutId = null;
+
+                function animate(widthDuration) {
+                    if (!progress) {
+                        return;
+                    }
+
+                    progress.style.transition = "none";
+                    progress.style.width = "100%";
+
+                    window.requestAnimationFrame(function () {
+                        progress.style.transition = "width " + widthDuration + "ms linear";
+                        progress.style.width = "0%";
+                    });
+                }
+
+                function run() {
+                    startedAt = Date.now();
+                    animate(remaining);
+                    timeoutId = window.setTimeout(function () {
+                        dismissToast(toast);
+                    }, remaining);
+                }
+
+                function pause() {
+                    if (timeoutId) {
+                        window.clearTimeout(timeoutId);
+                        timeoutId = null;
+                    }
+
+                    const elapsed = Date.now() - startedAt;
+                    remaining = Math.max(0, remaining - elapsed);
+
+                    if (progress) {
+                        const computedWidth = window.getComputedStyle(progress).width;
+                        progress.style.transition = "none";
+                        progress.style.width = computedWidth;
+                    }
+                }
+
+                function resume() {
+                    if (remaining <= 0) {
+                        dismissToast(toast);
+                        return;
+                    }
+
+                    run();
+                }
+
+                toast.addEventListener("mouseenter", pause);
+                toast.addEventListener("mouseleave", resume);
+
+                const close = toast.querySelector("[data-toast-close]");
+                if (close) {
+                    close.addEventListener("click", function () {
+                        dismissToast(toast);
+                    });
+                }
+
+                run();
+            }
+
+            toasts.forEach(startToast);
+        })();
+    </script>
 {% endif %}
