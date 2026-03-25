@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import ProtectedError
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
@@ -77,5 +79,13 @@ class CategoryDeleteView(LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         category = self.get_object()
+        try:
+            response = super().form_valid(form)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                f"Não é possível excluir a categoria '{category.name}' pois existem lançamentos vinculados.",
+            )
+            return redirect(self.success_url)
         messages.success(self.request, f"Categoria '{category.name}' removida com sucesso.")
-        return super().form_valid(form)
+        return response

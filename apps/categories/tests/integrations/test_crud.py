@@ -1,11 +1,12 @@
 from datetime import timedelta
 
+from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 
 from apps.categories.models import Category
 from apps.core.tests.base import BaseIntegrationTestCase
-from apps.core.tests.factories import CategoryFactory, UserFactory
+from apps.core.tests.factories import CategoryFactory, TransactionFactory, UserFactory
 
 
 class CategoryCRUDIntegrationTests(BaseIntegrationTestCase):
@@ -106,3 +107,17 @@ class CategoryCRUDIntegrationTests(BaseIntegrationTestCase):
         response = self.client.post(reverse("categories_http:delete", args=[other_category.pk]))
 
         self.assertEqual(response.status_code, 404)
+
+    def test_delete_category_with_linked_transactions_shows_error(self):
+        category = CategoryFactory(user=self.user, name="Com lançamentos", kind=Category.Kind.EXPENSE)
+        TransactionFactory(user=self.user, category=category)
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("categories_http:delete", args=[category.pk]))
+
+        self.assertRedirects(response, reverse("categories_http:index"), fetch_redirect_response=False)
+        self.assertTrue(Category.objects.filter(pk=category.pk).exists())
+        response_messages = list(messages.get_messages(response.wsgi_request))
+        self.assertTrue(
+            any("Não é possível excluir a categoria" in str(m) for m in response_messages),
+        )
