@@ -10,6 +10,31 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Visão geral das suas finanças</p>
     </div>
 
+    <!-- Date Range Filter -->
+    <section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+        <form method="get" action="{% url 'core_http:index' %}" class="flex flex-wrap items-center gap-3">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Período</span>
+
+            <label class="flex items-center gap-2">
+                <span class="text-sm text-gray-500 dark:text-gray-400">De</span>
+                <input type="date" name="date_from" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+            </label>
+
+            <label class="flex items-center gap-2">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
+                <input type="date" name="date_to" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+            </label>
+
+            <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                Filtrar
+            </button>
+
+            {% if current_filters.date_from or current_filters.date_to %}
+                <a href="{% url 'core_http:index' %}" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
+            {% endif %}
+        </form>
+    </section>
+
     <!-- Summary Cards -->
     <div class="grid gap-5 sm:grid-cols-3">
         <!-- Receitas -->

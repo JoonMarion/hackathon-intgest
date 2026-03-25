@@ -222,3 +222,55 @@ class DashboardViewIntegrationTests(BaseIntegrationTestCase):
         expense_data = json.loads(ctx["expense_categories_data"])
         self.assertNotIn("OtherExpense", expense_labels)
         self.assertEqual(expense_data, [])
+
+    def test_dashboard_with_date_range_filter(self):
+        """Date range filter narrows summary totals."""
+        cat = CategoryFactory(
+            user=self.user, kind=Category.Kind.INCOME, name="Inc"
+        )
+        TransactionFactory(
+            user=self.user,
+            category=cat,
+            kind=Transaction.Kind.INCOME,
+            amount="100.00",
+            transaction_date=date(2026, 1, 15),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=cat,
+            kind=Transaction.Kind.INCOME,
+            amount="200.00",
+            transaction_date=date(2026, 3, 15),
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(
+            self.url, {"date_from": "2026-03-01", "date_to": "2026-03-31"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_income"], Decimal("200"))
+
+    def test_dashboard_filter_preserves_current_filters_in_context(self):
+        """Submitted filter values appear in current_filters context."""
+        self.client.force_login(self.user)
+        response = self.client.get(
+            self.url, {"date_from": "2026-01-01", "date_to": "2026-06-30"}
+        )
+        filters = response.context["current_filters"]
+        self.assertEqual(filters["date_from"], "2026-01-01")
+        self.assertEqual(filters["date_to"], "2026-06-30")
+
+    def test_dashboard_no_filter_has_empty_current_filters(self):
+        """Without filter params, current_filters has empty strings."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        filters = response.context["current_filters"]
+        self.assertEqual(filters["date_from"], "")
+        self.assertEqual(filters["date_to"], "")
+
+    def test_dashboard_invalid_date_ignored(self):
+        """Invalid date params are treated as no filter."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.url, {"date_from": "not-a-date"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["current_filters"]["date_from"], "")
