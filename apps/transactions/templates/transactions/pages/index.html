@@ -17,50 +17,46 @@
 	</div>
 
 	<section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-		<form method="get" action="{% url 'transactions_http:index' %}" class="flex flex-col gap-3">
-			<div class="flex flex-col gap-3 md:flex-row md:items-center">
-				<label class="relative flex-1">
-					<span class="sr-only">Buscar por descrição</span>
-					<svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<circle cx="11" cy="11" r="7"></circle>
-						<path d="m20 20-3.5-3.5"></path>
-					</svg>
-					<input type="search" name="q" value="{{ current_filters.q }}" placeholder="Buscar por descrição..." class="w-full rounded-xl border border-gray-200 bg-gray-50/90 py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/70 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700/70">
-				</label>
+		<form method="get" action="{% url 'transactions_http:index' %}" class="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+			<label class="relative min-w-0 flex-1 md:max-w-xs">
+				<span class="sr-only">Buscar por descrição</span>
+				<svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<circle cx="11" cy="11" r="7"></circle>
+					<path d="m20 20-3.5-3.5"></path>
+				</svg>
+				<input type="search" name="q" value="{{ current_filters.q }}" placeholder="Buscar por descrição..." class="w-full rounded-xl border border-gray-200 bg-gray-50/90 py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/70 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700/70">
+			</label>
 
-				<select name="category" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-					<option value="">Todas categorias</option>
-					{% for cat in categories %}
-						<option value="{{ cat.pk }}" {% if current_filters.category == cat.pk|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
-					{% endfor %}
-				</select>
+			<label class="inline-flex items-center gap-2">
+				<span class="text-sm text-gray-500 dark:text-gray-400">De</span>
+				<input type="date" name="date_from" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+			</label>
 
-				<select name="kind" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-					<option value="">Todos os tipos</option>
-					<option value="income" {% if current_filters.kind == "income" %}selected{% endif %}>Receita</option>
-					<option value="expense" {% if current_filters.kind == "expense" %}selected{% endif %}>Despesa</option>
-				</select>
-			</div>
+			<label class="inline-flex items-center gap-2">
+				<span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
+				<input type="date" name="date_to" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+			</label>
 
-			<div class="flex flex-col gap-3 md:flex-row md:items-center">
-				<label class="inline-flex items-center gap-2">
-					<span class="text-sm text-gray-500 dark:text-gray-400">De</span>
-					<input type="date" name="date_from" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-				</label>
+			<select name="category" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+				<option value="">Todas categorias</option>
+				{% for cat in categories %}
+					<option value="{{ cat.pk }}" {% if current_filters.category == cat.pk|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
+				{% endfor %}
+			</select>
 
-				<label class="inline-flex items-center gap-2">
-					<span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
-					<input type="date" name="date_to" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-				</label>
+			<select name="kind" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+				<option value="">Todos os tipos</option>
+				<option value="income" {% if current_filters.kind == "income" %}selected{% endif %}>Receita</option>
+				<option value="expense" {% if current_filters.kind == "expense" %}selected{% endif %}>Despesa</option>
+			</select>
 
-				<button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-					Filtrar
-				</button>
+			<button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+				Filtrar
+			</button>
 
-				{% if current_filters.q or current_filters.category or current_filters.kind or current_filters.date_from or current_filters.date_to %}
-					<a href="{% url 'transactions_http:index' %}" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
-				{% endif %}
-			</div>
+			{% if current_filters.q or current_filters.category or current_filters.kind or current_filters.date_from or current_filters.date_to %}
+				<a href="{% url 'transactions_http:index' %}" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
+			{% endif %}
 		</form>
 
 		<div class="mt-5 overflow-x-auto">
