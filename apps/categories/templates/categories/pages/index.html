@@ -11,7 +11,7 @@
 			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie categorias de receitas e despesas.</p>
 		</div>
 
-		<a href="{% url 'categories_http:create' %}" class="inline-flex gap-2 items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+		<a href="{% url 'categories_http:create' %}" data-e2e-selector="categories-index-create-link-click" class="inline-flex gap-2 items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
 			<span aria-hidden="true">+</span>
 			<span>Nova</span>
 		</a>
@@ -25,17 +25,17 @@
 					<article class="group rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-3 transition-colors hover:bg-white dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-900">
 						<div class="flex items-center justify-between gap-3">
 							<div class="min-w-0">
-								<a href="{% url 'categories_http:update' category.pk %}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
+								<a href="{% url 'categories_http:update' category.pk %}" data-e2e-selector="categories-index-name-link-click-{{ category.pk }}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
 								<p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Receita</p>
 							</div>
 							<div class="flex items-center gap-1.5">
-								<a href="{% url 'categories_http:update' category.pk %}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
+								<a href="{% url 'categories_http:update' category.pk %}" data-e2e-selector="categories-index-edit-link-click-{{ category.pk }}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
 									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M12 20h9"></path>
 										<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
 									</svg>
 								</a>
-								<a href="{% url 'categories_http:delete' category.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
+								<a href="{% url 'categories_http:delete' category.pk %}" data-e2e-selector="categories-index-delete-link-click-{{ category.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
 									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M4 7h16"></path>
 										<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
@@ -61,17 +61,17 @@
 					<article class="group rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-3 transition-colors hover:bg-white dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-900">
 						<div class="flex items-center justify-between gap-3">
 							<div class="min-w-0">
-								<a href="{% url 'categories_http:update' category.pk %}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
+								<a href="{% url 'categories_http:update' category.pk %}" data-e2e-selector="categories-index-name-link-click-{{ category.pk }}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
 								<p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Despesa</p>
 							</div>
 							<div class="flex items-center gap-1.5">
-								<a href="{% url 'categories_http:update' category.pk %}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
+								<a href="{% url 'categories_http:update' category.pk %}" data-e2e-selector="categories-index-edit-link-click-{{ category.pk }}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
 									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M12 20h9"></path>
 										<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
 									</svg>
 								</a>
-								<a href="{% url 'categories_http:delete' category.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
+								<a href="{% url 'categories_http:delete' category.pk %}" data-e2e-selector="categories-index-delete-link-click-{{ category.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
 									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M4 7h16"></path>
 										<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>

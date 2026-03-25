@@ -1,3 +1,4 @@
+{% load static %}
 <header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-6 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
     <div class="text-sm font-medium text-gray-600 dark:text-gray-300">
         {% if user.is_authenticated %}
@@ -8,7 +9,7 @@
     </div>
 
     <div class="flex items-center gap-2.5">
-        <button type="button" data-theme-toggle class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800" aria-label="Alternar tema">
+        <button type="button" data-theme-toggle data-e2e-selector="core-topbar-theme-toggle-click" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800" aria-label="Alternar tema">
             <svg viewBox="0 0 24 24" class="h-4 w-4 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="4"></circle>
                 <path d="M12 2.5v2.2"></path>
@@ -31,6 +32,7 @@
                     <button
                         type="button"
                         data-user-menu-toggle
+                        data-e2e-selector="core-topbar-user-menu-toggle-click"
                         class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:bg-emerald-500/85 dark:text-emerald-950 dark:hover:bg-emerald-400"
                         aria-label="Abrir menu do usuário"
                         aria-haspopup="menu"
@@ -47,6 +49,7 @@
                     >
                         <a
                             href="{% url 'accounts_http:profile' %}"
+                            data-e2e-selector="core-topbar-profile-link-click"
                             class="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-gray-200 dark:hover:bg-gray-800"
                             role="menuitem"
                         >
@@ -56,6 +59,7 @@
                             {% csrf_token %}
                             <button
                                 type="submit"
+                                data-e2e-selector="core-topbar-logout-submit-click"
                                 class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-red-400 dark:hover:bg-red-500/10"
                                 role="menuitem"
                             >
@@ -69,92 +73,4 @@
     </div>
 </header>
 
-<script>
-    (() => {
-        const closeMenu = (menu) => {
-            const toggle = menu.querySelector("[data-user-menu-toggle]")
-            const panel = menu.querySelector("[data-user-menu-panel]")
-
-            if (!toggle || !panel) {
-                return
-            }
-
-            panel.classList.add("hidden")
-            toggle.setAttribute("aria-expanded", "false")
-        }
-
-        const openMenu = (menu) => {
-            const toggle = menu.querySelector("[data-user-menu-toggle]")
-            const panel = menu.querySelector("[data-user-menu-panel]")
-
-            if (!toggle || !panel) {
-                return
-            }
-
-            panel.classList.remove("hidden")
-            toggle.setAttribute("aria-expanded", "true")
-        }
-
-        if (window.__userMenuGlobalListenersBound !== true) {
-            document.addEventListener("click", (event) => {
-                const menus = document.querySelectorAll("[data-user-menu]")
-
-                menus.forEach((menu) => {
-                    if (!menu.contains(event.target)) {
-                        closeMenu(menu)
-                    }
-                })
-            })
-
-            document.addEventListener("keydown", (event) => {
-                if (event.key !== "Escape") {
-                    return
-                }
-
-                const menus = document.querySelectorAll("[data-user-menu]")
-
-                menus.forEach((menu) => {
-                    const toggle = menu.querySelector("[data-user-menu-toggle]")
-                    const panel = menu.querySelector("[data-user-menu-panel]")
-
-                    if (!toggle || !panel || panel.classList.contains("hidden")) {
-                        return
-                    }
-
-                    closeMenu(menu)
-                    toggle.focus()
-                })
-            })
-
-            window.__userMenuGlobalListenersBound = true
-        }
-
-        const menus = document.querySelectorAll("[data-user-menu]")
-
-        menus.forEach((menu) => {
-            if (menu.dataset.bound === "true") {
-                return
-            }
-
-            menu.dataset.bound = "true"
-
-            const toggle = menu.querySelector("[data-user-menu-toggle]")
-            const panel = menu.querySelector("[data-user-menu-panel]")
-
-            if (!toggle || !panel) {
-                return
-            }
-
-            toggle.addEventListener("click", (event) => {
-                event.stopPropagation()
-
-                if (panel.classList.contains("hidden")) {
-                    openMenu(menu)
-                    return
-                }
-
-                closeMenu(menu)
-            })
-        })
-    })()
-</script>
+<script src="{% static 'core/js/user-menu.js' %}"></script>

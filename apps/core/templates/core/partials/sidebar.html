@@ -1,6 +1,6 @@
 <aside class="w-full md:w-72 md:flex-none md:sticky md:top-0 md:h-screen md:overflow-y-auto border-b md:border-b-0 md:border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
     <div class="px-5 py-6 border-b border-gray-200 dark:border-gray-700">
-        <a href="{% url 'core_http:index' %}" class="inline-flex items-center gap-3 text-gray-900 dark:text-gray-100">
+        <a href="{% url 'core_http:index' %}" data-e2e-selector="core-sidebar-brand-link-click" class="inline-flex items-center gap-3 text-gray-900 dark:text-gray-100">
             <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/25 dark:text-emerald-300">PF</span>
             <span>
                 <span class="block text-sm font-semibold leading-tight">Personal Financie</span>
@@ -12,7 +12,8 @@
     <nav class="px-3 py-5" aria-label="Navegação principal">
         <ul class="space-y-1.5">
             <li>
-                <a href="{% url 'core_http:index' %}"
+                     <a href="{% url 'core_http:index' %}"
+                         data-e2e-selector="core-sidebar-dashboard-link-click"
                    class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'core_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
                     <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
                         <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -24,7 +25,8 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'transactions_http:index' %}"
+                     <a href="{% url 'transactions_http:index' %}"
+                         data-e2e-selector="core-sidebar-transactions-link-click"
                    class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'transactions_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
                     <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
                         <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -37,7 +39,8 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'categories_http:index' %}"
+                     <a href="{% url 'categories_http:index' %}"
+                         data-e2e-selector="core-sidebar-categories-link-click"
                    class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'categories_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
                     <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
                         <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">

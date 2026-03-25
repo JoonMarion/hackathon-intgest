@@ -36,10 +36,10 @@
         </dl>
 
         <div class="mt-6 flex flex-wrap items-center gap-3">
-            <a href="{% url 'accounts_http:profile_edit' %}" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+            <a href="{% url 'accounts_http:profile_edit' %}" data-e2e-selector="accounts-profile-detail-edit-link-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                 Editar dados
             </a>
-            <a href="{% url 'accounts_http:password_change' %}" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+            <a href="{% url 'accounts_http:password_change' %}" data-e2e-selector="accounts-profile-detail-password-change-link-click" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
                 Alterar senha
             </a>
         </div>

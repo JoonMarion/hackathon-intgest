@@ -40,10 +40,10 @@
             {% endfor %}
 
             <div class="flex items-center gap-3 pt-2">
-                <button type="submit" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                <button type="submit" data-e2e-selector="accounts-profile-edit-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                     Salvar
                 </button>
-                <a href="{% url 'accounts_http:profile' %}" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+                <a href="{% url 'accounts_http:profile' %}" data-e2e-selector="accounts-profile-edit-cancel-link-click" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
                     Cancelar
                 </a>
             </div>

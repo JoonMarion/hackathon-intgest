@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
 from django.views.generic import RedirectView
 from django.urls import include, path
 
@@ -26,3 +28,6 @@ urlpatterns = [
     path("categorias/", include("apps.categories.http.urls")),
     path("dashboard/", include("apps.core.http.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += staticfiles_urlpatterns()

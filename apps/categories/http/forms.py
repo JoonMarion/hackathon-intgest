@@ -13,6 +13,9 @@ class CategoryForm(forms.ModelForm):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
+        self.fields["name"].widget.attrs.update({"data-e2e-selector": "categories-form-name-input"})
+        self.fields["kind"].widget.attrs.update({"data-e2e-selector": "categories-form-kind-select"})
+
         self.fields["name"].error_messages["required"] = "Informe o nome da categoria."
         self.fields["kind"].error_messages["required"] = "Selecione o tipo da categoria."
 

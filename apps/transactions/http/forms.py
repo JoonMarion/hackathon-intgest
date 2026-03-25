@@ -17,6 +17,12 @@ class TransactionForm(forms.ModelForm):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
+        self.fields["category"].widget.attrs.update({"data-e2e-selector": "transactions-form-category-select"})
+        self.fields["kind"].widget.attrs.update({"data-e2e-selector": "transactions-form-kind-select"})
+        self.fields["amount"].widget.attrs.update({"data-e2e-selector": "transactions-form-amount-input"})
+        self.fields["transaction_date"].widget.attrs.update({"data-e2e-selector": "transactions-form-transaction-date-input"})
+        self.fields["description"].widget.attrs.update({"data-e2e-selector": "transactions-form-description-input"})
+
         self.fields["category"].error_messages["required"] = "Selecione uma categoria."
         self.fields["kind"].error_messages["required"] = "Selecione o tipo da transação."
         self.fields["amount"].error_messages["required"] = "Informe o valor da transação."

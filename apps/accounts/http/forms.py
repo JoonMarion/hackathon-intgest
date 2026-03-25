@@ -12,6 +12,13 @@ class RegisterForm(UserCreationForm):
         model = get_user_model()
         fields = ("username", "email", "password1", "password2")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({"data-e2e-selector": "accounts-register-username-input"})
+        self.fields["email"].widget.attrs.update({"data-e2e-selector": "accounts-register-email-input"})
+        self.fields["password1"].widget.attrs.update({"data-e2e-selector": "accounts-register-password1-input"})
+        self.fields["password2"].widget.attrs.update({"data-e2e-selector": "accounts-register-password2-input"})
+
     def clean_username(self):
         username = self.cleaned_data["username"]
         User = get_user_model()
@@ -42,6 +49,13 @@ class UserProfileForm(forms.ModelForm):
         model = get_user_model()
         fields = ("username", "email", "first_name", "last_name")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs.update({"data-e2e-selector": "accounts-profile-edit-username-input"})
+        self.fields["email"].widget.attrs.update({"data-e2e-selector": "accounts-profile-edit-email-input"})
+        self.fields["first_name"].widget.attrs.update({"data-e2e-selector": "accounts-profile-edit-first-name-input"})
+        self.fields["last_name"].widget.attrs.update({"data-e2e-selector": "accounts-profile-edit-last-name-input"})
+
     def clean_username(self):
         username = self.cleaned_data["username"]
         User = get_user_model()
@@ -67,8 +81,12 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     username = AuthenticationForm.declared_fields["username"].__class__(
         label="Usuário ou e-mail",
         max_length=254,
-        widget=forms.TextInput(attrs={"autofocus": True}),
+        widget=forms.TextInput(attrs={"autofocus": True, "data-e2e-selector": "accounts-login-username-input"}),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password"].widget.attrs.update({"data-e2e-selector": "accounts-login-password-input"})
 
     def clean(self):
         username = self.cleaned_data.get("username")

@@ -10,7 +10,7 @@
 			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie receitas e despesas</p>
 		</div>
 
-		<a href="{% url 'transactions_http:create' %}" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+		<a href="{% url 'transactions_http:create' %}" data-e2e-selector="transactions-index-create-link-click" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
 			<span aria-hidden="true">+</span>
 			<span>Novo</span>
 		</a>
@@ -25,24 +25,24 @@
 					<circle cx="11" cy="11" r="7"></circle>
 					<path d="m20 20-3.5-3.5"></path>
 				</svg>
-				<input type="search" name="q" value="{{ current_filters.q }}" placeholder="Buscar por descrição..." class="w-full rounded-xl border border-gray-200 bg-gray-50/90 py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/70 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700/70">
+				<input type="search" name="q" value="{{ current_filters.q }}" data-e2e-selector="transactions-index-search-input" placeholder="Buscar por descrição..." class="w-full rounded-xl border border-gray-200 bg-gray-50/90 py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/70 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700/70">
 			</label>
 
 			{# Zona 2 — Filtros de dados (grid responsivo) #}
 			<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				<label class="flex flex-col gap-1">
 					<span class="text-sm text-gray-500 dark:text-gray-400">De</span>
-					<input type="date" name="date_from" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+					<input type="date" name="date_from" data-e2e-selector="transactions-index-date-from-input" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 				</label>
 
 				<label class="flex flex-col gap-1">
 					<span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
-					<input type="date" name="date_to" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+					<input type="date" name="date_to" data-e2e-selector="transactions-index-date-to-input" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 				</label>
 
 				<label class="flex flex-col gap-1">
 					<span class="text-sm text-gray-500 dark:text-gray-400">Categoria</span>
-					<select name="category" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+					<select name="category" data-e2e-selector="transactions-index-category-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 						<option value="">Todas categorias</option>
 						{% for cat in categories %}
 							<option value="{{ cat.pk }}" {% if current_filters.category == cat.pk|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
@@ -52,7 +52,7 @@
 
 				<label class="flex flex-col gap-1">
 					<span class="text-sm text-gray-500 dark:text-gray-400">Tipo</span>
-					<select name="kind" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+					<select name="kind" data-e2e-selector="transactions-index-kind-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 						<option value="">Todos os tipos</option>
 						<option value="income" {% if current_filters.kind == "income" %}selected{% endif %}>Receita</option>
 						<option value="expense" {% if current_filters.kind == "expense" %}selected{% endif %}>Despesa</option>
@@ -65,7 +65,7 @@
 				<div class="flex flex-wrap items-end gap-3">
 					<label class="flex flex-col gap-1">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Ordenação</span>
-						<select name="ordering" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+						<select name="ordering" data-e2e-selector="transactions-index-ordering-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 							<option value="-transaction_date,-created_at" {% if current_ordering == "-transaction_date,-created_at" %}selected{% endif %}>Data (mais recente)</option>
 							<option value="transaction_date,created_at" {% if current_ordering == "transaction_date,created_at" %}selected{% endif %}>Data (mais antiga)</option>
 							<option value="-amount,-created_at" {% if current_ordering == "-amount,-created_at" %}selected{% endif %}>Valor (maior)</option>
@@ -75,7 +75,7 @@
 
 					<label class="flex flex-col gap-1">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Itens por página</span>
-						<select name="page_size" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
+						<select name="page_size" data-e2e-selector="transactions-index-page-size-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
 							{% for size in page_size_options %}
 								<option value="{{ size }}" {% if current_page_size == size %}selected{% endif %}>{{ size }} por página</option>
 							{% endfor %}
@@ -84,12 +84,12 @@
 				</div>
 
 				<div class="flex flex-wrap items-center gap-3">
-					<button type="submit" class="inline-flex items-center h-[39px] gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+					<button type="submit" data-e2e-selector="transactions-index-filter-submit-click" class="inline-flex items-center h-[39px] gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
 						Filtrar
 					</button>
 
 					{% if current_filters.q or current_filters.category or current_filters.kind or current_filters.date_from or current_filters.date_to %}
-						<a href="{% url 'transactions_http:index' %}" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
+						<a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-index-clear-link-click" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
 					{% endif %}
 				</div>
 			</div>
@@ -121,13 +121,13 @@
 							</td>
 							<td class="px-3 py-3.5">
 								<div class="flex items-center justify-end gap-1.5">
-									<a href="{% url 'transactions_http:update' transaction.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-400 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar lançamento {{ transaction.description|default:'sem descrição' }}">
+									<a href="{% url 'transactions_http:update' transaction.pk %}" data-e2e-selector="transactions-index-edit-link-click-{{ transaction.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-400 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar lançamento {{ transaction.description|default:'sem descrição' }}">
 										<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 											<path d="M12 20h9"></path>
 											<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
 										</svg>
 									</a>
-									<a href="{% url 'transactions_http:delete' transaction.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir lançamento {{ transaction.description|default:'sem descrição' }}">
+									<a href="{% url 'transactions_http:delete' transaction.pk %}" data-e2e-selector="transactions-index-delete-link-click-{{ transaction.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir lançamento {{ transaction.description|default:'sem descrição' }}">
 										<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 											<path d="M4 7h16"></path>
 											<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
@@ -154,7 +154,7 @@
 			<nav class="mt-4 flex items-center justify-between" aria-label="Paginação de lançamentos">
 				<div>
 					{% if page_obj.has_previous %}
-						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.previous_page_number }}" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
+						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.previous_page_number }}" data-e2e-selector="transactions-index-pagination-previous-link-click" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
 							Anterior
 						</a>
 					{% endif %}
@@ -166,7 +166,7 @@
 
 				<div>
 					{% if page_obj.has_next %}
-						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.next_page_number }}" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
+						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.next_page_number }}" data-e2e-selector="transactions-index-pagination-next-link-click" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
 							Próxima
 						</a>
 					{% endif %}

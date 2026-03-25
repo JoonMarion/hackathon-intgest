@@ -15,7 +15,7 @@
                 {% if object %}Atualize os dados da categoria selecionada.{% else %}Cadastre uma nova categoria para receitas ou despesas.{% endif %}
             </p>
         </div>
-        <a href="{% url 'categories_http:index' %}" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Voltar</a>
+        <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-back-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Voltar</a>
     </div>
 
     <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
@@ -51,10 +51,10 @@
             </div>
 
             <div class="flex items-center gap-3 pt-2">
-                <button type="submit" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                <button type="submit" data-e2e-selector="categories-form-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                     Salvar
                 </button>
-                <a href="{% url 'categories_http:index' %}" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Cancelar</a>
+                <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-cancel-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Cancelar</a>
             </div>
         </form>
     </div>

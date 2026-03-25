@@ -13,6 +13,17 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS: list[str] = config("ALLOWED_HOSTS", default="", cast=Csv())
 
+PROJECT_APPS = [
+    "apps.accounts",
+    "apps.transactions",
+    "apps.categories",
+    "apps.core",
+]
+
+LIB_APPS = [
+    "django_filters",
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -20,12 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_filters",
-    "apps.accounts",
-    "apps.transactions",
-    "apps.categories",
-    "apps.core",
-]
+] + LIB_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -87,7 +93,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+] + [
+    (BASE_DIR / app.replace(".", "/") / "static")
+    for app in PROJECT_APPS
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

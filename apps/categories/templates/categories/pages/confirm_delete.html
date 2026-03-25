@@ -13,10 +13,10 @@
 
         <form method="post" class="mt-5 flex items-center gap-3">
             {% csrf_token %}
-            <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">
+            <button type="submit" data-e2e-selector="categories-confirm-delete-submit-click" class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">
                 Excluir
             </button>
-            <a href="{% url 'categories_http:index' %}" class="text-sm text-gray-700 hover:underline dark:text-gray-200">Cancelar</a>
+            <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-confirm-delete-cancel-link-click" class="text-sm text-gray-700 hover:underline dark:text-gray-200">Cancelar</a>
         </form>
     </div>
 </div>

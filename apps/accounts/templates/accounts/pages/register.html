@@ -68,14 +68,14 @@
             </div>
 
             <div class="flex items-center gap-3 pt-2">
-                <button type="submit" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                <button type="submit" data-e2e-selector="accounts-register-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                     Cadastrar
                 </button>
             </div>
 
             <p class="text-sm text-gray-500 dark:text-gray-400">
                 Já tem conta?
-                <a href="{% url 'accounts_http:login' %}" class="font-medium text-gray-900 underline dark:text-gray-100">Entrar</a>
+                <a href="{% url 'accounts_http:login' %}" data-e2e-selector="accounts-register-login-link-click" class="font-medium text-gray-900 underline dark:text-gray-100">Entrar</a>
             </p>
         </form>
     </div>

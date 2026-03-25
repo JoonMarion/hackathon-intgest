@@ -37,6 +37,13 @@ class ProfilePasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = "accounts/pages/password_change.html"
     success_url = reverse_lazy("accounts_http:profile")
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["old_password"].widget.attrs.update({"data-e2e-selector": "accounts-password-change-old-password-input"})
+        form.fields["new_password1"].widget.attrs.update({"data-e2e-selector": "accounts-password-change-new-password1-input"})
+        form.fields["new_password2"].widget.attrs.update({"data-e2e-selector": "accounts-password-change-new-password2-input"})
+        return form
+
     def form_valid(self, form):
         messages.success(self.request, "Senha alterada com sucesso.")
         return super().form_valid(form)
