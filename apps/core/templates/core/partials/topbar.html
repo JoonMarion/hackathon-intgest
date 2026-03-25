@@ -1,0 +1,24 @@
+<header class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
+    <div class="text-sm text-gray-600 dark:text-gray-300">
+        {% if user.is_authenticated %}
+            {{ user.email|default:user.username }}
+        {% else %}
+            Visitante
+        {% endif %}
+    </div>
+
+    <div class="flex items-center gap-3">
+        <button type="button" data-theme-toggle class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+            Dark/Light
+        </button>
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'accounts_http:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="rounded bg-gray-900 px-3 py-1 text-sm text-white hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                    Logout
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</header>

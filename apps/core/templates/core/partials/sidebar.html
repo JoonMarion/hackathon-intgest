@@ -1,0 +1,16 @@
+<aside class="w-full md:w-64 md:sticky md:top-0 md:h-screen md:overflow-y-auto bg-white border-b md:border-b-0 md:border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div class="p-4 text-lg font-semibold">Personal Financie</div>
+    <nav class="px-4 pb-4">
+        <ul class="space-y-2">
+            <li>
+                <a href="{% url 'core_http:index' %}" class="block rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</a>
+            </li>
+            <li>
+                <a href="{% url 'transactions_http:index' %}" class="block rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Lançamentos</a>
+            </li>
+            <li>
+                <a href="{% url 'categories_http:index' %}" class="block rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Categorias</a>
+            </li>
+        </ul>
+    </nav>
+</aside>
