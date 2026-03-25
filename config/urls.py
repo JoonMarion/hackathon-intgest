@@ -21,8 +21,8 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", RedirectView.as_view(pattern_name="core_http:index", permanent=False)),
-    path("accounts/", include("apps.accounts.http.urls")),
-    path("transactions/", include("apps.transactions.http.urls")),
-    path("categories/", include("apps.categories.http.urls")),
-    path("core/", include("apps.core.http.urls")),
+    path("contas/", include("apps.accounts.http.urls")),
+    path("lancamentos/", include("apps.transactions.http.urls")),
+    path("categorias/", include("apps.categories.http.urls")),
+    path("dashboard/", include("apps.core.http.urls")),
 ]

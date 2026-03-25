@@ -4,5 +4,5 @@ from django.urls import resolve
 
 class TransactionsBootstrapTests(SimpleTestCase):
     def test_http_route_resolves(self):
-        match = resolve("/transactions/")
+        match = resolve("/lancamentos/")
         self.assertEqual(match.url_name, "index")
