@@ -39,8 +39,20 @@
 
             <div class="space-y-1.5">
                 <label for="id_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.password }}
+                <div class="flex items-center gap-2">
+                    <div class="flex-1 [&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
+                        {{ form.password }}
+                    </div>
+                    <button
+                        type="button"
+                        id="toggle-password-visibility"
+                        class="hidden inline-flex items-center rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:text-gray-100"
+                        aria-controls="id_password"
+                        aria-pressed="false"
+                        aria-label="Mostrar senha"
+                    >
+                        Mostrar
+                    </button>
                 </div>
                 {% if form.password.errors %}
                     <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.password.errors.0 }}</p>
@@ -61,3 +73,26 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("id_password");
+            const toggleButton = document.getElementById("toggle-password-visibility");
+
+            if (!passwordInput || !toggleButton) {
+                return;
+            }
+
+            toggleButton.classList.remove("hidden");
+            toggleButton.addEventListener("click", function () {
+                const showingPassword = passwordInput.type === "text";
+                passwordInput.type = showingPassword ? "password" : "text";
+                toggleButton.textContent = showingPassword ? "Mostrar" : "Ocultar";
+                toggleButton.setAttribute("aria-pressed", showingPassword ? "false" : "true");
+                toggleButton.setAttribute("aria-label", showingPassword ? "Mostrar senha" : "Ocultar senha");
+            });
+        });
+    </script>
+{% endblock scripts %}
