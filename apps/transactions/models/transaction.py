@@ -1,30 +1,33 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from apps.categories.models import Category
+from config.models import BaseModel, TransactionKind
 
 
-class Transaction(models.Model):
-    class Kind(models.TextChoices):
-        INCOME = "income", "Income"
-        EXPENSE = "expense", "Expense"
+class Transaction(BaseModel):
+    Kind = TransactionKind
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Usuário"),
         on_delete=models.CASCADE,
         related_name="transactions",
     )
     category = models.ForeignKey(
         Category,
+        verbose_name=_("Categoria"),
         on_delete=models.PROTECT,
         related_name="transactions",
     )
-    kind = models.CharField(max_length=20, choices=Kind.choices)
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    transaction_date = models.DateField()
-    description = models.CharField(max_length=255, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    kind = models.CharField(_("Tipo"), max_length=20, choices=TransactionKind.choices)
+    amount = models.DecimalField(_("Valor"), max_digits=12, decimal_places=2)
+    transaction_date = models.DateField(_("Data da Transação"))
+    description = models.CharField(_("Descrição"), max_length=255, blank=True)
+
+    class Meta:
+        """Model options intentionally explicit without schema-impacting settings."""
 
     def __str__(self) -> str:
-        return f"{self.kind} {self.amount}"
+        return f"{self.get_kind_display()} {self.amount}"

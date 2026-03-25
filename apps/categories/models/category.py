@@ -2,11 +2,11 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from config.models import BaseModel, CategoryKind
 
-class Category(models.Model):
-    class Kind(models.TextChoices):
-        INCOME = "income", _("Receita")
-        EXPENSE = "expense", _("Despesa")
+
+class Category(BaseModel):
+    Kind = CategoryKind
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -14,22 +14,16 @@ class Category(models.Model):
         on_delete=models.CASCADE,
         related_name="categories",
     )
-    name = models.CharField(
-        max_length=120,
-        verbose_name=_("Nome"))
-    
+    name = models.CharField(_("Nome"), max_length=120)
+
     kind = models.CharField(
+        _("Tipo"),
         max_length=20,
-        choices=Kind.choices,
-        verbose_name=_("Tipo"))
-    
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_("Criado em"))
-    
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_("Atualizado em"))
+        choices=CategoryKind.choices,
+    )
+
+    class Meta:
+        """Model options intentionally explicit without schema-impacting settings."""
 
     def __str__(self) -> str:
         return self.name
