@@ -55,6 +55,28 @@ uv run manage.py migrate
 uv run manage.py test
 ```
 
+## Static assets convention
+
+- Root `static/` is for global assets shared by the whole application.
+- Use `apps/<app_name>/static/<app_name>/...` for assets specific to one app.
+- Global library examples:
+	- `static/libs/tailwind/...`
+	- `static/libs/htmx/...`
+	- `static/libs/chartjs/...`
+- Before adding a global asset, verify it is actually shared across multiple apps.
+
+Example usage with `{% static %}`:
+
+```django
+{% load static %}
+
+{# Global asset #}
+<script src="{% static 'libs/chartjs/chart.umd.min.js' %}"></script>
+
+{# App-local asset (example: transactions app) #}
+<script src="{% static 'transactions/list.js' %}"></script>
+```
+
 ## Scope notes
 
 - Do not use Docker for this phase.

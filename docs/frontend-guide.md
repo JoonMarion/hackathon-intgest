@@ -56,6 +56,28 @@ const chartData = JSON.parse(document.getElementById("dashboard-chart-data").tex
 - Prioritize readability and consistent spacing.
 - Avoid introducing heavy UI framework complexity during MVP.
 
+## Static assets convention
+
+- Use root `static/` for global assets shared across the whole application.
+- Use `apps/<app_name>/static/<app_name>/...` for app-specific assets.
+- Global library examples in this project:
+	- `static/libs/tailwind/...`
+	- `static/libs/htmx/...`
+	- `static/libs/chartjs/...`
+- Before creating a global asset, confirm it is truly shared by multiple apps.
+
+Example usage with `{% static %}`:
+
+```django
+{% load static %}
+
+{# Global asset #}
+<script src="{% static 'libs/htmx/htmx.min.js' %}"></script>
+
+{# App-local asset (example: categories app) #}
+<link rel="stylesheet" href="{% static 'categories/styles.css' %}">
+```
+
 ## Accessibility basics
 
 - Ensure labels are linked to inputs.
