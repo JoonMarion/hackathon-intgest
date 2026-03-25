@@ -52,3 +52,18 @@ Display at least:
 - Clear validation messages
 - Reliable feedback for create/update/delete
 - Keep parity between full-page and partial rendering results
+
+## Template data to JavaScript
+
+- Use `json_script` to pass backend data to JavaScript in Django templates.
+- Do not use `|safe` to inject JSON directly into `<script>`.
+
+Example:
+
+```django
+{{ chart_data|json_script:"dashboard-chart-data" }}
+```
+
+```javascript
+const chartData = JSON.parse(document.getElementById("dashboard-chart-data").textContent)
+```

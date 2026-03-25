@@ -15,6 +15,21 @@ This guide focuses on practical frontend patterns for the hackathon MVP.
 - Keep pages simple and task-oriented.
 - Prefer explicit labels and error messages in forms.
 
+## Template data to JavaScript
+
+- Use `json_script` to pass backend data to JavaScript in Django templates.
+- Do not use `|safe` to inject JSON directly into `<script>`.
+
+Example:
+
+```django
+{{ chart_data|json_script:"dashboard-chart-data" }}
+```
+
+```javascript
+const chartData = JSON.parse(document.getElementById("dashboard-chart-data").textContent)
+```
+
 ## HTMX conventions
 
 - Prefer HTMX for create/edit/delete/list refresh interactions.

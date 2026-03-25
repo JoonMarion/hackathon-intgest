@@ -25,7 +25,7 @@
                 <input type="date" name="date_to" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
             </label>
 
-            <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+            <button type="submit" class="inline-flex items-center gap-2 h-[39px] rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                 Filtrar
             </button>
 
@@ -126,11 +126,48 @@
     </div>
 </div>
 
+{{ chart_labels|json_script:"chart-labels-data" }}
+{{ chart_income|json_script:"chart-income-data" }}
+{{ chart_expense|json_script:"chart-expense-data" }}
+{{ expense_categories_labels|json_script:"expense-categories-labels-data" }}
+{{ expense_categories_data|json_script:"expense-categories-data" }}
+{{ income_categories_labels|json_script:"income-categories-labels-data" }}
+{{ income_categories_data|json_script:"income-categories-data" }}
+
 <script>
 (function() {
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
     const textColor = isDark ? '#9ca3af' : '#6b7280';
+
+    const readJsonScript = function(id, fallback) {
+        const element = document.getElementById(id);
+        if (!element) {
+            return fallback;
+        }
+
+        try {
+            const firstParse = JSON.parse(element.textContent);
+            if (typeof firstParse === 'string') {
+                try {
+                    return JSON.parse(firstParse);
+                } catch (_error) {
+                    return firstParse;
+                }
+            }
+            return firstParse;
+        } catch (_error) {
+            return fallback;
+        }
+    };
+
+    const chartLabels = readJsonScript('chart-labels-data', []);
+    const chartIncome = readJsonScript('chart-income-data', []);
+    const chartExpense = readJsonScript('chart-expense-data', []);
+    const expenseLabels = readJsonScript('expense-categories-labels-data', []);
+    const expenseData = readJsonScript('expense-categories-data', []);
+    const incomeLabels = readJsonScript('income-categories-labels-data', []);
+    const incomeData = readJsonScript('income-categories-data', []);
 
     // --- Line Chart ---
     const evolutionCtx = document.getElementById('evolutionChart');
@@ -138,11 +175,11 @@
         new Chart(evolutionCtx, {
             type: 'line',
             data: {
-                labels: {{ chart_labels|safe }},
+                labels: chartLabels,
                 datasets: [
                     {
                         label: 'Receitas',
-                        data: {{ chart_income|safe }},
+                        data: chartIncome,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         tension: 0.3,
@@ -152,7 +189,7 @@
                     },
                     {
                         label: 'Despesas',
-                        data: {{ chart_expense|safe }},
+                        data: chartExpense,
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         tension: 0.3,
@@ -196,8 +233,6 @@
 
     // --- Expense Doughnut Chart ---
     const expenseCtx = document.getElementById('expenseDoughnutChart');
-    const expenseLabels = {{ expense_categories_labels|safe }};
-    const expenseData = {{ expense_categories_data|safe }};
     if (expenseCtx && expenseData.length > 0) {
         new Chart(expenseCtx, {
             type: 'doughnut',
@@ -226,8 +261,6 @@
 
     // --- Income Doughnut Chart ---
     const incomeCtx = document.getElementById('incomeDoughnutChart');
-    const incomeLabels = {{ income_categories_labels|safe }};
-    const incomeData = {{ income_categories_data|safe }};
     if (incomeCtx && incomeData.length > 0) {
         new Chart(incomeCtx, {
             type: 'doughnut',
