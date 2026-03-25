@@ -40,7 +40,7 @@ class RegistrationFlowTests(BaseIntegrationTestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response.context["form"], "email", ["This field is required."])
+        self.assertFormError(response.context["form"], "email", ["Este campo é obrigatório."])
 
     def test_register_with_duplicate_username_shows_error(self):
         UserFactory(username="dup-user")
