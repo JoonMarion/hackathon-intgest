@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "sleep",
+      "type": "shell",
+      "command": "sleep",
+      "args": ["3"],
+    },
+    {
+      "label": "Django: Check",
+      "type": "shell",
+      "command": "uv",
+      "args": ["run", "manage.py", "check"],
+      "group": "test"
+    },
+    {
+      "label": "Django: Makemigrations (Check)",
+      "type": "shell",
+      "command": "uv",
+      "args": ["run", "manage.py", "makemigrations", "--check"],
+      "group": "test"
+    },
+    {
+      "label": "Django: Makemigrations",
+      "type": "shell",
+      "command": "uv",
+      "args": ["run", "manage.py", "makemigrations"],
+      "group": "build"
+    },
+    {
+      "label": "Django: Migrate",
+      "type": "shell",
+      "command": "uv",
+      "args": ["run", "manage.py", "migrate"],
+      "group": "build"
+    },
+  ],
+  "inputs": [
+    {
+      "id": "testModulePath",
+      "type": "promptString",
+      "description": "Test module path (example: apps.transactions.tests.test_views)"
+    }
+  ]
+}
