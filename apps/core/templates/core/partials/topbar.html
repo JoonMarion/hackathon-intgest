@@ -26,17 +26,135 @@
         </button>
 
         {% if user.is_authenticated %}
-            <form method="post" action="{% url 'accounts_http:logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:bg-emerald-500/85 dark:hover:bg-emerald-400 dark:text-emerald-950">
-                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M9 21H5.7A1.7 1.7 0 0 1 4 19.3V4.7A1.7 1.7 0 0 1 5.7 3H9"></path>
-                        <path d="M16 17l5-5-5-5"></path>
-                        <path d="M21 12H9"></path>
-                    </svg>
-                    Sair
-                </button>
-            </form>
+            {% with avatar_seed=user.username|default:user.email|default:"U" %}
+                <div class="relative" data-user-menu>
+                    <button
+                        type="button"
+                        data-user-menu-toggle
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:bg-emerald-500/85 dark:text-emerald-950 dark:hover:bg-emerald-400"
+                        aria-label="Abrir menu do usuário"
+                        aria-haspopup="menu"
+                        aria-expanded="false"
+                    >
+                        {{ avatar_seed|first|upper }}
+                    </button>
+
+                    <div
+                        data-user-menu-panel
+                        class="absolute right-0 mt-2 hidden min-w-44 rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+                        role="menu"
+                        aria-label="Menu do usuário"
+                    >
+                        <a
+                            href="{% url 'accounts_http:profile' %}"
+                            class="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-gray-200 dark:hover:bg-gray-800"
+                            role="menuitem"
+                        >
+                            Minha conta
+                        </a>
+                        <form method="post" action="{% url 'accounts_http:logout' %}" class="mt-1">
+                            {% csrf_token %}
+                            <button
+                                type="submit"
+                                class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-red-400 dark:hover:bg-red-500/10"
+                                role="menuitem"
+                            >
+                                Sair
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endwith %}
         {% endif %}
     </div>
 </header>
+
+<script>
+    (() => {
+        const closeMenu = (menu) => {
+            const toggle = menu.querySelector("[data-user-menu-toggle]")
+            const panel = menu.querySelector("[data-user-menu-panel]")
+
+            if (!toggle || !panel) {
+                return
+            }
+
+            panel.classList.add("hidden")
+            toggle.setAttribute("aria-expanded", "false")
+        }
+
+        const openMenu = (menu) => {
+            const toggle = menu.querySelector("[data-user-menu-toggle]")
+            const panel = menu.querySelector("[data-user-menu-panel]")
+
+            if (!toggle || !panel) {
+                return
+            }
+
+            panel.classList.remove("hidden")
+            toggle.setAttribute("aria-expanded", "true")
+        }
+
+        if (window.__userMenuGlobalListenersBound !== true) {
+            document.addEventListener("click", (event) => {
+                const menus = document.querySelectorAll("[data-user-menu]")
+
+                menus.forEach((menu) => {
+                    if (!menu.contains(event.target)) {
+                        closeMenu(menu)
+                    }
+                })
+            })
+
+            document.addEventListener("keydown", (event) => {
+                if (event.key !== "Escape") {
+                    return
+                }
+
+                const menus = document.querySelectorAll("[data-user-menu]")
+
+                menus.forEach((menu) => {
+                    const toggle = menu.querySelector("[data-user-menu-toggle]")
+                    const panel = menu.querySelector("[data-user-menu-panel]")
+
+                    if (!toggle || !panel || panel.classList.contains("hidden")) {
+                        return
+                    }
+
+                    closeMenu(menu)
+                    toggle.focus()
+                })
+            })
+
+            window.__userMenuGlobalListenersBound = true
+        }
+
+        const menus = document.querySelectorAll("[data-user-menu]")
+
+        menus.forEach((menu) => {
+            if (menu.dataset.bound === "true") {
+                return
+            }
+
+            menu.dataset.bound = "true"
+
+            const toggle = menu.querySelector("[data-user-menu-toggle]")
+            const panel = menu.querySelector("[data-user-menu-panel]")
+
+            if (!toggle || !panel) {
+                return
+            }
+
+            toggle.addEventListener("click", (event) => {
+                event.stopPropagation()
+
+                if (panel.classList.contains("hidden")) {
+                    openMenu(menu)
+                    return
+                }
+
+                closeMenu(menu)
+            })
+        })
+    })()
+</script>
