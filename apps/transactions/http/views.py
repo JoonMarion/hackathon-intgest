@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
@@ -69,7 +70,12 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.success(self.request, "Transação criada com sucesso.")
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Não foi possível criar a transação. Verifique os campos informados.")
+        return super().form_invalid(form)
 
 
 class TransactionUpdateView(LoginRequiredMixin, UpdateView):
@@ -86,6 +92,14 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def form_valid(self, form):
+        messages.success(self.request, "Transação atualizada com sucesso.")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Não foi possível atualizar a transação. Verifique os campos informados.")
+        return super().form_invalid(form)
+
 
 class TransactionDeleteView(LoginRequiredMixin, DeleteView):
     model = Transaction
@@ -94,3 +108,9 @@ class TransactionDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
+
+    def form_valid(self, form):
+        transaction = self.get_object()
+        label = transaction.description.strip() if transaction.description else f"{transaction.get_kind_display()} {transaction.amount}"
+        messages.success(self.request, f"Transação '{label}' removida com sucesso.")
+        return super().form_valid(form)
