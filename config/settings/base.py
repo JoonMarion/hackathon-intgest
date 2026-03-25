@@ -93,12 +93,18 @@ USE_I18N = True
 
 USE_TZ = True
 
+APPS_STATIC_PATHS = [
+    (BASE_DIR / app.replace(".", "/") / "static")
+    for app in PROJECT_APPS
+]
+
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ] + [
-    (BASE_DIR / app.replace(".", "/") / "static")
-    for app in PROJECT_APPS
+    app
+    for app in APPS_STATIC_PATHS
+    if app.is_dir()
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
