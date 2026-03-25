@@ -33,6 +33,12 @@ class TransactionForm(forms.ModelForm):
             category_queryset = Category.objects.filter(user=self.user).order_by("name")
         self.fields["category"].queryset = category_queryset
 
+    def get_initial_for_field(self, field, field_name):
+        val = super().get_initial_for_field(field, field_name)
+        if field_name == "transaction_date" and val:
+            return val.isoformat()
+        return val
+
     def clean_amount(self):
         amount = self.cleaned_data.get("amount")
         if amount is None or amount <= 0:
