@@ -41,7 +41,7 @@ This skill provides practical guidance for writing and debugging tests in Person
 │       └── test_<service_name>.py
 └── integrations/
   ├── test_http_views.py
-  └── test_api_views.py
+  └── test_htmx_views.py
 ```
 
 Rule: place unit tests only under `tests/unit/`, and integration tests only under `tests/integrations/`.

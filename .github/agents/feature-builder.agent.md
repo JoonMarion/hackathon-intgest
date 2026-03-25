@@ -16,7 +16,7 @@ You coordinate feature delivery for Personal Financie. You do not directly imple
 - Python 3.13, Django 6, SQLite, HTMX
 - Use `uv` workflows only
 - No Docker/containerization
-- No mandatory external API or complex infrastructure
+- No API implementation for this hackathon MVP and no complex external infrastructure
 
 Always follow precedence:
 1. `RULES.md`
@@ -72,7 +72,7 @@ Tests are intentionally executed via `execute/runTests`; if temporarily unavaila
   - `uv run manage.py makemigrations --check`
   - targeted `execute/runTests` (if temporarily unavailable, run `execute/runTask` task `sleep`, then retry)
   - structure compliance evidence in `checks_run` confirming:
-    - app packages: `models/`, `http/` (and `api/` only when explicitly requested)
+    - app packages: `models/`, `http/`
     - test packages: `tests/unit/`, `tests/integrations/`
     - app-local templates duck pattern: `apps/<app_name>/templates/<app_name>/...`
 
@@ -109,6 +109,15 @@ Tests are intentionally executed via `execute/runTests`; if temporarily unavaila
   - `pylance-mcp-server/pylanceRunCodeSnippet`
   - `uv run manage.py check`
   - targeted `execute/runTests` (if temporarily unavailable, run `execute/runTask` task `sleep`, then retry)
+
+### Optional Visual Verification Gate (Frontend/HTMX)
+- Worker: `Frontend Dev`
+- Use when the phase changes templates, HTMX fragments, or server-driven UI behavior
+- Verification expectation in `checks_run`:
+  - target route opened in browser tooling (`openBrowserPage`)
+  - at least one key interaction attempted
+  - pass/fail result or explicit skip reason
+- This gate complements tests and does not replace required automated checks
 
 ### Phase 4 — Quality
 - Workers: `Test Developer` and `Code Reviewer`

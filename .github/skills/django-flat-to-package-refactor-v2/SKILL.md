@@ -1,12 +1,12 @@
 ---
 name: "django-flat-to-package-refactor-v2"
-description: Guidelines for evolving from flat `views.py` and `urls.py` to explicit app-root `http/` and `api/` packages with a canonical aggregator in Personal Financie.
+description: Guidelines for evolving from flat `views.py` and `urls.py` to explicit app-root `http/` packages with a canonical aggregator in Personal Financie.
 user-invocable: true
 ---
 
 # Django Flat-to-Package Refactor (Personal Financie)
 
-Use this skill when an app still has flat `views.py` and/or `urls.py` and you want a clearer app-root structure with explicit `http/` and `api/` packages.
+Use this skill when an app still has flat `views.py` and/or `urls.py` and you want a clearer app-root structure with explicit `http/` package boundaries.
 
 ## Source of truth
 
@@ -17,9 +17,11 @@ When conflicts exist, follow:
 
 ## When to use
 
-- You need cleaner separation between HTML/HTMX endpoints and API endpoints.
+- You need cleaner separation between HTTP route concerns, forms, and HTMX rendering flows.
 - Flat files are growing and hard to maintain.
 - You want staged refactor with backward compatibility.
+
+For this hackathon MVP, API endpoints are disallowed. Keep this refactor HTTP/HTMX-only.
 
 ## Target structure
 
@@ -31,11 +33,6 @@ myapp/
 │   ├── __init__.py
 │   ├── views.py
 │   ├── forms.py
-│   └── urls.py
-├── api/
-│   ├── __init__.py
-│   ├── views.py
-│   ├── serializers.py   # only if API layer exists
 │   └── urls.py
 ├── urls.py              # canonical app aggregator
 ├── views.py             # optional temporary compatibility shim
@@ -59,7 +56,6 @@ app_name = "myapp"
 
 urlpatterns = [
     path("", include("myapp.http.urls")),
-    path("api/", include("myapp.api.urls")),
 ]
 ```
 
@@ -67,9 +63,9 @@ Use empty prefix for `http` routes unless a feature explicitly requires a differ
 
 ## Migration workflow
 
-1. Create `http/` and `api/` packages.
+1. Create `http/` package.
 2. Move view/form code to package modules.
-3. Create `http/urls.py` and `api/urls.py` preserving route `name=` values.
+3. Create `http/urls.py` preserving route `name=` values.
 4. Replace old URL entrypoint with canonical app-root `urls.py` aggregator.
 5. Add temporary compatibility shims for `views.py` and/or `forms.py` when needed.
 6. Update imports/callers incrementally.

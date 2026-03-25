@@ -24,11 +24,27 @@ Use this agent as the default orchestrator for multi-step feature delivery.
 4. Run smoke checks/tests.
 5. Document what was automated and what was adjusted manually.
 
+## Frontend visual verification (when needed)
+
+When a change affects templates, HTMX fragments, or interaction behavior, include a short browser validation step.
+
+Suggested flow:
+1. Ask the orchestrator to route UI work to `Frontend Dev`.
+2. Open the target route with browser tooling (`openBrowserPage`) and verify render output.
+3. Attempt one critical interaction (for example create/edit/delete or HTMX refresh).
+4. Record result as evidence in the phase report (`checks_run`).
+
+Notes:
+- Browser validation complements tests and does not replace `execute/runTests`.
+- Keep checks focused and fast; this is not a full E2E suite.
+- If browser interaction is unavailable, report explicit skip reason and continue with test gates.
+
 ## Prompt examples
 
 - "Use Feature Builder to implement transaction edit flow end-to-end (view, template partial, tests)."
 - "Use Feature Builder to add category CRUD with HTMX partial updates."
 - "Use Feature Builder to add dashboard summary cards and corresponding tests."
+- "Use Feature Builder and include browser visual verification for the updated HTMX transaction list flow."
 
 ## Evaluation readiness checklist
 

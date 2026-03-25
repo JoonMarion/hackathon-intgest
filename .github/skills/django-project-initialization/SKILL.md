@@ -11,7 +11,6 @@ Use this skill to initialize a new Django project (or normalize an early project
 - `config/settings/{base,development,production,test}.py`
 - `apps/` as the app root package
 - app-level `models/`, `http/`, and `tests/` layout
-- optional app-level `api/` package only when explicitly requested by scope
 - tests split into `tests/unit/` and `tests/integrations/`
 - app-local templates using duck pattern under `apps/<app_name>/templates/<app_name>/...`
 - app registration in `INSTALLED_APPS`
@@ -30,6 +29,7 @@ When conflicts exist, follow:
 - SQLite/local-first MVP
 - Use `uv` commands only
 - No Docker/containerization
+- APIs are disallowed in this hackathon MVP
 
 ## Canonical app layout policy (strict)
 
@@ -37,20 +37,19 @@ For all new apps and scaffold-normalization work, this skill's target structure 
 
 - Do not keep or introduce flat app modules (`views.py`, `urls.py`, `tests.py`) as the primary layout.
 - Use package-first app modules (`models/`, `http/`) and split tests into `tests/unit/` and `tests/integrations/`.
-- Create `api/` only when explicitly requested by feature scope.
+- Do not create `api/` packages in this hackathon scope.
 - Keep templates app-local and organized by duck pattern (`apps/<app_name>/templates/<app_name>/...`) aligned to HTTP route/view responsibilities.
 
 ## When to use
 
 - Starting a new Django codebase from scratch.
 - Creating a new app in a project that already uses `apps/` package layout.
-- Refactoring a flat app into package modules (`models/`, `http/`, optional `api/`) without changing feature behavior.
+- Refactoring a flat app into package modules (`models/`, `http/`) without changing feature behavior.
 
 ## Required inputs
 
 - `project_slug` (e.g., `myproject`)
 - `app_name` (e.g., `accounts`, `products`)
-- Optional: API enablement (disabled by default for hackathon MVP; enable only when explicitly requested)
 
 ## Target project structure
 
@@ -161,7 +160,6 @@ For each app (example: `accounts`), ensure:
 
 - `apps/accounts/models/` package with domain modules and re-exports in `models/__init__.py`
 - `apps/accounts/http/` package for HTML/HTMX endpoints
-- optional `apps/accounts/api/` package only when scope explicitly requires API endpoints
 - `apps/accounts/tests/` package with explicit test split:
   - `tests/unit/` for unit tests
   - `tests/integrations/` for integration tests
@@ -193,15 +191,8 @@ urlpatterns = [
 ]
 ```
 
-Within the app, keep dedicated `http/urls.py` module. Add `api/urls.py` only when API scope is explicitly requested. If desired, add app-root `urls.py` as aggregator.
-
-If API scope is explicitly requested, append:
-
-```python
-urlpatterns += [
-  path("api/<app_name>/", include("apps.<app_name>.api.urls")),
-]
-```
+Within the app, keep dedicated `http/urls.py` module. If desired, add app-root `urls.py` as aggregator.
+Within this hackathon scope, do not add `api/urls.py` or API route prefixes.
 
 ## App package checklist (per app)
 
@@ -213,7 +204,6 @@ urlpatterns += [
 - [ ] app-local templates exist under `apps/<app_name>/templates/<app_name>/...` using duck pattern
 - [ ] app is registered in `config/settings/base.py`
 - [ ] imports resolve from package paths
-- [ ] if API is explicitly requested, `apps/<app_name>/api/views.py` and `api/urls.py` are present
 
 ## Validation checklist
 
@@ -232,7 +222,7 @@ Use `uv` commands only:
 - Do not add infrastructure outside MVP scope.
 - Keep refactors incremental; avoid changing URL names unless required.
 - Prefer explicit imports over wildcard imports.
-- If API scope is explicitly enabled, keep API and HTTP route layers separate (`api/` vs `http/`).
+- Do not introduce API layer structures (`api/`) during this hackathon.
 
 ## Output contract (for worker reports)
 

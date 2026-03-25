@@ -24,6 +24,26 @@ Build server-rendered frontend behavior using Django templates and HTMX.
 4. Keep user-facing text clear and consistent
 5. Preserve stable selectors in tests where they exist
 
+## Visual Verification Policy (Browser)
+
+Use browser tooling (`openBrowserPage`) when frontend behavior changes and visual/interaction validation is useful.
+
+When to run browser verification:
+- template/layout updates under `apps/*/templates/`
+- HTMX fragment updates or partial swap behavior changes
+- form UX changes where server response and rendered feedback must be confirmed
+
+How to run:
+1. open the target route in browser
+2. validate critical render targets (page shell + updated fragment)
+3. attempt one or more key user interactions (create/edit/delete/filter applicable flow)
+4. capture outcome in `checks_run` with page path, interaction attempted, and result
+
+Guardrails:
+- keep checks short and scenario-focused (not full E2E replacement)
+- do not block delivery if browser validation is not possible; report exact reason under `checks_run`
+- keep automated tests as primary functional gate
+
 ## Command Policy
 
 - in agent/subagent workflows, run frontend-relevant tests via `execute/runTests` when applicable
@@ -39,6 +59,7 @@ Build server-rendered frontend behavior using Django templates and HTMX.
   - <workspace relative path>
 - checks_run:
   - <tool/command + result>
+  - browser verification evidence when UI/HTMX changed (or explicit skip reason)
 - blockers:
   - <exact error output and failing file> (or "none")
 - next_recommended_phase:
