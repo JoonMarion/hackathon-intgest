@@ -2,6 +2,8 @@
 
 This document describes the simplified architecture for the Personal Financie hackathon MVP.
 
+> ⚠️ IMPORTANTE: Evite criação e consumo de APIs neste hackathon; priorize fluxo server-rendered com HTMX.
+
 ## Stack
 
 - Python 3.13

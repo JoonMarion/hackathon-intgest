@@ -4,12 +4,14 @@ Este repositório contém uma Prova de Conceito de uma pequena aplicação de Ge
 
 ## Objetivo do Projeto
 
-O projeto demonstra uma aplicação simples em Django para gerenciar lançamentos financeiros (receitas e despesas), com API e views tradicionais, além de exemplos de separação de responsabilidades (models, services, api, http).
+O projeto demonstra uma aplicação simples em Django para gerenciar lançamentos financeiros (receitas e despesas), com abordagem server-rendered e HTMX, além de exemplos de separação de responsabilidades (models e camadas HTTP).
+
+> ⚠️ IMPORTANTE: APIs estão desautorizadas neste hackathon. Não criar nem consumir endpoints API.
 
 ## Estrutura Mínima Esperada
 
-- `apps/transaction/` — app principal (models, services, api, http, templates, tests)
-- `personal_finance/` — configuração do Django (`settings.py`, `urls.py`, `wsgi.py`, `asgi.py`)
+- `config/` — configuração do Django com split de settings em `config/settings/`
+- `apps/transactions/` — app principal com layout package-first (`models/`, `http/`, `tests/`, `templates/transactions/...`)
 
 ## Como executar (desenvolvimento)
 
@@ -37,14 +39,8 @@ uv run manage.py runserver
 
 Notas de instalação:
 
-- Use `uv sync` para criar o ambiente virtual e instalar dependências de runtime e desenvolvimento.
-- Para instalar os navegadores do Playwright (necessários para testes end-to-end), execute estes comandos dentro do ambiente `uv`:
-
-```bash
-uv run playwright install-deps && uv run playwright install
-```
-
-- Se preferir uma configuração manual sem o `uv`, crie e ative um virtualenv e instale as dependências com `pip install -r requirements-dev.txt` (ou use `pyproject.toml`).
+- Use `uv sync` para criar o ambiente virtual e instalar dependências.
+- Use `uv run ...` para comandos do Django e scripts do projeto.
 
 ## Testes (rápido)
 
@@ -54,10 +50,10 @@ uv run playwright install-deps && uv run playwright install
 uv run manage.py test
 ```
 
-- Execute apenas os testes E2E com:
+- Execute um teste direcionado de bootstrap com:
 
 ```bash
-uv run manage.py test personal_finance.tests.e2e.main
+uv run manage.py test apps.transactions.tests.unit.test_bootstrap
 ```
 
 ## Sobre os Testes
@@ -68,14 +64,14 @@ Os testes usam o runner padrão do Django (baseado em unittest). Execute os test
 # rodar todos os testes
 uv run manage.py test
 
-# rodar apenas a pasta de testes E2E
-uv run manage.py test personal_finance.tests.e2e.main
+# rodar teste direcionado de bootstrap
+uv run manage.py test apps.transactions.tests.unit.test_bootstrap
 ```
 
 Observações:
 
 - Este projeto usa intencionalmente o runner padrão do Django (sem pytest, por convenção do projeto).
-- O Playwright (para testes E2E em navegador) deve ser instalado também via `uv` (veja `docs/testing-guide.md` para detalhes).
+- Para estratégias de testes adicionais, consulte `docs/testing-guide.md`.
 
 ## Observações sobre o uso do GitHub Copilot
 

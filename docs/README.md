@@ -38,6 +38,8 @@ Use legacy docs only if a concrete task explicitly requires them.
 
 ## Scope guardrails
 
+> ⚠️ IMPORTANTE: APIs estão desautorizadas neste hackathon. Não criar nem consumir endpoints API.
+
 - Keep docs aligned with local-first execution.
 - Do not reintroduce mandatory external infra requirements.
 - Prioritize mandatory MVP features before optional differentials.

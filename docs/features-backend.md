@@ -2,6 +2,8 @@
 
 This guide describes backend behavior expected for the hackathon MVP.
 
+> ⚠️ IMPORTANTE: Abordagem do MVP sem APIs. Não criar nem consumir endpoints API.
+
 ## Mandatory feature set
 
 - Create income entries

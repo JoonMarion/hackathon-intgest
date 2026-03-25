@@ -12,7 +12,7 @@
 - User Needs & User Stories
 - Product Features (Hackathon MVP / Optional / Roadmap)
 - Data Model (Entities & Relationships)
-- API / Backend Endpoints
+- Backend Delivery (Server-rendered + HTMX)
 - UI / UX Flows
 - Permissions, Roles & Security
 - AI-Assisted Development & Copilot Usage
@@ -37,6 +37,7 @@ This section is mandatory and takes precedence over aspirational roadmap items.
 - **Execution model:** Must run locally during presentation.
 - **Infrastructure limits:** No Docker/containerization; no critical dependency on complex external infrastructure.
 - **Data policy:** No real sensitive data, credentials, or non-authorized corporate resources.
+- **API policy:** ⚠️ IMPORTANTE: APIs estão desautorizadas neste hackathon. Não criar nem consumir endpoints API.
 - **Event format:** Base delivery + live implementation of a newly drawn feature during evaluation.
 - **Scope strategy:** Prioritize mandatory base requirements first; only then implement optional differentials.
 
@@ -130,16 +131,15 @@ This section is mandatory and takes precedence over aspirational roadmap items.
 - A User has many Categories and Transactions.
 - A Transaction belongs to one Category.
 
-## API / Backend Endpoints
+## Backend Delivery (Server-rendered + HTMX)
 
-Implementation can be server-rendered views, API endpoints, or a mixed approach. If API endpoints are used, prefer:
+> ⚠️ IMPORTANTE: APIs estão desautorizadas neste hackathon. Não criar nem consumir endpoints API.
 
-- `POST /api/auth/login` (if authentication is implemented)
-- `GET/POST /api/categories`
-- `GET/POST /api/transactions`
-- `PATCH/DELETE /api/transactions/{id}`
-- `POST /api/transactions/import` (CSV)
-- `GET /api/reports/summary` (dashboard totals)
+Implementation for this event must be server-rendered with Django templates and HTMX-driven partial updates.
+
+- Prefer HTTP views and template rendering for create/list/edit/delete flows.
+- Use HTMX requests to refresh targeted UI regions without SPA complexity.
+- Keep endpoints focused on page/fragment rendering, not API payload contracts.
 
 CSV import expectations:
 
