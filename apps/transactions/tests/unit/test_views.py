@@ -54,3 +54,22 @@ class TransactionViewConfigTests(BaseIntegrationTestCase):
         response = self.client.get(reverse("transactions_http:index"))
 
         self.assertIn("categories", response.context)
+
+    def test_list_view_context_has_ordering_and_page_size_state(self):
+        response = self.client.get(
+            reverse("transactions_http:index"),
+            {"ordering": "amount,created_at", "page_size": "10"},
+        )
+
+        self.assertEqual(response.context["current_ordering"], "amount,created_at")
+        self.assertEqual(response.context["current_page_size"], 10)
+        self.assertEqual(response.context["page_size_options"], (10, 25, 50))
+
+    def test_list_view_context_falls_back_for_invalid_ordering_and_page_size(self):
+        response = self.client.get(
+            reverse("transactions_http:index"),
+            {"ordering": "invalid", "page_size": "999"},
+        )
+
+        self.assertEqual(response.context["current_ordering"], "-transaction_date,-created_at")
+        self.assertEqual(response.context["current_page_size"], 25)

@@ -1,46 +1,60 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, UpdateView
+from django_filters.views import FilterView
 
 from apps.categories.models import Category
+from apps.transactions.http.filters import TransactionFilterSet
 from apps.transactions.http.forms import TransactionForm
 from apps.transactions.models import Transaction
 
 
-class TransactionListView(LoginRequiredMixin, ListView):
+class TransactionListView(LoginRequiredMixin, FilterView):
     model = Transaction
+    filterset_class = TransactionFilterSet
     template_name = "transactions/pages/index.html"
     context_object_name = "transactions"
 
-    def get_queryset(self):
-        qs = (
-            Transaction.objects.filter(user=self.request.user)
-            .select_related("category")
-            .order_by("-transaction_date", "-created_at")
-        )
+    ORDERING_DEFAULT = "-transaction_date,-created_at"
+    ORDERING_OPTIONS = {
+        "-transaction_date,-created_at": ("-transaction_date", "-created_at"),
+        "transaction_date,created_at": ("transaction_date", "created_at"),
+        "-amount,-created_at": ("-amount", "-created_at"),
+        "amount,created_at": ("amount", "created_at"),
+    }
+    PAGE_SIZE_DEFAULT = 25
+    PAGE_SIZE_OPTIONS = (10, 25, 50)
 
-        q = self.request.GET.get("q", "").strip()
-        if q:
-            qs = qs.filter(description__icontains=q)
+    def get_base_queryset(self):
+        return Transaction.objects.filter(user=self.request.user).select_related("category")
 
-        category = self.request.GET.get("category", "").strip()
-        if category:
-            qs = qs.filter(category_id=category)
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs["queryset"] = self.get_base_queryset().order_by(*self.get_ordering_fields())
+        kwargs["user"] = self.request.user
+        return kwargs
 
-        kind = self.request.GET.get("kind", "").strip()
-        if kind:
-            qs = qs.filter(kind=kind)
+    def get_ordering_value(self):
+        ordering = self.request.GET.get("ordering", self.ORDERING_DEFAULT)
+        if ordering in self.ORDERING_OPTIONS:
+            return ordering
+        return self.ORDERING_DEFAULT
 
-        date_from = self.request.GET.get("date_from", "").strip()
-        if date_from:
-            qs = qs.filter(transaction_date__gte=date_from)
+    def get_ordering_fields(self):
+        return self.ORDERING_OPTIONS[self.get_ordering_value()]
 
-        date_to = self.request.GET.get("date_to", "").strip()
-        if date_to:
-            qs = qs.filter(transaction_date__lte=date_to)
+    def get_page_size(self):
+        page_size = self.request.GET.get("page_size", "")
+        if page_size.isdigit():
+            page_size_value = int(page_size)
+            if page_size_value in self.PAGE_SIZE_OPTIONS:
+                return page_size_value
+        return self.PAGE_SIZE_DEFAULT
 
-        return qs
+    def get_paginate_by(self, queryset):
+        del queryset
+        return self.get_page_size()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -54,6 +68,10 @@ class TransactionListView(LoginRequiredMixin, ListView):
             "date_from": self.request.GET.get("date_from", ""),
             "date_to": self.request.GET.get("date_to", ""),
         }
+        context["current_ordering"] = self.get_ordering_value()
+        context["current_page_size"] = self.get_page_size()
+        context["ordering_options"] = tuple(self.ORDERING_OPTIONS.keys())
+        context["page_size_options"] = self.PAGE_SIZE_OPTIONS
         return context
 
 

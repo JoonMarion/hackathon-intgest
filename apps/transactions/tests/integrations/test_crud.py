@@ -44,6 +44,119 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
         transactions = list(response.context["transactions"])
         self.assertEqual(transactions, [newer, older])
 
+    def test_list_uses_default_ordering_with_tie_breaker_by_created_at_desc(self):
+        self.client.force_login(self.user)
+        first_created = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="20.00",
+            transaction_date=date(2026, 3, 10),
+            description="Criada primeiro",
+        )
+        second_created = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="30.00",
+            transaction_date=date(2026, 3, 10),
+            description="Criada depois",
+        )
+
+        response = self.client.get(reverse("transactions_http:index"))
+
+        self.assertEqual(response.status_code, 200)
+        transactions = list(response.context["transactions"])
+        self.assertEqual(transactions, [second_created, first_created])
+
+    def test_list_ordering_param_amount_created_at_orders_ascending(self):
+        self.client.force_login(self.user)
+        low_amount = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="10.00",
+            transaction_date=date(2026, 3, 20),
+            description="Menor valor",
+        )
+        high_amount = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="30.00",
+            transaction_date=date(2026, 3, 20),
+            description="Maior valor",
+        )
+
+        response = self.client.get(reverse("transactions_http:index"), {"ordering": "amount,created_at"})
+
+        self.assertEqual(response.status_code, 200)
+        transactions = list(response.context["transactions"])
+        self.assertEqual(transactions, [low_amount, high_amount])
+
+    def test_list_ordering_param_desc_amount_created_at_orders_descending(self):
+        self.client.force_login(self.user)
+        low_amount = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="10.00",
+            transaction_date=date(2026, 3, 20),
+            description="Menor valor",
+        )
+        high_amount = TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="30.00",
+            transaction_date=date(2026, 3, 20),
+            description="Maior valor",
+        )
+
+        response = self.client.get(reverse("transactions_http:index"), {"ordering": "-amount,-created_at"})
+
+        self.assertEqual(response.status_code, 200)
+        transactions = list(response.context["transactions"])
+        self.assertEqual(transactions, [high_amount, low_amount])
+
+    def test_list_page_size_param_limits_items_per_page(self):
+        self.client.force_login(self.user)
+        for index in range(12):
+            TransactionFactory(
+                user=self.user,
+                category=self.category,
+                kind=Transaction.Kind.EXPENSE,
+                amount="10.00",
+                transaction_date=date(2026, 3, 20),
+                description=f"Item {index}",
+            )
+
+        response = self.client.get(reverse("transactions_http:index"), {"page_size": "10"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_paginated"])
+        self.assertEqual(len(response.context["transactions"]), 10)
+        self.assertIsNotNone(response.context["page_obj"])
+
+    def test_list_invalid_page_size_uses_default_fallback(self):
+        self.client.force_login(self.user)
+        for index in range(26):
+            TransactionFactory(
+                user=self.user,
+                category=self.category,
+                kind=Transaction.Kind.EXPENSE,
+                amount="10.00",
+                transaction_date=date(2026, 3, 20),
+                description=f"Item fallback {index}",
+            )
+
+        response = self.client.get(reverse("transactions_http:index"), {"page_size": "999"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["is_paginated"])
+        self.assertEqual(len(response.context["transactions"]), 25)
+        self.assertIsNotNone(response.context["page_obj"])
+
     def test_create_creates_transaction_for_logged_in_user(self):
         self.client.force_login(self.user)
 
