@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 
-from apps.accounts.http.forms import EmailOrUsernameAuthenticationForm, RegisterForm
+from apps.accounts.http.forms import (
+    EmailOrUsernameAuthenticationForm,
+    RegisterForm,
+    UserProfileForm,
+)
 from apps.core.tests.base import BaseIntegrationTestCase
 from apps.core.tests.factories import UserFactory
 
@@ -57,6 +61,98 @@ class RegisterFormTests(BaseIntegrationTestCase):
             RegisterForm.Meta.fields,
             ("username", "email", "password1", "password2"),
         )
+
+    def test_register_form_duplicate_username_is_rejected_in_username_field(self):
+        UserFactory(username="ExistingUser", email="existing-user@example.com")
+        form = RegisterForm(
+            data={
+                "username": "existinguser",
+                "email": "new-register@example.com",
+                "password1": "strong-pass-987!",
+                "password2": "strong-pass-987!",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+        self.assertEqual(
+            form.errors["username"],
+            [RegisterForm.duplicated_username_message],
+        )
+
+    def test_register_form_duplicate_email_is_rejected_in_email_field(self):
+        UserFactory(username="existing-register", email="User@Example.com")
+        form = RegisterForm(
+            data={
+                "username": "new-register",
+                "email": "user@example.com",
+                "password1": "strong-pass-987!",
+                "password2": "strong-pass-987!",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+        self.assertEqual(
+            form.errors["email"],
+            [RegisterForm.duplicated_email_message],
+        )
+
+
+class UserProfileFormTests(BaseIntegrationTestCase):
+    def test_profile_form_blocks_duplicate_username_from_another_user(self):
+        UserFactory(username="existing-user", email="existing@example.com")
+        current_user = UserFactory(username="current-user", email="current@example.com")
+        form = UserProfileForm(
+            instance=current_user,
+            data={
+                "username": "Existing-User",
+                "email": "current@example.com",
+                "first_name": "Current",
+                "last_name": "User",
+            },
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+        self.assertEqual(
+            form.errors["username"],
+            [UserProfileForm.duplicated_username_message],
+        )
+
+    def test_profile_form_blocks_duplicate_email_from_another_user(self):
+        UserFactory(username="existing-user", email="existing@example.com")
+        current_user = UserFactory(username="current-user", email="current@example.com")
+        form = UserProfileForm(
+            instance=current_user,
+            data={
+                "username": "current-user",
+                "email": "EXISTING@EXAMPLE.COM",
+                "first_name": "Current",
+                "last_name": "User",
+            },
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+        self.assertEqual(
+            form.errors["email"],
+            [UserProfileForm.duplicated_email_message],
+        )
+
+    def test_profile_form_allows_keeping_own_username_and_email(self):
+        current_user = UserFactory(username="self-user", email="Self@Example.com")
+        form = UserProfileForm(
+            instance=current_user,
+            data={
+                "username": "self-user",
+                "email": "self@example.com",
+                "first_name": "Self",
+                "last_name": "User",
+            },
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
 
 
 class EmailOrUsernameAuthenticationFormTests(BaseIntegrationTestCase):

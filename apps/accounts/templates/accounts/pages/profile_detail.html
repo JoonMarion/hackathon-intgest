@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Minha conta - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto w-full max-w-2xl space-y-7">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                Minha conta
+            </h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Visualize e gerencie seus dados de acesso.
+            </p>
+        </div>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
+        <dl class="space-y-4 text-sm">
+            <div>
+                <dt class="font-medium text-gray-600 dark:text-gray-300">Usuário</dt>
+                <dd class="mt-1 text-gray-900 dark:text-gray-100">{{ profile_user.username }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600 dark:text-gray-300">E-mail</dt>
+                <dd class="mt-1 text-gray-900 dark:text-gray-100">{{ profile_user.email|default:"Não informado" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600 dark:text-gray-300">Nome</dt>
+                <dd class="mt-1 text-gray-900 dark:text-gray-100">{{ profile_user.first_name|default:"Não informado" }}</dd>
+            </div>
+            <div>
+                <dt class="font-medium text-gray-600 dark:text-gray-300">Sobrenome</dt>
+                <dd class="mt-1 text-gray-900 dark:text-gray-100">{{ profile_user.last_name|default:"Não informado" }}</dd>
+            </div>
+        </dl>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+            <a href="{% url 'accounts_http:profile_edit' %}" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                Editar dados
+            </a>
+            <a href="{% url 'accounts_http:password_change' %}" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+                Alterar senha
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
