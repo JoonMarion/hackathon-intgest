@@ -15,6 +15,10 @@ O projeto demonstra uma aplicação simples em Django para gerenciar lançamento
 
 ## Como executar (desenvolvimento)
 
+### Requisitos
+
+- UV da Astral, [Instalação](https://docs.astral.sh/uv/getting-started/installation/)
+
 Este projeto utiliza o helper `uv` para gerenciamento do ambiente virtual e execução de comandos. O fluxo local recomendado é:
 
 1. Criar o ambiente virtual e instalar dependências do projeto (gerenciado por `uv`):

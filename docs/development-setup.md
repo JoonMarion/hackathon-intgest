@@ -4,8 +4,7 @@ This setup is intentionally minimal and aligned with hackathon constraints.
 
 ## Prerequisites
 
-- Python 3.13
-- `uv` (Astral)
+- `uv` (Astral) [Instalação](https://docs.astral.sh/uv/getting-started/installation/)
 - Git
 
 ## Environment setup
