@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir categoria - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto w-full max-w-xl space-y-6">
+    <h1 class="text-2xl font-semibold">Excluir categoria</h1>
+
+    <div class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+        <p class="text-sm text-gray-700 dark:text-gray-200">
+            Deseja excluir a categoria <strong>{{ object.name }}</strong>?
+        </p>
+
+        <form method="post" class="mt-5 flex items-center gap-3">
+            {% csrf_token %}
+            <button type="submit" class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">
+                Excluir
+            </button>
+            <a href="{% url 'categories_http:index' %}" class="text-sm text-gray-700 hover:underline dark:text-gray-200">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock content %}

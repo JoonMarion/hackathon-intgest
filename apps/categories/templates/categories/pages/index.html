@@ -3,6 +3,91 @@
 {% block title %}Categorias - Personal Financie{% endblock title %}
 
 {% block content %}
-<h1 class="text-2xl font-semibold">Categorias</h1>
-<p class="mt-2 text-gray-600 dark:text-gray-300">Lista de categorias (placeholder).</p>
+
+<div class="space-y-7">
+	<div class="flex flex-wrap items-start justify-between gap-4">
+		<div>
+			<h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Categorias</h1>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie categorias de receitas e despesas.</p>
+		</div>
+
+		<a href="{% url 'categories_http:create' %}" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+			Nova
+		</a>
+	</div>
+
+	<div class="grid gap-6 lg:grid-cols-2">
+		<section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+			<h2 class="text-base font-semibold tracking-tight text-gray-900 dark:text-gray-100">Receitas</h2>
+			<div class="mt-4 space-y-2.5">
+				{% for category in income_categories %}
+					<article class="group rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-3 transition-colors hover:bg-white dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-900">
+						<div class="flex items-center justify-between gap-3">
+							<div class="min-w-0">
+								<a href="{% url 'categories_http:update' category.pk %}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
+								<p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Receita</p>
+							</div>
+							<div class="flex items-center gap-1.5">
+								<a href="{% url 'categories_http:update' category.pk %}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
+									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M12 20h9"></path>
+										<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
+									</svg>
+								</a>
+								<a href="{% url 'categories_http:delete' category.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
+									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M4 7h16"></path>
+										<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
+										<path d="M7.5 7.5 8.2 19a1.5 1.5 0 0 0 1.5 1.4h4.6a1.5 1.5 0 0 0 1.5-1.4l.7-11.5"></path>
+										<path d="M10 11v6"></path>
+										<path d="M14 11v6"></path>
+									</svg>
+								</a>
+							</div>
+						</div>
+					</article>
+				{% endfor %}
+				{% if not income_categories %}
+					<p class="text-sm text-gray-500 dark:text-gray-400">Nenhuma categoria cadastrada.</p>
+				{% endif %}
+			</div>
+		</section>
+
+		<section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+			<h2 class="text-base font-semibold tracking-tight text-gray-900 dark:text-gray-100">Despesas</h2>
+			<div class="mt-4 space-y-2.5">
+				{% for category in expense_categories %}
+					<article class="group rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-3 transition-colors hover:bg-white dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-900">
+						<div class="flex items-center justify-between gap-3">
+							<div class="min-w-0">
+								<a href="{% url 'categories_http:update' category.pk %}" class="block truncate text-sm font-medium text-gray-800 hover:text-gray-950 hover:underline dark:text-gray-200 dark:hover:text-white">{{ category.name }}</a>
+								<p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Despesa</p>
+							</div>
+							<div class="flex items-center gap-1.5">
+								<a href="{% url 'categories_http:update' category.pk %}" class="inline-flex items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar categoria {{ category.name }}">
+									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M12 20h9"></path>
+										<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
+									</svg>
+								</a>
+								<a href="{% url 'categories_http:delete' category.pk %}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir categoria {{ category.name }}">
+									<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M4 7h16"></path>
+										<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
+										<path d="M7.5 7.5 8.2 19a1.5 1.5 0 0 0 1.5 1.4h4.6a1.5 1.5 0 0 0 1.5-1.4l.7-11.5"></path>
+										<path d="M10 11v6"></path>
+										<path d="M14 11v6"></path>
+									</svg>
+								</a>
+							</div>
+						</div>
+					</article>
+				{% endfor %}
+				{% if not expense_categories %}
+					<p class="text-sm text-gray-500 dark:text-gray-400">Nenhuma categoria cadastrada.</p>
+				{% endif %}
+			</div>
+		</section>
+	</div>
+</div>
 {% endblock content %}

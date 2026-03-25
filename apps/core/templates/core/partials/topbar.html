@@ -1,5 +1,5 @@
-<header class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
-    <div class="text-sm text-gray-600 dark:text-gray-300">
+<header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-6 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
+    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">
         {% if user.is_authenticated %}
             {{ user.email|default:user.username }}
         {% else %}
@@ -7,16 +7,34 @@
         {% endif %}
     </div>
 
-    <div class="flex items-center gap-3">
-        <button type="button" data-theme-toggle class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
-            Dark/Light
+    <div class="flex items-center gap-2.5">
+        <button type="button" data-theme-toggle class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800" aria-label="Alternar tema">
+            <svg viewBox="0 0 24 24" class="h-4 w-4 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2.5v2.2"></path>
+                <path d="M12 19.3v2.2"></path>
+                <path d="m4.9 4.9 1.6 1.6"></path>
+                <path d="m17.5 17.5 1.6 1.6"></path>
+                <path d="M2.5 12h2.2"></path>
+                <path d="M19.3 12h2.2"></path>
+                <path d="m4.9 19.1 1.6-1.6"></path>
+                <path d="m17.5 6.5 1.6-1.6"></path>
+            </svg>
+            <svg viewBox="0 0 24 24" class="hidden h-4 w-4 dark:block" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.8A8.8 8.8 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+            </svg>
         </button>
 
         {% if user.is_authenticated %}
             <form method="post" action="{% url 'accounts_http:logout' %}">
                 {% csrf_token %}
-                <button type="submit" class="rounded bg-gray-900 px-3 py-1 text-sm text-white hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                    Logout
+                <button type="submit" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:bg-emerald-500/85 dark:hover:bg-emerald-400 dark:text-emerald-950">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M9 21H5.7A1.7 1.7 0 0 1 4 19.3V4.7A1.7 1.7 0 0 1 5.7 3H9"></path>
+                        <path d="M16 17l5-5-5-5"></path>
+                        <path d="M21 12H9"></path>
+                    </svg>
+                    Sair
                 </button>
             </form>
         {% endif %}
