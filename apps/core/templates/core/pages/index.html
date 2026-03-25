@@ -3,6 +3,231 @@
 {% block title %}Dashboard - Personal Financie{% endblock title %}
 
 {% block content %}
-<h1 class="text-2xl font-semibold">Dashboard</h1>
-<p class="mt-2 text-gray-600 dark:text-gray-300">Resumo financeiro (placeholder).</p>
+<div class="space-y-7">
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Dashboard</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Visão geral das suas finanças</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid gap-5 sm:grid-cols-3">
+        <!-- Receitas -->
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Receitas</span>
+                <svg viewBox="0 0 24 24" class="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <p class="mt-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">R$ {{ total_income|floatformat:2 }}</p>
+        </div>
+
+        <!-- Despesas -->
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Despesas</span>
+                <svg viewBox="0 0 24 24" class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline>
+                    <polyline points="16 17 22 17 22 11"></polyline>
+                </svg>
+            </div>
+            <p class="mt-2 text-2xl font-bold text-red-600 dark:text-red-400">R$ {{ total_expense|floatformat:2 }}</p>
+        </div>
+
+        <!-- Saldo -->
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Saldo</span>
+                <svg viewBox="0 0 24 24" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+                    <path d="M9 10h6"></path>
+                    <path d="M9 14h6"></path>
+                    <path d="M9 18h6"></path>
+                </svg>
+            </div>
+            <p class="mt-2 text-2xl font-bold {% if balance >= 0 %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                R$ {{ balance|floatformat:2 }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Line Chart: Evolução de Receitas e Despesas -->
+    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas</h2>
+        <div class="mt-4" style="position: relative; height: 300px;">
+            <canvas id="evolutionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Donut Charts -->
+    <div class="grid gap-5 lg:grid-cols-2">
+        <!-- Despesas por Categoria -->
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Despesas por Categoria</h2>
+            <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
+                <canvas id="expenseDoughnutChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Receitas por Categoria -->
+        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas por Categoria</h2>
+            <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
+                <canvas id="incomeDoughnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos Lançamentos -->
+    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Últimos Lançamentos</h2>
+        <div class="mt-4 divide-y divide-gray-200/70 dark:divide-gray-700/70">
+            {% for transaction in recent_transactions %}
+                <div class="flex items-center justify-between py-3.5">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ transaction.description|default:"Sem descrição" }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.category.name }}</p>
+                    </div>
+                    <span class="text-sm font-semibold {% if transaction.kind == 'income' %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                        {% if transaction.kind == 'income' %}+ {% else %}- {% endif %}R$ {{ transaction.amount|floatformat:2 }}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">Nenhum lançamento registrado ainda.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    const textColor = isDark ? '#9ca3af' : '#6b7280';
+
+    // --- Line Chart ---
+    const evolutionCtx = document.getElementById('evolutionChart');
+    if (evolutionCtx) {
+        new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Receitas',
+                        data: {{ chart_income|safe }},
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#10b981',
+                        fill: false,
+                    },
+                    {
+                        label: 'Despesas',
+                        data: {{ chart_expense|safe }},
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#ef4444',
+                        fill: false,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor, usePointStyle: true, pointStyle: 'circle' },
+                    },
+                },
+                scales: {
+                    x: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor },
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textColor,
+                            callback: function(value) { return 'R$' + (value / 1000).toFixed(0) + 'k'; },
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
+    }
+
+    const doughnutColors = [
+        '#10b981', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444',
+        '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1',
+    ];
+
+    // --- Expense Doughnut Chart ---
+    const expenseCtx = document.getElementById('expenseDoughnutChart');
+    const expenseLabels = {{ expense_categories_labels|safe }};
+    const expenseData = {{ expense_categories_data|safe }};
+    if (expenseCtx && expenseData.length > 0) {
+        new Chart(expenseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: expenseLabels,
+                datasets: [{
+                    data: expenseData,
+                    backgroundColor: doughnutColors.slice(0, expenseLabels.length),
+                    borderWidth: 2,
+                    borderColor: isDark ? '#1f2937' : '#ffffff',
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor, usePointStyle: true, pointStyle: 'circle', padding: 16 },
+                    },
+                },
+            },
+        });
+    }
+
+    // --- Income Doughnut Chart ---
+    const incomeCtx = document.getElementById('incomeDoughnutChart');
+    const incomeLabels = {{ income_categories_labels|safe }};
+    const incomeData = {{ income_categories_data|safe }};
+    if (incomeCtx && incomeData.length > 0) {
+        new Chart(incomeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: incomeLabels,
+                datasets: [{
+                    data: incomeData,
+                    backgroundColor: doughnutColors.slice(0, incomeLabels.length),
+                    borderWidth: 2,
+                    borderColor: isDark ? '#1f2937' : '#ffffff',
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor, usePointStyle: true, pointStyle: 'circle', padding: 16 },
+                    },
+                },
+            },
+        });
+    }
+})();
+</script>
 {% endblock content %}
