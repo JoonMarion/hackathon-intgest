@@ -20,6 +20,7 @@ Review implementation output for correctness, maintainability, and alignment wit
 - Decimal-safe monetary handling
 - Clear validation and user-facing text
 - No unintended infrastructure complexity
+- Views must be thin — delegate ORM queries, aggregations, and data transformations to service classes under `services/`. Views should only parse request params, call services, and populate template context. Flag views with business logic as a violation.
 
 ### Testing and Risk Checks
 
