@@ -17,13 +17,13 @@ This guide defines a lean testing approach for the hackathon MVP.
 ## Run tests
 
 ```bash
-uv run manage.py test
+$ uv run manage.py test
 ```
 
 Run one module:
 
 ```bash
-uv run manage.py test app.tests
+$ uv run manage.py test <app_name>.tests
 ```
 
 ## Manual smoke checklist (before demo)
