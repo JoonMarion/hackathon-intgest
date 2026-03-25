@@ -23,7 +23,7 @@ Use this agent for:
 - app scaffolding under `apps/`
 - settings and URL wiring required for new app bootstrap
 - canonical app structure enforcement from `django-project-initialization` skill:
-  - app packages: `models/`, `http/`, `api/`
+  - app packages: `models/`, `http/` (and optional `api/` only when explicitly requested)
   - tests package split: `tests/unit/` and `tests/integrations/`
   - app-local template duck pattern: `apps/<app_name>/templates/<app_name>/...`
 
@@ -67,8 +67,9 @@ Also include structure compliance evidence under `checks_run`.
 
 ### Structure Compliance Evidence (required for bootstrap/scaffolding)
 
-- [ ] `apps/<app_name>/models/`, `apps/<app_name>/http/`, `apps/<app_name>/api/` exist
+- [ ] `apps/<app_name>/models/` and `apps/<app_name>/http/` exist
 - [ ] `apps/<app_name>/tests/__init__.py` exists
 - [ ] `apps/<app_name>/tests/unit/__init__.py` exists
 - [ ] `apps/<app_name>/tests/integrations/__init__.py` exists
 - [ ] app-local templates follow duck pattern at `apps/<app_name>/templates/<app_name>/...`
+- [ ] if API is explicitly requested, `apps/<app_name>/api/` exists

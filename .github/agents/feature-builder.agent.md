@@ -72,7 +72,7 @@ Tests are intentionally executed via `execute/runTests`; if temporarily unavaila
   - `uv run manage.py makemigrations --check`
   - targeted `execute/runTests` (if temporarily unavailable, run `execute/runTask` task `sleep`, then retry)
   - structure compliance evidence in `checks_run` confirming:
-    - app packages: `models/`, `http/`, `api/`
+    - app packages: `models/`, `http/` (and `api/` only when explicitly requested)
     - test packages: `tests/unit/`, `tests/integrations/`
     - app-local templates duck pattern: `apps/<app_name>/templates/<app_name>/...`
 

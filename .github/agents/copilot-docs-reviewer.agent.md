@@ -1,7 +1,7 @@
 ---
 name: Copilot Docs Reviewer
 description: Review only GitHub Copilot customization files under .github/**/*.md for effectiveness, correctness, and best-practice alignment
-tools: [read, search, web/fetch, web/githubRepo, todo, agent]
+tools: [read, search, web/fetch, web/githubRepo, todo]
 agents: []
 user-invocable: true
 handoffs:

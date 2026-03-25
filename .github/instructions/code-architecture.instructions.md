@@ -45,6 +45,7 @@ Do not suggest `pip` or manual venv workflows.
 
 - Use package-first app layout under `apps/<app_name>/` with `models/` and `http/` as the default MVP structure.
 - Create `api/` only when explicitly requested by scope.
+- API-related applyTo coverage in this file is opt-in guidance for those explicitly requested scopes.
 - Split tests under `apps/<app_name>/tests/unit/` and `apps/<app_name>/tests/integrations/`.
 - Keep templates app-local using duck pattern under `apps/<app_name>/templates/<app_name>/...`.
 - Do not treat flat modules (`views.py`, `urls.py`, `tests.py`) as the primary structure for new scaffolding.

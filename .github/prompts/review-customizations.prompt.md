@@ -19,6 +19,16 @@ Output format:
 ## Summary
 [Short overall assessment]
 
+## Scores
+| Area | Score | Notes |
+|------|-------|-------|
+| Copilot instructions | X/10 | ... |
+| Instruction files | X/10 | ... |
+| Agent definitions | X/10 | ... |
+| Prompt files | X/10 | ... |
+| Skill files | X/10 | ... |
+| Overall | X/10 | ... |
+
 ## Critical Issues (must fix)
 1. **[File]**: [Issue] — [Why it matters] — [Fix]
 

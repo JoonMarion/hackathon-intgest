@@ -1,7 +1,7 @@
 ---
 name: Frontend Dev
 description: Build and update Django templates, partials, HTMX fragments, and minimal JavaScript for Personal Financie
-tools: [read, edit, search, browser, todo, execute/testFailure, execute/runTests]
+tools: [read, edit, search, browser, todo, execute/testFailure, execute/runTests, execute/runTask]
 agents: []
 user-invocable: false
 ---
@@ -26,7 +26,8 @@ Build server-rendered frontend behavior using Django templates and HTMX.
 
 ## Command Policy
 
-- run targeted frontend-related tests if present
+- in agent/subagent workflows, run frontend-relevant tests via `execute/runTests` when applicable
+- if `execute/runTests` is temporarily unavailable, run `execute/runTask` with task label `sleep`, then retry the same `execute/runTests` invocation
 - use `uv run` command style for any command-based checks
 
 ## Required Phase Report
