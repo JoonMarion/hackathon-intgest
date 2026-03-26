@@ -314,6 +314,50 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["form"].errors)
 
+    def test_create_with_notes_persists_observation(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("transactions_http:create"),
+            data={
+                "category": self.category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "50.00",
+                "transaction_date": "2026-03-15",
+                "description": "Compra com obs",
+                "notes": "Observação detalhada",
+            },
+        )
+
+        self.assertRedirects(response, reverse("transactions_http:index"))
+        created = Transaction.objects.get(description="Compra com obs")
+        self.assertEqual(created.notes, "Observação detalhada")
+
+    def test_update_preserves_notes(self):
+        transaction = TransactionFactory(
+            user=self.user, category=self.category, kind=Transaction.Kind.EXPENSE,
+            amount="50.00", transaction_date=date(2026, 3, 10), description="Original",
+        )
+        transaction.notes = "Original obs"
+        transaction.save()
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("transactions_http:update", args=[transaction.pk]),
+            data={
+                "category": self.category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "50.00",
+                "transaction_date": "2026-03-10",
+                "description": "Original",
+                "notes": "Atualizada obs",
+            },
+        )
+
+        self.assertRedirects(response, reverse("transactions_http:index"))
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.notes, "Atualizada obs")
+
 
 class TransactionFilterIntegrationTests(BaseIntegrationTestCase):
     def setUp(self):
@@ -364,6 +408,21 @@ class TransactionFilterIntegrationTests(BaseIntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         transactions = list(response.context["transactions"])
         self.assertEqual(transactions, [])
+
+    def test_search_q_matches_notes_field(self):
+        tx_with_notes = TransactionFactory(
+            user=self.user, category=self.category_food, kind=Transaction.Kind.EXPENSE,
+            amount="25.00", transaction_date=date(2026, 3, 20), description="Compra",
+        )
+        tx_with_notes.notes = "pagamento via pix"
+        tx_with_notes.save()
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("transactions_http:index"), {"q": "pix"})
+
+        self.assertEqual(response.status_code, 200)
+        transactions = list(response.context["transactions"])
+        self.assertIn(tx_with_notes, transactions)
 
     def test_categories_in_context_for_filter_dropdown(self):
         self.client.force_login(self.user)

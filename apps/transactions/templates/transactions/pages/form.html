@@ -80,6 +80,16 @@
                 {% endif %}
             </div>
 
+            <div class="space-y-1.5">
+                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observação</label>
+                <div class="[&_textarea]:w-full [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:bg-white [&_textarea]:px-3 [&_textarea]:py-2.5 [&_textarea]:text-sm [&_textarea]:text-gray-900 [&_textarea]:shadow-sm [&_textarea]:transition [&_textarea]:placeholder:text-gray-400 [&_textarea]:hover:border-gray-400 [&_textarea]:focus:border-gray-500 [&_textarea]:focus:outline-none [&_textarea]:focus:ring-2 [&_textarea]:focus:ring-gray-400/30 dark:[&_textarea]:border-gray-600 dark:[&_textarea]:bg-gray-900/70 dark:[&_textarea]:text-gray-100 dark:[&_textarea]:placeholder:text-gray-500 dark:[&_textarea]:hover:border-gray-500 dark:[&_textarea]:focus:border-gray-400 dark:[&_textarea]:focus:ring-gray-500/30">
+                    {{ form.notes }}
+                </div>
+                {% if form.notes.errors %}
+                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.notes.errors.0 }}</p>
+                {% endif %}
+            </div>
+
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit" data-e2e-selector="transactions-form-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                     Salvar

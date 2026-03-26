@@ -25,6 +25,7 @@ class Transaction(BaseModel):
     amount = models.DecimalField(_("Valor"), max_digits=12, decimal_places=2)
     transaction_date = models.DateField(_("Data da Transação"))
     description = models.CharField(_("Descrição"), max_length=255, blank=True)
+    notes = models.CharField(_("Observação"), max_length=500, blank=True)
 
     class Meta:
         """Model options intentionally explicit without schema-impacting settings."""

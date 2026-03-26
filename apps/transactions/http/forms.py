@@ -8,9 +8,10 @@ from apps.transactions.models import Transaction
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ["category", "kind", "amount", "transaction_date", "description"]
+        fields = ["category", "kind", "amount", "transaction_date", "description", "notes"]
         widgets = {
             "transaction_date": forms.DateInput(attrs={"type": "date"}),
+            "notes": forms.Textarea(attrs={"rows": 3, "maxlength": "500"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -22,6 +23,7 @@ class TransactionForm(forms.ModelForm):
         self.fields["amount"].widget.attrs.update({"data-e2e-selector": "transactions-form-amount-input"})
         self.fields["transaction_date"].widget.attrs.update({"data-e2e-selector": "transactions-form-transaction-date-input"})
         self.fields["description"].widget.attrs.update({"data-e2e-selector": "transactions-form-description-input"})
+        self.fields["notes"].widget.attrs.update({"data-e2e-selector": "transactions-form-notes-input"})
 
         self.fields["category"].error_messages["required"] = "Selecione uma categoria."
         self.fields["kind"].error_messages["required"] = "Selecione o tipo da transação."

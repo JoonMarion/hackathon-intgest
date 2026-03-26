@@ -24,4 +24,6 @@ class TransactionFilterSet(django_filters.FilterSet):
         del name
         if not value:
             return queryset
-        return queryset.filter(description__icontains=value)
+        from django.db.models import Q
+
+        return queryset.filter(Q(description__icontains=value) | Q(notes__icontains=value))

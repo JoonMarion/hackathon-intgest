@@ -1,3 +1,5 @@
+from django import forms
+
 from apps.categories.models import Category
 from apps.core.tests.base import BaseIntegrationTestCase
 from apps.core.tests.factories import CategoryFactory, UserFactory
@@ -129,3 +131,59 @@ class TransactionFormTests(BaseIntegrationTestCase):
         )
 
         self.assertTrue(form.is_valid())
+
+    def test_notes_is_optional(self):
+        category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
+
+        form = TransactionForm(
+            user=self.user,
+            data={
+                "category": category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "10.00",
+                "transaction_date": "2026-03-25",
+                "description": "Compra",
+            },
+        )
+
+        self.assertTrue(form.is_valid())
+
+    def test_notes_accepts_text_up_to_500_chars(self):
+        category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
+
+        form = TransactionForm(
+            user=self.user,
+            data={
+                "category": category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "10.00",
+                "transaction_date": "2026-03-25",
+                "description": "Compra",
+                "notes": "A" * 500,
+            },
+        )
+
+        self.assertTrue(form.is_valid())
+
+    def test_notes_rejects_text_over_500_chars(self):
+        category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
+
+        form = TransactionForm(
+            user=self.user,
+            data={
+                "category": category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "10.00",
+                "transaction_date": "2026-03-25",
+                "description": "Compra",
+                "notes": "A" * 501,
+            },
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("notes", form.errors)
+
+    def test_notes_widget_is_textarea(self):
+        form = TransactionForm(user=self.user)
+
+        self.assertIsInstance(form.fields["notes"].widget, forms.Textarea)
