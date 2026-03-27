@@ -3,51 +3,83 @@
 {% block title %}Editar dados - Personal Financie{% endblock title %}
 
 {% block content %}
-<div class="mx-auto w-full max-w-2xl space-y-7">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                Editar dados
-            </h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Atualize suas informações gerais.
-            </p>
-        </div>
-    </div>
+<div class="mx-auto max-w-6xl space-y-6">
+    <section class="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
+        <aside class="space-y-4">
+            <div class="pf-card pf-card-section pf-reveal">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Perfil</span>
+                    <span class="pf-pill">Atualização segura</span>
+                </div>
+                <h1 class="pf-heading mt-4 text-4xl font-black tracking-tight text-[color:var(--pf-text)]">Editar dados</h1>
+                <p class="mt-3 text-sm leading-7 pf-text-muted">
+                    Atualize suas informações gerais mantendo o mesmo fluxo de salvamento e retorno para a página da conta.
+                </p>
+            </div>
 
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
+            <div class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+                <p class="pf-kicker">Conta atual</p>
+                <div class="mt-5 space-y-4 text-sm">
+                    <div class="rounded-[1.25rem] border border-[color:var(--pf-border)] bg-white/45 px-4 py-3 dark:bg-white/5">
+                        <p class="pf-kicker">Usuário atual</p>
+                        <p class="mt-2 font-semibold text-[color:var(--pf-text)]">{{ request.user.username }}</p>
+                    </div>
+                    <div class="rounded-[1.25rem] border border-[color:var(--pf-border)] bg-white/45 px-4 py-3 dark:bg-white/5">
+                        <p class="pf-kicker">E-mail atual</p>
+                        <p class="mt-2 font-semibold text-[color:var(--pf-text)]">{{ request.user.email|default:"Não informado" }}</p>
+                    </div>
+                    <div class="rounded-[1.25rem] border border-[color:var(--pf-border)] bg-[color:var(--pf-background-alt)]/65 px-4 py-3">
+                        <p class="pf-kicker">Orientação</p>
+                        <p class="mt-2 pf-text-muted">Revise usuário e e-mail com atenção. O comportamento de validação e redirecionamento continua o mesmo.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-            {% if form.non_field_errors %}
-                <div class="rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
+        <div class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <p class="pf-kicker">Atualização</p>
+                    <h2 class="mt-1 text-2xl font-semibold tracking-tight text-[color:var(--pf-text)]">Seus dados gerais</h2>
+                </div>
+                <span class="pf-pill pf-pill-mint">Mudanças imediatas</span>
+            </div>
+
+            <form method="post" class="mt-6 space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-[1.35rem] border border-[color:var(--pf-rose-strong)]/25 bg-[color:var(--pf-rose-soft)] px-4 py-3 text-sm text-[color:var(--pf-rose-strong)]">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="grid gap-5 sm:grid-cols-2">
+                    {% for field in form %}
+                        <div class="space-y-2 {% if field.name == 'username' or field.name == 'email' %}sm:col-span-2{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">{{ field.label }}</label>
+                            <div class="[&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-[color:var(--pf-border)] [&_input]:bg-white/80 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-[color:var(--pf-text)] [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-[color:var(--pf-text-muted)] [&_input]:hover:border-[color:var(--pf-brand)]/30 [&_input]:focus:border-[color:var(--pf-brand)]/45 [&_input]:focus:bg-white [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-[color:var(--pf-brand)]/10 dark:[&_input]:bg-slate-950/40 dark:[&_input]:focus:bg-slate-950/70">
+                                {{ field }}
+                            </div>
+                            {% if field.errors %}
+                                <p class="text-sm font-semibold text-[color:var(--pf-rose-strong)]">{{ field.errors.0 }}</p>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
-            {% endif %}
 
-            {% for field in form %}
-                <div class="space-y-1.5">
-                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ field.label }}</label>
-                    <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                        {{ field }}
-                    </div>
-                    {% if field.errors %}
-                        <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ field.errors.0 }}</p>
-                    {% endif %}
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <button type="submit" data-e2e-selector="accounts-profile-edit-submit-click" class="pf-btn pf-btn-primary min-w-[10rem]">
+                        Salvar
+                    </button>
+                    <a href="{% url 'accounts_http:profile' %}" data-e2e-selector="accounts-profile-edit-cancel-link-click" class="pf-btn pf-btn-secondary min-w-[10rem] justify-center">
+                        Cancelar
+                    </a>
                 </div>
-            {% endfor %}
-
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit" data-e2e-selector="accounts-profile-edit-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                    Salvar
-                </button>
-                <a href="{% url 'accounts_http:profile' %}" data-e2e-selector="accounts-profile-edit-cancel-link-click" class="inline-flex items-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
-                    Cancelar
-                </a>
-            </div>
-        </form>
-    </div>
+            </form>
+        </div>
+    </section>
 </div>
 {% endblock content %}

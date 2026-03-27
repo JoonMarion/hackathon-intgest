@@ -8,6 +8,10 @@ from apps.categories.models import Category
 from apps.transactions.http.filters import TransactionFilterSet
 from apps.transactions.http.forms import TransactionForm
 from apps.transactions.models import Transaction
+from apps.transactions.services import (
+    build_filtered_summary,
+    resolve_selected_category_name,
+)
 
 
 class TransactionListView(LoginRequiredMixin, FilterView):
@@ -58,16 +62,25 @@ class TransactionListView(LoginRequiredMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["categories"] = (
-            Category.objects.filter(user=self.request.user).order_by("name")
-        )
-        context["current_filters"] = {
+        categories = Category.objects.filter(user=self.request.user).order_by("name")
+        current_filters = {
             "q": self.request.GET.get("q", ""),
             "category": self.request.GET.get("category", ""),
             "kind": self.request.GET.get("kind", ""),
             "date_from": self.request.GET.get("date_from", ""),
             "date_to": self.request.GET.get("date_to", ""),
         }
+        filterset = context.get("filter")
+        summary_queryset = filterset.qs if filterset is not None else self.get_base_queryset()
+
+        context["categories"] = categories
+        context["current_filters"] = current_filters
+        context["has_active_filters"] = any(current_filters.values())
+        context["selected_category_name"] = resolve_selected_category_name(
+            categories,
+            current_filters["category"],
+        )
+        context["filtered_summary"] = build_filtered_summary(summary_queryset)
         context["current_ordering"] = self.get_ordering_value()
         context["current_page_size"] = self.get_page_size()
         context["ordering_options"] = tuple(self.ORDERING_OPTIONS.keys())

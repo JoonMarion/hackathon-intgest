@@ -2,7 +2,7 @@
 name: Feature Builder
 description: Orchestrate multi-phase MVP implementation by coordinating specialized subagents
 tools: [execute/testFailure, execute/runTask, execute/runTests, read, agent, search, web/fetch, pylance-mcp-server/pylanceFileSyntaxErrors, pylance-mcp-server/pylanceImports, pylance-mcp-server/pylanceRunCodeSnippet, todo]
-agents: ['Plan', 'Django App Builder', 'Model Builder', 'Migration Writer', 'Service Developer', 'View Updater', 'Frontend Dev', 'Test Developer', 'Code Reviewer', 'Docs Reviewer', 'Copilot Docs Reviewer']
+agents: ['Plan', 'Django App Builder', 'Model Builder', 'Migration Writer', 'Service Developer', 'View Updater', 'Frontend Dev', 'Test Developer', 'Code Reviewer', 'Docs Reviewer', 'Copilot Docs Reviewer', 'Feature Builder']
 user-invocable: true
 ---
 

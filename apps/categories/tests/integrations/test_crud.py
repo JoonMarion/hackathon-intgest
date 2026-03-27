@@ -40,6 +40,28 @@ class CategoryCRUDIntegrationTests(BaseIntegrationTestCase):
         categories = list(response.context["categories"])
         self.assertEqual(categories, [newer_category, older_category])
 
+    def test_list_exposes_summary_context(self):
+        self.client.force_login(self.user)
+        CategoryFactory(user=self.user, name="Salário", kind=Category.Kind.INCOME)
+        CategoryFactory(user=self.user, name="Mercado", kind=Category.Kind.EXPENSE)
+
+        response = self.client.get(reverse("categories_http:index"))
+
+        summary = response.context["category_summary"]
+        self.assertEqual(summary["total_count"], 2)
+        self.assertEqual(summary["income_count"], 1)
+        self.assertEqual(summary["expense_count"], 1)
+        self.assertTrue(summary["has_both_kinds"])
+        self.assertEqual(summary["newest_category"].name, "Mercado")
+
+    def test_list_renders_future_import_export_actions(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("categories_http:index"))
+
+        self.assertContains(response, "Importar categorias em breve")
+        self.assertContains(response, "Exportar planilha em breve")
+
     def test_create_creates_category_for_logged_in_user(self):
         self.client.force_login(self.user)
 

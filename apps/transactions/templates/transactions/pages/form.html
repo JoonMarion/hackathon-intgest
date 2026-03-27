@@ -5,98 +5,158 @@
 {% endblock title %}
 
 {% block content %}
-<div class="mx-auto w-full max-w-2xl space-y-7">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                {% if object %}Editar lançamento{% else %}Novo lançamento{% endif %}
-            </h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {% if object %}Atualize os dados do lançamento selecionado.{% else %}Cadastre uma nova receita ou despesa.{% endif %}
-            </p>
+<div class="mx-auto max-w-6xl space-y-6">
+    <section class="pf-card pf-card-section pf-reveal">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-3xl">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Lançamentos</span>
+                    {% if object %}
+                        <span class="pf-pill pf-pill-amber">Modo edição</span>
+                    {% else %}
+                        <span class="pf-pill pf-pill-mint">Novo registro</span>
+                    {% endif %}
+                </div>
+                <h1 class="pf-heading pf-hero-title">
+                    {% if object %}Edite o lançamento com conforto e clareza.{% else %}Registre uma nova movimentação sem atrito.{% endif %}
+                </h1>
+                <p class="pf-hero-copy">
+                    {% if object %}
+                        Ajuste categoria, tipo, valor e contexto sem perder o ritmo da operação. As alterações refletem na listagem e nos resumos do período.
+                    {% else %}
+                        Preencha apenas o essencial, mantenha a categoria coerente com o tipo e deixe o restante pronto para acompanhar dashboard e filtros.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-form-back-link-click" class="pf-btn pf-btn-secondary">Voltar para a lista</a>
+            </div>
         </div>
-        <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-form-back-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Voltar</a>
-    </div>
+    </section>
 
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(19rem,0.85fr)]">
+        <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <div class="mb-5">
+                <p class="pf-kicker">Formulário principal</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Dados do lançamento</h2>
+                <p class="mt-2 text-sm pf-text-muted">Campos objetivos, validação próxima ao campo e organização pensada para desktop e mobile.</p>
+            </div>
 
-            {% if form.non_field_errors %}
-                <div class="rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
 
-            <div class="space-y-1.5">
-                <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Categoria</label>
-                <div class="[&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:px-3 [&_select]:py-2.5 [&_select]:text-sm [&_select]:text-gray-900 [&_select]:shadow-sm [&_select]:transition [&_select]:hover:border-gray-400 [&_select]:focus:border-gray-500 [&_select]:focus:outline-none [&_select]:focus:ring-2 [&_select]:focus:ring-gray-400/30 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-900/70 dark:[&_select]:text-gray-100 dark:[&_select]:hover:border-gray-500 dark:[&_select]:focus:border-gray-400 dark:[&_select]:focus:ring-gray-500/30">
-                    {{ form.category }}
-                </div>
-                {% if form.category.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.category.errors.0 }}</p>
+                {% if form.non_field_errors %}
+                    <div class="rounded-[1.4rem] border border-[color:var(--pf-rose-strong)]/25 bg-[color:var(--pf-rose-soft)] px-4 py-3 text-sm text-[color:var(--pf-rose-strong)]">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.kind.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
-                <div class="[&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:px-3 [&_select]:py-2.5 [&_select]:text-sm [&_select]:text-gray-900 [&_select]:shadow-sm [&_select]:transition [&_select]:hover:border-gray-400 [&_select]:focus:border-gray-500 [&_select]:focus:outline-none [&_select]:focus:ring-2 [&_select]:focus:ring-gray-400/30 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-900/70 dark:[&_select]:text-gray-100 dark:[&_select]:hover:border-gray-500 dark:[&_select]:focus:border-gray-400 dark:[&_select]:focus:ring-gray-500/30">
-                    {{ form.kind }}
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Categoria</label>
+                        <p class="mt-1 text-sm pf-text-muted">Escolha uma categoria da sua conta.</p>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm [&_select]:transition [&_select]:focus:border-slate-400 [&_select]:focus:outline-none [&_select]:focus:ring-4 [&_select]:focus:ring-slate-200/70 dark:[&_select]:border-slate-700 dark:[&_select]:bg-slate-950/60 dark:[&_select]:text-slate-100 dark:[&_select]:focus:border-slate-500 dark:[&_select]:focus:ring-slate-800">
+                            {{ form.category }}
+                        </div>
+                        {% if form.category.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.category.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.kind.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Tipo</label>
+                        <p class="mt-1 text-sm pf-text-muted">Receita ou despesa, compatível com a categoria.</p>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm [&_select]:transition [&_select]:focus:border-slate-400 [&_select]:focus:outline-none [&_select]:focus:ring-4 [&_select]:focus:ring-slate-200/70 dark:[&_select]:border-slate-700 dark:[&_select]:bg-slate-950/60 dark:[&_select]:text-slate-100 dark:[&_select]:focus:border-slate-500 dark:[&_select]:focus:ring-slate-800">
+                            {{ form.kind }}
+                        </div>
+                        {% if form.kind.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.kind.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if form.kind.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.kind.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.amount.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valor</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.amount }}
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Valor</label>
+                        <p class="mt-1 text-sm pf-text-muted">Use um valor maior que zero.</p>
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-slate-400 [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
+                            {{ form.amount }}
+                        </div>
+                        {% if form.amount.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.amount.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.transaction_date.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Data</label>
+                        <p class="mt-1 text-sm pf-text-muted">A data alimenta filtros, ordem e resumos.</p>
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
+                            {{ form.transaction_date }}
+                        </div>
+                        {% if form.transaction_date.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.transaction_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if form.amount.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.amount.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.transaction_date.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.transaction_date }}
+                <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Descrição</label>
+                    <p class="mt-1 text-sm pf-text-muted">Nome curto para localizar o lançamento depois.</p>
+                    <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-slate-400 [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
+                        {{ form.description }}
+                    </div>
+                    {% if form.description.errors %}
+                        <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.description.errors.0 }}</p>
+                    {% endif %}
                 </div>
-                {% if form.transaction_date.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.transaction_date.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.description }}
+                <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                    <label for="{{ form.notes.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Observação</label>
+                    <p class="mt-1 text-sm pf-text-muted">Contexto opcional para enriquecer a busca e a revisão futura.</p>
+                    <div class="mt-3 [&_textarea]:w-full [&_textarea]:rounded-2xl [&_textarea]:border [&_textarea]:border-slate-200 [&_textarea]:bg-white [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:text-sm [&_textarea]:text-slate-700 [&_textarea]:shadow-sm [&_textarea]:transition [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus:border-slate-400 [&_textarea]:focus:outline-none [&_textarea]:focus:ring-4 [&_textarea]:focus:ring-slate-200/70 dark:[&_textarea]:border-slate-700 dark:[&_textarea]:bg-slate-950/60 dark:[&_textarea]:text-slate-100 dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus:border-slate-500 dark:[&_textarea]:focus:ring-slate-800">
+                        {{ form.notes }}
+                    </div>
+                    {% if form.notes.errors %}
+                        <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
                 </div>
-                {% if form.description.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.description.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observação</label>
-                <div class="[&_textarea]:w-full [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:bg-white [&_textarea]:px-3 [&_textarea]:py-2.5 [&_textarea]:text-sm [&_textarea]:text-gray-900 [&_textarea]:shadow-sm [&_textarea]:transition [&_textarea]:placeholder:text-gray-400 [&_textarea]:hover:border-gray-400 [&_textarea]:focus:border-gray-500 [&_textarea]:focus:outline-none [&_textarea]:focus:ring-2 [&_textarea]:focus:ring-gray-400/30 dark:[&_textarea]:border-gray-600 dark:[&_textarea]:bg-gray-900/70 dark:[&_textarea]:text-gray-100 dark:[&_textarea]:placeholder:text-gray-500 dark:[&_textarea]:hover:border-gray-500 dark:[&_textarea]:focus:border-gray-400 dark:[&_textarea]:focus:ring-gray-500/30">
-                    {{ form.notes }}
+                <div class="flex flex-col gap-3 border-t border-[color:var(--pf-border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-sm pf-text-muted">Ao salvar, o lançamento volta para a listagem e passa a compor os resumos e filtros do período.</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="submit" data-e2e-selector="transactions-form-submit-click" class="pf-btn pf-btn-primary">
+                            Salvar
+                        </button>
+                        <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-form-cancel-link-click" class="pf-btn pf-btn-ghost">Cancelar</a>
+                    </div>
                 </div>
-                {% if form.notes.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.notes.errors.0 }}</p>
-                {% endif %}
-            </div>
+            </form>
+        </section>
 
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit" data-e2e-selector="transactions-form-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                    Salvar
-                </button>
-                <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-form-cancel-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Cancelar</a>
-            </div>
-        </form>
+        <aside class="space-y-4 pf-reveal pf-reveal-delay-2">
+            <article class="pf-card pf-card-section">
+                <p class="pf-kicker">Guia rápido</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Preenchimento confortável</h2>
+                <div class="mt-4 space-y-3 text-sm pf-text-muted">
+                    <p>Categoria e tipo devem conversar entre si para evitar inconsistência na classificação.</p>
+                    <p>Descrição curta ajuda na leitura da listagem. Observação é melhor para detalhes longos.</p>
+                    <p>O valor e a data impactam ordenação, saldo e leitura do dashboard imediatamente após salvar.</p>
+                </div>
+            </article>
+
+            <article class="pf-card pf-card-section">
+                <p class="pf-kicker">Próxima evolução</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Importar e exportar</h2>
+                <p class="mt-3 text-sm pf-text-muted">A base visual já prepara a futura entrada de CSV e a exportação em Excel sem alterar o fluxo principal de cadastro.</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="pf-pill">CSV em breve</span>
+                    <span class="pf-pill">Excel em breve</span>
+                </div>
+            </article>
+        </aside>
     </div>
 </div>
 {% endblock content %}

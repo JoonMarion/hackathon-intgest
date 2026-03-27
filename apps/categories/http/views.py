@@ -7,6 +7,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from apps.categories.http.forms import CategoryForm
 from apps.categories.models import Category
+from apps.categories.services import build_category_library_context
 
 
 class CategoryListView(LoginRequiredMixin, ListView):
@@ -20,8 +21,7 @@ class CategoryListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         categories = context.get("categories") or []
-        context["income_categories"] = [category for category in categories if category.kind == Category.Kind.INCOME]
-        context["expense_categories"] = [category for category in categories if category.kind == Category.Kind.EXPENSE]
+        context.update(build_category_library_context(list(categories)))
         return context
 
 

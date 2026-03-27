@@ -5,58 +5,112 @@
 {% endblock title %}
 
 {% block content %}
-<div class="mx-auto w-full max-w-2xl space-y-7">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                {% if object %}Editar categoria{% else %}Nova categoria{% endif %}
-            </h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {% if object %}Atualize os dados da categoria selecionada.{% else %}Cadastre uma nova categoria para receitas ou despesas.{% endif %}
-            </p>
+<div class="mx-auto max-w-6xl space-y-6">
+    <section class="pf-card pf-card-section pf-reveal">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-3xl">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Categorias</span>
+                    {% if object %}
+                        <span class="pf-pill pf-pill-amber">Modo edição</span>
+                    {% else %}
+                        <span class="pf-pill pf-pill-mint">Nova estrutura</span>
+                    {% endif %}
+                </div>
+                <h1 class="pf-heading pf-hero-title">
+                    {% if object %}Ajuste a categoria com contexto e consistência.{% else %}Crie uma nova categoria com leitura clara e rápida.{% endif %}
+                </h1>
+                <p class="pf-hero-copy">
+                    {% if object %}
+                        Atualize nome e tipo sem alterar o restante do fluxo. A categoria continua disponível para os formulários e gráficos assim que for salva.
+                    {% else %}
+                        Cadastre uma categoria para enriquecer a organização de receitas e despesas e dar mais clareza ao dashboard.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-back-link-click" class="pf-btn pf-btn-secondary">Voltar para a lista</a>
+            </div>
         </div>
-        <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-back-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Voltar</a>
-    </div>
+    </section>
 
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.85fr)]">
+        <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <div class="mb-5">
+                <p class="pf-kicker">Formulário principal</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Dados da categoria</h2>
+                <p class="mt-2 text-sm pf-text-muted">Preenchimento objetivo com validação próxima ao campo e linguagem consistente com o restante do produto.</p>
+            </div>
 
-            {% if form.non_field_errors %}
-                <div class="rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
 
-            <div class="space-y-1.5">
-                <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nome</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.name }}
-                </div>
-                {% if form.name.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.name.errors.0 }}</p>
+                {% if form.non_field_errors %}
+                    <div class="rounded-[1.4rem] border border-[color:var(--pf-rose-strong)]/25 bg-[color:var(--pf-rose-soft)] px-4 py-3 text-sm text-[color:var(--pf-rose-strong)]">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.kind.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
-                <div class="[&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:px-3 [&_select]:py-2.5 [&_select]:text-sm [&_select]:text-gray-900 [&_select]:shadow-sm [&_select]:transition [&_select]:hover:border-gray-400 [&_select]:focus:border-gray-500 [&_select]:focus:outline-none [&_select]:focus:ring-2 [&_select]:focus:ring-gray-400/30 dark:[&_select]:border-gray-600 dark:[&_select]:bg-gray-900/70 dark:[&_select]:text-gray-100 dark:[&_select]:hover:border-gray-500 dark:[&_select]:focus:border-gray-400 dark:[&_select]:focus:ring-gray-500/30">
-                    {{ form.kind }}
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35 md:col-span-2">
+                        <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Nome</label>
+                        <p class="mt-1 text-sm pf-text-muted">Use um nome curto e reconhecível para reaproveitar nos lançamentos.</p>
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-slate-400 [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
+                            {{ form.name }}
+                        </div>
+                        {% if form.name.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35 md:col-span-2">
+                        <label for="{{ form.kind.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Tipo</label>
+                        <p class="mt-1 text-sm pf-text-muted">Defina se a categoria será usada para entradas ou saídas.</p>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm [&_select]:transition [&_select]:focus:border-slate-400 [&_select]:focus:outline-none [&_select]:focus:ring-4 [&_select]:focus:ring-slate-200/70 dark:[&_select]:border-slate-700 dark:[&_select]:bg-slate-950/60 dark:[&_select]:text-slate-100 dark:[&_select]:focus:border-slate-500 dark:[&_select]:focus:ring-slate-800">
+                            {{ form.kind }}
+                        </div>
+                        {% if form.kind.errors %}
+                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.kind.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if form.kind.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.kind.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit" data-e2e-selector="categories-form-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                    Salvar
-                </button>
-                <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-cancel-link-click" class="inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-300 dark:hover:bg-gray-700/70 dark:hover:text-gray-100">Cancelar</a>
-            </div>
-        </form>
+                <div class="flex flex-col gap-3 border-t border-[color:var(--pf-border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-sm pf-text-muted">Ao salvar, a categoria volta para a biblioteca e fica disponível nos próximos lançamentos.</p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="submit" data-e2e-selector="categories-form-submit-click" class="pf-btn pf-btn-primary">
+                            Salvar
+                        </button>
+                        <a href="{% url 'categories_http:index' %}" data-e2e-selector="categories-form-cancel-link-click" class="pf-btn pf-btn-ghost">Cancelar</a>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <aside class="space-y-4 pf-reveal pf-reveal-delay-2">
+            <article class="pf-card pf-card-section">
+                <p class="pf-kicker">Guia rápido</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Como usar melhor</h2>
+                <div class="mt-4 space-y-3 text-sm pf-text-muted">
+                    <p>Evite nomes muito genéricos quando quiser relatórios mais legíveis, como "Despesas diversas" para tudo.</p>
+                    <p>Prefira separar categorias recorrentes, como mercado, moradia e transporte, para deixar os gráficos mais úteis.</p>
+                    <p>O tipo correto evita inconsistência no formulário de lançamentos e na análise do dashboard.</p>
+                </div>
+            </article>
+
+            <article class="pf-card pf-card-section">
+                <p class="pf-kicker">Próxima evolução</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Importar e exportar</h2>
+                <p class="mt-3 text-sm pf-text-muted">A base visual já prepara a futura entrada e saída por planilhas sem interferir no fluxo atual de CRUD.</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="pf-pill">CSV em breve</span>
+                    <span class="pf-pill">Excel em breve</span>
+                </div>
+            </article>
+        </aside>
     </div>
 </div>
 {% endblock content %}

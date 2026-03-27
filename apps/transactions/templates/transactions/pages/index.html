@@ -3,181 +3,316 @@
 {% block title %}Lançamentos - Personal Financie{% endblock title %}
 
 {% block content %}
-<div class="space-y-7">
-	<div class="flex flex-wrap items-start justify-between gap-4">
-		<div>
-			<h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Lançamentos</h1>
-			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gerencie receitas e despesas</p>
-		</div>
+<div class="mx-auto max-w-7xl space-y-6">
+    <section class="pf-card pf-card-section pf-reveal">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-3xl">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Central de lançamentos</span>
+                    <span class="pf-pill">CRUD ativo</span>
+                    {% if has_active_filters %}
+                        <span class="pf-pill pf-pill-amber">Recorte filtrado</span>
+                    {% endif %}
+                </div>
+                <h1 class="pf-heading pf-hero-title">Movimente receitas e despesas com leitura rápida, filtros fortes e ações preparadas para a próxima evolução.</h1>
+                <p class="pf-hero-copy">
+                    Esta página concentra o trabalho diário da gestão financeira: aplicar recortes, conferir saldo líquido,
+                    revisar contexto da categoria e agir rápido em cada lançamento sem perder legibilidade no mobile.
+                </p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                    <span class="pf-pill pf-pill-mint">{{ filtered_summary.transaction_count }} lançamentos no recorte</span>
+                    <span class="pf-pill">{{ filtered_summary.active_categories }} categorias em uso</span>
+                    <span class="pf-pill pf-pill-rose">{{ filtered_summary.expense_count }} saídas</span>
+                </div>
+            </div>
 
-		<a href="{% url 'transactions_http:create' %}" data-e2e-selector="transactions-index-create-link-click" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-			<span aria-hidden="true">+</span>
-			<span>Novo</span>
-		</a>
-	</div>
+            <div class="flex flex-wrap items-center justify-start gap-3 lg:justify-end">
+                <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Importar CSV em breve</button>
+                <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Exportar Excel em breve</button>
+                <a href="{% url 'transactions_http:create' %}" data-e2e-selector="transactions-index-create-link-click" class="pf-btn pf-btn-primary">
+                    <span aria-hidden="true">+</span>
+                    <span>Novo lançamento</span>
+                </a>
+            </div>
+        </div>
+    </section>
 
-	<section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-		<form method="get" action="{% url 'transactions_http:index' %}" class="flex flex-col gap-4">
-			{# Zona 1 — Busca (full-width) #}
-			<label class="relative w-full">
-				<span class="sr-only">Buscar por descrição</span>
-				<svg viewBox="0 0 24 24" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<circle cx="11" cy="11" r="7"></circle>
-					<path d="m20 20-3.5-3.5"></path>
-				</svg>
-				<input type="search" name="q" value="{{ current_filters.q }}" data-e2e-selector="transactions-index-search-input" placeholder="Buscar por descrição..." class="w-full rounded-xl border border-gray-200 bg-gray-50/90 py-2.5 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/70 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:ring-gray-700/70">
-			</label>
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="pf-card pf-metric-card pf-metric-card--brand pf-reveal pf-reveal-delay-1">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Saldo líquido</p>
+                <p class="pf-metric-value {% if filtered_summary.net_total >= 0 %}is-positive{% else %}is-negative{% endif %}">
+                    R$ {{ filtered_summary.net_total|floatformat:2 }}
+                </p>
+                <p class="pf-metric-footnote">Diferença entre entradas e saídas considerando o recorte atual.</p>
+            </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--mint pf-reveal pf-reveal-delay-2">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Entradas</p>
+                <p class="pf-metric-value is-positive">R$ {{ filtered_summary.total_income|floatformat:2 }}</p>
+                <p class="pf-metric-footnote">{{ filtered_summary.income_count }} transações de receita selecionadas.</p>
+            </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--rose pf-reveal pf-reveal-delay-3">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Saídas</p>
+                <p class="pf-metric-value is-negative">R$ {{ filtered_summary.total_expense|floatformat:2 }}</p>
+                <p class="pf-metric-footnote">{{ filtered_summary.expense_count }} transações de despesa no recorte.</p>
+            </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--amber pf-reveal pf-reveal-delay-4">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Cobertura</p>
+                <p class="pf-metric-value">{{ filtered_summary.active_categories }}</p>
+                <p class="pf-metric-footnote">Categorias distintas visíveis depois dos filtros e da busca.</p>
+            </div>
+        </article>
+    </section>
 
-			{# Zona 2 — Filtros de dados (grid responsivo) #}
-			<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-				<label class="flex flex-col gap-1">
-					<span class="text-sm text-gray-500 dark:text-gray-400">De</span>
-					<input type="date" name="date_from" data-e2e-selector="transactions-index-date-from-input" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-				</label>
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.85fr)]">
+        <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <p class="pf-kicker">Filtro operacional</p>
+                    <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Recorte da lista</h2>
+                    <p class="mt-2 text-sm pf-text-muted">Busca livre, período, categoria, tipo, ordenação e densidade por página em um bloco único.</p>
+                </div>
+                <span class="pf-pill">Rotina pronta para demo</span>
+            </div>
 
-				<label class="flex flex-col gap-1">
-					<span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
-					<input type="date" name="date_to" data-e2e-selector="transactions-index-date-to-input" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-				</label>
+            <form method="get" action="{% url 'transactions_http:index' %}" class="space-y-5">
+                <div>
+                    <label class="block">
+                        <span class="pf-kicker">Busca</span>
+                        <span class="relative mt-2 block">
+                            <svg viewBox="0 0 24 24" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m20 20-3.5-3.5"></path>
+                            </svg>
+                            <input type="search" name="q" value="{{ current_filters.q }}" data-e2e-selector="transactions-index-search-input" placeholder="Buscar por descrição ou observação" class="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                        </span>
+                    </label>
+                </div>
 
-				<label class="flex flex-col gap-1">
-					<span class="text-sm text-gray-500 dark:text-gray-400">Categoria</span>
-					<select name="category" data-e2e-selector="transactions-index-category-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-						<option value="">Todas categorias</option>
-						{% for cat in categories %}
-							<option value="{{ cat.pk }}" {% if current_filters.category == cat.pk|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
-						{% endfor %}
-					</select>
-				</label>
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <label class="block">
+                        <span class="pf-kicker">Data inicial</span>
+                        <input type="date" name="date_from" data-e2e-selector="transactions-index-date-from-input" value="{{ current_filters.date_from }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                    </label>
 
-				<label class="flex flex-col gap-1">
-					<span class="text-sm text-gray-500 dark:text-gray-400">Tipo</span>
-					<select name="kind" data-e2e-selector="transactions-index-kind-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-						<option value="">Todos os tipos</option>
-						<option value="income" {% if current_filters.kind == "income" %}selected{% endif %}>Receita</option>
-						<option value="expense" {% if current_filters.kind == "expense" %}selected{% endif %}>Despesa</option>
-					</select>
-				</label>
-			</div>
+                    <label class="block">
+                        <span class="pf-kicker">Data final</span>
+                        <input type="date" name="date_to" data-e2e-selector="transactions-index-date-to-input" value="{{ current_filters.date_to }}" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                    </label>
 
-			{# Zona 3 — Controles de exibição + ações #}
-			<div class="flex flex-wrap items-end gap-3 justify-between border-t border-gray-100 pt-3 dark:border-gray-700/50">
-				<div class="flex flex-wrap items-end gap-3">
-					<label class="flex flex-col gap-1">
-						<span class="text-sm text-gray-500 dark:text-gray-400">Ordenação</span>
-						<select name="ordering" data-e2e-selector="transactions-index-ordering-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-							<option value="-transaction_date,-created_at" {% if current_ordering == "-transaction_date,-created_at" %}selected{% endif %}>Data (mais recente)</option>
-							<option value="transaction_date,created_at" {% if current_ordering == "transaction_date,created_at" %}selected{% endif %}>Data (mais antiga)</option>
-							<option value="-amount,-created_at" {% if current_ordering == "-amount,-created_at" %}selected{% endif %}>Valor (maior)</option>
-							<option value="amount,created_at" {% if current_ordering == "amount,created_at" %}selected{% endif %}>Valor (menor)</option>
-						</select>
-					</label>
+                    <label class="block">
+                        <span class="pf-kicker">Categoria</span>
+                        <select name="category" data-e2e-selector="transactions-index-category-select" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                            <option value="">Todas categorias</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.pk }}" {% if current_filters.category == cat.pk|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
 
-					<label class="flex flex-col gap-1">
-						<span class="text-sm text-gray-500 dark:text-gray-400">Itens por página</span>
-						<select name="page_size" data-e2e-selector="transactions-index-page-size-select" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-							{% for size in page_size_options %}
-								<option value="{{ size }}" {% if current_page_size == size %}selected{% endif %}>{{ size }} por página</option>
-							{% endfor %}
-						</select>
-					</label>
-				</div>
+                    <label class="block">
+                        <span class="pf-kicker">Tipo</span>
+                        <select name="kind" data-e2e-selector="transactions-index-kind-select" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                            <option value="">Todos os tipos</option>
+                            <option value="income" {% if current_filters.kind == "income" %}selected{% endif %}>Receita</option>
+                            <option value="expense" {% if current_filters.kind == "expense" %}selected{% endif %}>Despesa</option>
+                        </select>
+                    </label>
+                </div>
 
-				<div class="flex flex-wrap items-center gap-3">
-					<button type="submit" data-e2e-selector="transactions-index-filter-submit-click" class="inline-flex items-center h-[39px] gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-						Filtrar
-					</button>
+                <div class="rounded-[1.5rem] border border-slate-200/80 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
+                        <label class="block">
+                            <span class="pf-kicker">Ordenação</span>
+                            <select name="ordering" data-e2e-selector="transactions-index-ordering-select" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                                <option value="-transaction_date,-created_at" {% if current_ordering == "-transaction_date,-created_at" %}selected{% endif %}>Data (mais recente)</option>
+                                <option value="transaction_date,created_at" {% if current_ordering == "transaction_date,created_at" %}selected{% endif %}>Data (mais antiga)</option>
+                                <option value="-amount,-created_at" {% if current_ordering == "-amount,-created_at" %}selected{% endif %}>Valor (maior)</option>
+                                <option value="amount,created_at" {% if current_ordering == "amount,created_at" %}selected{% endif %}>Valor (menor)</option>
+                            </select>
+                        </label>
 
-					{% if current_filters.q or current_filters.category or current_filters.kind or current_filters.date_from or current_filters.date_to %}
-						<a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-index-clear-link-click" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
-					{% endif %}
-				</div>
-			</div>
-		</form>
+                        <label class="block">
+                            <span class="pf-kicker">Itens por página</span>
+                            <select name="page_size" data-e2e-selector="transactions-index-page-size-select" class="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                                {% for size in page_size_options %}
+                                    <option value="{{ size }}" {% if current_page_size == size %}selected{% endif %}>{{ size }} por página</option>
+                                {% endfor %}
+                            </select>
+                        </label>
 
-		<div class="mt-5 overflow-x-auto">
-			<table class="min-w-full divide-y divide-gray-200/80 dark:divide-gray-700/80">
-				<thead>
-					<tr class="text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-						<th scope="col" class="px-3 py-3">Data</th>
-						<th scope="col" class="px-3 py-3">Descrição</th>
-						<th scope="col" class="px-3 py-3">Categoria</th>
-                        <th scope="col" class="px-3 py-3">Tipo</th>
-						<th scope="col" class="px-3 py-3 text-right">Valor</th>
-						<th scope="col" class="px-3 py-3 text-right">Ações</th>
-					</tr>
-				</thead>
-				<tbody class="divide-y divide-gray-200/70 text-sm dark:divide-gray-700/70">
-					{% for transaction in transactions %}
-						<tr class="text-gray-700 dark:text-gray-200">
-							<td class="whitespace-nowrap px-3 py-3.5 text-gray-600 dark:text-gray-300">{{ transaction.transaction_date|date:"d/m/Y" }}</td>
-							<td class="px-3 py-3.5">
-								<div class="font-medium text-gray-900 dark:text-gray-100">{{ transaction.description|default:"-" }}</div>
-								{% if transaction.notes %}
-									<div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{{ transaction.notes }}</div>
-								{% endif %}
-							</td>
-							<td class="px-3 py-3.5 text-gray-600 dark:text-gray-300">{{ transaction.category.name }}</td>
-                            <td class="px-3 py-3.5 text-gray-600 dark:text-gray-300">{{ transaction.get_kind_display }}</td>
-							<td class="whitespace-nowrap px-3 py-3.5 text-right font-semibold {% if transaction.kind == 'income' %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-								{% if transaction.kind == 'income' %}+
-								{% else %}-
-								{% endif %}R$ {{ transaction.amount|floatformat:2 }}
-							</td>
-							<td class="px-3 py-3.5">
-								<div class="flex items-center justify-end gap-1.5">
-									<a href="{% url 'transactions_http:update' transaction.pk %}" data-e2e-selector="transactions-index-edit-link-click-{{ transaction.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:text-gray-400 dark:hover:bg-gray-700/70 dark:hover:text-gray-100" aria-label="Editar lançamento {{ transaction.description|default:'sem descrição' }}">
-										<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-											<path d="M12 20h9"></path>
-											<path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
-										</svg>
-									</a>
-									<a href="{% url 'transactions_http:delete' transaction.pk %}" data-e2e-selector="transactions-index-delete-link-click-{{ transaction.pk }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400" aria-label="Excluir lançamento {{ transaction.description|default:'sem descrição' }}">
-										<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-											<path d="M4 7h16"></path>
-											<path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
-											<path d="M7.5 7.5 8.2 19a1.5 1.5 0 0 0 1.5 1.4h4.6a1.5 1.5 0 0 0 1.5-1.4l.7-11.5"></path>
-											<path d="M10 11v6"></path>
-											<path d="M14 11v6"></path>
-										</svg>
-									</a>
-								</div>
-							</td>
-						</tr>
-					{% empty %}
-						<tr>
-							<td colspan="6" class="px-3 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-								Nenhum lançamento encontrado. Adicione sua primeira receita ou despesa para começar.
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
+                        <div class="flex flex-wrap items-center gap-3 lg:justify-end">
+                            <button type="submit" data-e2e-selector="transactions-index-filter-submit-click" class="pf-btn pf-btn-primary">
+                                Filtrar
+                            </button>
+                            {% if has_active_filters %}
+                                <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-index-clear-link-click" class="pf-btn pf-btn-ghost">Limpar</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
 
-		{% if is_paginated %}
-			<nav class="mt-4 flex items-center justify-between" aria-label="Paginação de lançamentos">
-				<div>
-					{% if page_obj.has_previous %}
-						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.previous_page_number }}" data-e2e-selector="transactions-index-pagination-previous-link-click" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
-							Anterior
-						</a>
-					{% endif %}
-				</div>
+        <aside class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <p class="pf-kicker">Estado da consulta</p>
+            <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Resumo do recorte</h2>
+            <p class="mt-2 text-sm pf-text-muted">Os números acompanham exatamente o queryset filtrado antes da paginação.</p>
 
-				<p class="text-sm text-gray-500 dark:text-gray-400">
-					Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
-				</p>
+            <div class="mt-5 flex flex-wrap gap-2">
+                {% if has_active_filters %}
+                    {% if current_filters.q %}
+                        <span class="pf-pill">Busca: {{ current_filters.q }}</span>
+                    {% endif %}
+                    {% if selected_category_name %}
+                        <span class="pf-pill pf-pill-amber">Categoria: {{ selected_category_name }}</span>
+                    {% endif %}
+                    {% if current_filters.kind == "income" %}
+                        <span class="pf-pill pf-pill-mint">Tipo: Receita</span>
+                    {% elif current_filters.kind == "expense" %}
+                        <span class="pf-pill pf-pill-rose">Tipo: Despesa</span>
+                    {% endif %}
+                    {% if current_filters.date_from %}
+                        <span class="pf-pill">De: {{ current_filters.date_from }}</span>
+                    {% endif %}
+                    {% if current_filters.date_to %}
+                        <span class="pf-pill">Até: {{ current_filters.date_to }}</span>
+                    {% endif %}
+                {% else %}
+                    <span class="pf-pill pf-pill-brand">Sem filtros adicionais</span>
+                    <span class="pf-pill">Histórico completo</span>
+                {% endif %}
+            </div>
 
-				<div>
-					{% if page_obj.has_next %}
-						<a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.next_page_number }}" data-e2e-selector="transactions-index-pagination-next-link-click" class="inline-flex items-center rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/60">
-							Próxima
-						</a>
-					{% endif %}
-				</div>
-			</nav>
-		{% endif %}
-	</section>
+            <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                <div class="rounded-[1.4rem] border border-[color:var(--pf-border)] px-4 py-4">
+                    <p class="pf-kicker">Resultados</p>
+                    <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">{{ filtered_summary.transaction_count }}</p>
+                    <p class="mt-2 text-sm pf-text-muted">Base total considerada no momento.</p>
+                </div>
+                <div class="rounded-[1.4rem] border border-[color:var(--pf-border)] px-4 py-4">
+                    <p class="pf-kicker">Próximos passos</p>
+                    <p class="mt-3 text-base font-semibold text-[color:var(--pf-text)]">Importação e exportação já reservadas</p>
+                    <p class="mt-2 text-sm pf-text-muted">Os botões futuros já aparecem no shell para facilitar a demo da evolução do produto.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+        <div class="flex flex-col gap-3 border-b border-[color:var(--pf-border)] pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="pf-kicker">Lista filtrada</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Movimentações</h2>
+                <p class="mt-2 text-sm pf-text-muted">
+                    {% if is_paginated %}
+                        Exibindo {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ filtered_summary.transaction_count }} lançamentos no recorte atual.
+                    {% else %}
+                        Total filtrado: {{ filtered_summary.transaction_count }} lançamento{{ filtered_summary.transaction_count|pluralize }}.
+                    {% endif %}
+                </p>
+            </div>
+            <span class="pf-pill">Página {{ page_obj.number|default:1 }}</span>
+        </div>
+
+        <div class="mt-5 overflow-x-auto">
+            <table class="min-w-full border-separate [border-spacing:0_0.75rem]">
+                <thead>
+                    <tr class="text-left text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--pf-text-muted)]">
+                        <th scope="col" class="px-4 py-2">Data</th>
+                        <th scope="col" class="px-4 py-2">Descrição</th>
+                        <th scope="col" class="px-4 py-2">Categoria</th>
+                        <th scope="col" class="px-4 py-2">Tipo</th>
+                        <th scope="col" class="px-4 py-2 text-right">Valor</th>
+                        <th scope="col" class="px-4 py-2 text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr class="align-top text-sm text-[color:var(--pf-text)]">
+                            <td class="rounded-l-[1.6rem] border border-r-0 border-[color:var(--pf-border)] bg-white/80 px-4 py-4 font-semibold shadow-sm dark:bg-slate-950/35">
+                                {{ transaction.transaction_date|date:"d/m/Y" }}
+                            </td>
+                            <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
+                                <p class="text-base font-semibold text-[color:var(--pf-text)]">{{ transaction.description|default:"Sem descrição" }}</p>
+                                {% if transaction.notes %}
+                                    <p class="mt-1 text-sm pf-text-muted">{{ transaction.notes|truncatechars:110 }}</p>
+                                {% endif %}
+                            </td>
+                            <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
+                                <p class="font-medium text-[color:var(--pf-text)]">{{ transaction.category.name }}</p>
+                            </td>
+                            <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
+                                {% if transaction.kind == 'income' %}
+                                    <span class="pf-pill pf-pill-mint">{{ transaction.get_kind_display }}</span>
+                                {% else %}
+                                    <span class="pf-pill pf-pill-rose">{{ transaction.get_kind_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 text-right shadow-sm dark:bg-slate-950/35">
+                                <span class="inline-flex rounded-full px-3 py-2 text-sm font-black {% if transaction.kind == 'income' %}bg-[color:var(--pf-mint-soft)] text-[color:var(--pf-mint-strong)]{% else %}bg-[color:var(--pf-rose-soft)] text-[color:var(--pf-rose-strong)]{% endif %}">
+                                    {% if transaction.kind == 'income' %}+{% else %}-{% endif %}R$ {{ transaction.amount|floatformat:2 }}
+                                </span>
+                            </td>
+                            <td class="rounded-r-[1.6rem] border border-l-0 border-[color:var(--pf-border)] bg-white/80 px-4 py-4 text-right shadow-sm dark:bg-slate-950/35">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{% url 'transactions_http:update' transaction.pk %}" data-e2e-selector="transactions-index-edit-link-click-{{ transaction.pk }}" class="pf-icon-button !h-10 !w-10 !rounded-2xl" aria-label="Editar lançamento {{ transaction.description|default:'sem descrição' }}">
+                                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M12 20h9"></path>
+                                            <path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{% url 'transactions_http:delete' transaction.pk %}" data-e2e-selector="transactions-index-delete-link-click-{{ transaction.pk }}" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[color:var(--pf-border)] bg-[color:var(--pf-rose-soft)] text-[color:var(--pf-rose-strong)] transition hover:-translate-y-0.5 hover:shadow-sm" aria-label="Excluir lançamento {{ transaction.description|default:'sem descrição' }}">
+                                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <path d="M4 7h16"></path>
+                                            <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path>
+                                            <path d="M7.5 7.5 8.2 19a1.5 1.5 0 0 0 1.5 1.4h4.6a1.5 1.5 0 0 0 1.5-1.4l.7-11.5"></path>
+                                            <path d="M10 11v6"></path>
+                                            <path d="M14 11v6"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="rounded-[1.8rem] border border-dashed border-[color:var(--pf-border)] px-6 py-12 text-center">
+                                <span class="pf-pill pf-pill-brand">Sem resultados</span>
+                                <h3 class="mt-4 text-xl font-semibold text-[color:var(--pf-text)]">Nenhum lançamento encontrado</h3>
+                                <p class="mt-2 text-sm pf-text-muted">Ajuste os filtros ou cadastre sua primeira receita ou despesa para começar.</p>
+                                <div class="mt-6">
+                                    <a href="{% url 'transactions_http:create' %}" class="pf-btn pf-btn-primary">Cadastrar lançamento</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_paginated %}
+            <nav class="mt-6 flex flex-col gap-3 border-t border-[color:var(--pf-border)] pt-4 sm:flex-row sm:items-center sm:justify-between" aria-label="Paginação de lançamentos">
+                <div>
+                    {% if page_obj.has_previous %}
+                        <a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.previous_page_number }}" data-e2e-selector="transactions-index-pagination-previous-link-click" class="pf-btn pf-btn-secondary">Anterior</a>
+                    {% endif %}
+                </div>
+
+                <p class="text-sm pf-text-muted">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+
+                <div class="sm:text-right">
+                    {% if page_obj.has_next %}
+                        <a href="?q={{ current_filters.q|urlencode }}&date_from={{ current_filters.date_from|urlencode }}&date_to={{ current_filters.date_to|urlencode }}&category={{ current_filters.category|urlencode }}&kind={{ current_filters.kind|urlencode }}&ordering={{ current_ordering|urlencode }}&page_size={{ current_page_size }}&page={{ page_obj.next_page_number }}" data-e2e-selector="transactions-index-pagination-next-link-click" class="pf-btn pf-btn-secondary">Próxima</a>
+                    {% endif %}
+                </div>
+            </nav>
+        {% endif %}
+    </section>
 </div>
 {% endblock content %}

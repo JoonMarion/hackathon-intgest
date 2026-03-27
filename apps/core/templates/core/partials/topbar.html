@@ -1,15 +1,31 @@
 {% load static %}
-<header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/95 px-6 py-6 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
-    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">
-        {% if user.is_authenticated %}
-            {{ user.email|default:user.username }}
-        {% else %}
-            Visitante
-        {% endif %}
+{% now "d/m/Y" as today_label %}
+<header class="pf-topbar sticky top-4 z-20 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex min-w-0 items-center gap-3">
+        <div class="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--pf-brand-soft)] text-[color:var(--pf-brand-strong)] sm:inline-flex">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3v18"></path>
+                <path d="M17 8.5a5 5 0 0 0-10 0c0 6 10 3 10 9a5 5 0 0 1-10 0"></path>
+            </svg>
+        </div>
+        <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="pf-pill">Local demo</span>
+                <span class="pf-pill pf-pill-mint">{{ today_label }}</span>
+            </div>
+            <p class="mt-2 truncate text-sm font-semibold text-[color:var(--pf-text)]">
+                {% if user.is_authenticated %}
+                    {{ user.email|default:user.username }}
+                {% else %}
+                    Visitante
+                {% endif %}
+            </p>
+            <p class="mt-1 text-xs pf-text-muted">Base compartilhada para dashboard, listagens e interações HTMX.</p>
+        </div>
     </div>
 
     <div class="flex items-center gap-2.5">
-        <button type="button" data-theme-toggle data-e2e-selector="core-topbar-theme-toggle-click" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800" aria-label="Alternar tema">
+        <button type="button" data-theme-toggle data-e2e-selector="core-topbar-theme-toggle-click" class="pf-icon-button" aria-label="Alternar tema">
             <svg viewBox="0 0 24 24" class="h-4 w-4 dark:hidden" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="4"></circle>
                 <path d="M12 2.5v2.2"></path>
@@ -27,13 +43,13 @@
         </button>
 
         {% if user.is_authenticated %}
-            {% with avatar_seed=user.username|default:user.email|default:"U" %}
+            {% with avatar_seed=user.username|default:user.email|default:'U' %}
                 <div class="relative" data-user-menu>
                     <button
                         type="button"
                         data-user-menu-toggle
                         data-e2e-selector="core-topbar-user-menu-toggle-click"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:bg-emerald-500/85 dark:text-emerald-950 dark:hover:bg-emerald-400"
+                        class="pf-brand-mark inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-black"
                         aria-label="Abrir menu do usuário"
                         aria-haspopup="menu"
                         aria-expanded="false"
@@ -43,14 +59,14 @@
 
                     <div
                         data-user-menu-panel
-                        class="absolute right-0 mt-2 hidden min-w-44 rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-900"
+                        class="pf-card absolute right-0 mt-2 hidden min-w-52 p-2"
                         role="menu"
                         aria-label="Menu do usuário"
                     >
                         <a
                             href="{% url 'accounts_http:profile' %}"
                             data-e2e-selector="core-topbar-profile-link-click"
-                            class="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-gray-200 dark:hover:bg-gray-800"
+                            class="pf-btn pf-btn-ghost !min-h-0 !w-full !justify-start !rounded-2xl !px-3 !py-3 !text-sm"
                             role="menuitem"
                         >
                             Minha conta
@@ -60,7 +76,7 @@
                             <button
                                 type="submit"
                                 data-e2e-selector="core-topbar-logout-submit-click"
-                                class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 dark:text-red-400 dark:hover:bg-red-500/10"
+                                class="pf-btn !min-h-0 !w-full !justify-start !rounded-2xl !bg-[color:var(--pf-rose-soft)] !px-3 !py-3 !text-sm !text-[color:var(--pf-rose-strong)]"
                                 role="menuitem"
                             >
                                 Sair

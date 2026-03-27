@@ -1,67 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-white dark:bg-gray-900">
+<html lang="en" class="h-full bg-white dark:bg-slate-950">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Personal Financie{% endblock title %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-        };
-    </script>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="{% static 'core/js/tailwind-config.js' %}"></script>
+    <script src="{% static 'libs/tailwind/tailwindcss-cdn.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'styles/design-system.css' %}">
+    <script src="{% static 'core/js/theme-csrf.js' %}"></script>
+    <script src="{% static 'libs/htmx/htmx.min.js' %}"></script>
+    <script src="{% static 'libs/chartjs/chart.umd.min.js' %}"></script>
 </head>
-<body class="min-h-full bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100" data-theme-root>
+<body class="min-h-full" data-theme-root>
 <div class="min-h-screen md:flex md:items-start">
     {% if user.is_authenticated %}
-        {% include "core/partials/sidebar.html" %}
+        {% include 'core/partials/sidebar.html' %}
     {% endif %}
 
-    <div class="flex-1 min-w-0">
-        {% include "core/partials/topbar.html" %}
-        {% include "core/partials/toasts.html" %}
+    <div class="min-w-0 flex-1">
+        {% include 'core/partials/topbar.html' %}
+        {% include 'core/partials/toasts.html' %}
 
-        <main id="main-content" class="p-6" hx-target="#main-content" hx-swap="innerHTML">
+        <main id="main-content" class="pf-shell-main" hx-target="#main-content" hx-swap="innerHTML">
             {% block content %}{% endblock content %}
         </main>
     </div>
 </div>
-
-<script>
-    (function () {
-        const root = document.documentElement;
-        const savedTheme = localStorage.getItem("theme");
-
-        if (savedTheme === "dark") {
-            root.classList.add("dark");
-        }
-
-        document.addEventListener("click", function (event) {
-            const toggle = event.target.closest("[data-theme-toggle]");
-            if (!toggle) {
-                return;
-            }
-
-            const isDark = root.classList.toggle("dark");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-        });
-
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) {
-                return parts.pop().split(";").shift();
-            }
-            return "";
-        }
-
-        document.body.addEventListener("htmx:configRequest", function (event) {
-            event.detail.headers["X-CSRFToken"] = getCookie("csrftoken");
-        });
-    })();
-</script>
 {% block scripts %}{% endblock scripts %}
 </body>
 </html>

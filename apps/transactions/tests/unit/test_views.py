@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.urls import reverse
 
@@ -73,3 +74,40 @@ class TransactionViewConfigTests(BaseIntegrationTestCase):
 
         self.assertEqual(response.context["current_ordering"], "-transaction_date,-created_at")
         self.assertEqual(response.context["current_page_size"], 25)
+
+    def test_list_view_context_has_filtered_summary(self):
+        income_category = CategoryFactory(user=self.user, name="Salário", kind=Category.Kind.INCOME)
+        TransactionFactory(
+            user=self.user,
+            category=income_category,
+            kind=Transaction.Kind.INCOME,
+            amount="3200.00",
+            transaction_date=date(2026, 3, 25),
+            description="Salário",
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.category,
+            kind=Transaction.Kind.EXPENSE,
+            amount="89.90",
+            transaction_date=date(2026, 3, 20),
+            description="Mercado",
+        )
+
+        response = self.client.get(reverse("transactions_http:index"), {"kind": "expense"})
+
+        summary = response.context["filtered_summary"]
+        self.assertEqual(summary["transaction_count"], 1)
+        self.assertEqual(summary["income_count"], 0)
+        self.assertEqual(summary["expense_count"], 1)
+        self.assertEqual(summary["active_categories"], 1)
+        self.assertEqual(summary["total_income"], Decimal("0.00"))
+        self.assertEqual(summary["total_expense"], Decimal("89.90"))
+        self.assertEqual(summary["net_total"], Decimal("-89.90"))
+        self.assertTrue(response.context["has_active_filters"])
+
+    def test_list_view_renders_upcoming_import_export_actions(self):
+        response = self.client.get(reverse("transactions_http:index"))
+
+        self.assertContains(response, "Importar CSV em breve")
+        self.assertContains(response, "Exportar Excel em breve")

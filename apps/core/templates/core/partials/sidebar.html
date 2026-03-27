@@ -1,58 +1,77 @@
-<aside class="w-full md:w-72 md:flex-none md:sticky md:top-0 md:h-screen md:overflow-y-auto border-b md:border-b-0 md:border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-    <div class="px-5 py-6 border-b border-gray-200 dark:border-gray-700">
-        <a href="{% url 'core_http:index' %}" data-e2e-selector="core-sidebar-brand-link-click" class="inline-flex items-center gap-3 text-gray-900 dark:text-gray-100">
-            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/25 dark:text-emerald-300">PF</span>
+<aside class="pf-sidebar w-full border-b md:sticky md:top-0 md:h-[calc(100vh-1.8rem)] md:w-80 md:flex-none md:overflow-y-auto md:border-b-0">
+    <div class="border-b border-[color:var(--pf-border)] px-5 py-6">
+        <a href="{% url 'core_http:index' %}" data-e2e-selector="core-sidebar-brand-link-click" class="inline-flex items-center gap-3">
+            <span class="pf-brand-mark inline-flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-black tracking-[0.18em]">PF</span>
             <span>
-                <span class="block text-sm font-semibold leading-tight">Personal Financie</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">Controle financeiro</span>
+                <span class="pf-heading block text-base font-black leading-tight text-[color:var(--pf-text)]">Personal Financie</span>
+                <span class="block text-xs pf-text-muted">Painel local para rotina financeira</span>
             </span>
         </a>
     </div>
 
-    <nav class="px-3 py-5" aria-label="Navegação principal">
-        <ul class="space-y-1.5">
-            <li>
-                     <a href="{% url 'core_http:index' %}"
-                         data-e2e-selector="core-sidebar-dashboard-link-click"
-                   class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'core_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
-                    <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 10.5 12 3l9 7.5"></path>
-                            <path d="M5.5 9.5V20h13V9.5"></path>
-                        </svg>
-                    </span>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                     <a href="{% url 'transactions_http:index' %}"
-                         data-e2e-selector="core-sidebar-transactions-link-click"
-                   class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'transactions_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
-                    <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 7h16"></path>
-                            <path d="M4 12h16"></path>
-                            <path d="M4 17h10"></path>
-                        </svg>
-                    </span>
-                    <span>Lançamentos</span>
-                </a>
-            </li>
-            <li>
-                     <a href="{% url 'categories_http:index' %}"
-                         data-e2e-selector="core-sidebar-categories-link-click"
-                   class="group flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 {% if request.resolver_match.namespace == 'categories_http' %}bg-emerald-100 text-emerald-900 dark:bg-emerald-500/20 dark:text-emerald-200{% else %}text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100{% endif %}">
-                    <span class="inline-flex h-5 w-5 items-center justify-center text-current" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="4" width="7" height="7" rx="1.5"></rect>
-                            <rect x="13" y="4" width="7" height="7" rx="1.5"></rect>
-                            <rect x="4" y="13" width="7" height="7" rx="1.5"></rect>
-                            <rect x="13" y="13" width="7" height="7" rx="1.5"></rect>
-                        </svg>
-                    </span>
-                    <span>Categorias</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <div class="px-4 py-5">
+        <div class="pf-pill pf-pill-brand mb-4">Design system compartilhado</div>
+
+        <nav aria-label="Navegação principal">
+            <ul class="space-y-2">
+                <li>
+                    <a
+                        href="{% url 'core_http:index' %}"
+                        data-e2e-selector="core-sidebar-dashboard-link-click"
+                        class="pf-nav-link {% if request.resolver_match.namespace == 'core_http' %}is-active{% endif %}"
+                    >
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--pf-brand-soft)] text-[color:var(--pf-brand-strong)]" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 10.5 12 3l9 7.5"></path>
+                                <path d="M5.5 9.5V20h13V9.5"></path>
+                            </svg>
+                        </span>
+                        <span>
+                            <span class="block text-sm font-semibold">Dashboard</span>
+                            <span class="block text-xs pf-text-muted">Panorama do caixa e categorias</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="{% url 'transactions_http:index' %}"
+                        data-e2e-selector="core-sidebar-transactions-link-click"
+                        class="pf-nav-link {% if request.resolver_match.namespace == 'transactions_http' %}is-active{% endif %}"
+                    >
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--pf-mint-soft)] text-[color:var(--pf-mint-strong)]" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 7h16"></path>
+                                <path d="M4 12h16"></path>
+                                <path d="M4 17h10"></path>
+                            </svg>
+                        </span>
+                        <span>
+                            <span class="block text-sm font-semibold">Lançamentos</span>
+                            <span class="block text-xs pf-text-muted">Entradas, saídas e histórico</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="{% url 'categories_http:index' %}"
+                        data-e2e-selector="core-sidebar-categories-link-click"
+                        class="pf-nav-link {% if request.resolver_match.namespace == 'categories_http' %}is-active{% endif %}"
+                    >
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--pf-amber-soft)] text-[color:var(--pf-amber-strong)]" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="7" height="7" rx="1.5"></rect>
+                                <rect x="13" y="4" width="7" height="7" rx="1.5"></rect>
+                                <rect x="4" y="13" width="7" height="7" rx="1.5"></rect>
+                                <rect x="13" y="13" width="7" height="7" rx="1.5"></rect>
+                            </svg>
+                        </span>
+                        <span>
+                            <span class="block text-sm font-semibold">Categorias</span>
+                            <span class="block text-xs pf-text-muted">Grupos ativos para receitas e despesas</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </aside>

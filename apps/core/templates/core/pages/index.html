@@ -1,268 +1,329 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Dashboard - Personal Financie{% endblock title %}
 
 {% block content %}
-<style>
-    .chart-section {
-        overflow: hidden;
-        max-height: 600px;
-        opacity: 1;
-        transform: translateY(0);
-        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                    opacity 0.3s ease,
-                    transform 0.3s ease,
-                    margin 0.4s ease,
-                    padding 0.4s ease;
-    }
-    .chart-section.chart-hidden {
-        max-height: 0;
-        opacity: 0;
-        transform: translateY(-10px);
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        pointer-events: none;
-    }
-    #chart-settings-popup {
-        transform-origin: top right;
-    }
-    #chart-settings-popup.popup-animate-in {
-        animation: popupIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-    #chart-settings-popup.popup-animate-out {
-        animation: popupOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-    @keyframes popupIn {
-        from { opacity: 0; transform: scale(0.95) translateY(-5px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    @keyframes popupOut {
-        from { opacity: 1; transform: scale(1) translateY(0); }
-        to { opacity: 0; transform: scale(0.95) translateY(-5px); }
-    }
-</style>
+<div class="mx-auto max-w-7xl space-y-6">
+    <section class="pf-card pf-card-section pf-reveal">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-3xl">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Painel financeiro</span>
+                    <span class="pf-pill">{{ selected_period_label }}</span>
+                </div>
+                <h1 class="pf-heading pf-hero-title">Dashboard com profundidade visual e leitura rápida do seu caixa.</h1>
+                <p class="pf-hero-copy">
+                    Acompanhe receitas, despesas e o ritmo das categorias em uma interface mais sólida para demo local,
+                    com cartões de contexto, gráficos ajustáveis e ações futuras já posicionadas no shell do produto.
+                </p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                    <span class="pf-pill pf-pill-mint">{{ dashboard_highlights.transaction_count }} transações</span>
+                    <span class="pf-pill pf-pill-amber">{{ dashboard_highlights.active_categories }} categorias ativas</span>
+                    <span class="pf-pill">Modo local, sem integrações externas</span>
+                </div>
+            </div>
 
-<div class="space-y-7">
-    <!-- Header with gear button -->
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">Dashboard</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Visão geral das suas finanças</p>
+            <div class="relative">
+                <div class="flex flex-wrap justify-start gap-3 lg:justify-end">
+                    <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Importar CSV em breve</button>
+                    <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Exportar Excel em breve</button>
+                    <button id="chart-settings-btn" type="button" class="pf-icon-button" aria-label="Configurar gráficos" aria-controls="chart-settings-popup" aria-expanded="false">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="chart-settings-popup" class="pf-card pf-popover absolute right-0 top-full z-20 mt-3 hidden w-[min(24rem,92vw)] p-5" role="dialog" aria-modal="false" aria-hidden="true" aria-labelledby="chart-settings-title" tabindex="-1">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="pf-kicker">Configurações</p>
+                            <h2 id="chart-settings-title" class="mt-1 text-base font-semibold text-[color:var(--pf-text)]">Escolha os blocos visíveis</h2>
+                        </div>
+                            <button id="chart-settings-close" type="button" class="pf-icon-button !h-9 !w-9" aria-label="Fechar configurações de gráficos">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="evolution-line" checked class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Evolução mensal
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="evolution-bar" class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Barras comparativas
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="expense-doughnut" checked class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Despesas por categoria
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="income-doughnut" checked class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Receitas por categoria
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="balance-area" checked class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Área de saldo acumulado
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)]">
+                            <input type="checkbox" data-chart-toggle="category-hbar" class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Categoria x categoria
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--pf-border)] px-3 py-3 text-sm text-[color:var(--pf-text)] sm:col-span-2">
+                            <input type="checkbox" data-chart-toggle="top-expenses" checked class="h-4 w-4 rounded" style="accent-color: var(--pf-brand);">
+                            Radar das maiores despesas
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="relative">
-            <button id="chart-settings-btn" type="button" class="rounded-xl p-2.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700/60 dark:hover:text-gray-300 transition-colors" aria-label="Configurar gráficos">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </button>
-        </div>
-    </div>
+    </section>
 
-    <!-- Chart Settings Popup -->
-    <div id="chart-settings-popup" class="hidden rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 transition-all duration-300">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Configurar Gráficos</h3>
-            <button id="chart-settings-close" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <div class="grid gap-3 sm:grid-cols-2">
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="evolution-line" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Evolução Receitas/Despesas (Linha)
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="evolution-bar" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Evolução Receitas/Despesas (Barras)
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="expense-doughnut" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Despesas por Categoria
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="income-doughnut" checked class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Receitas por Categoria
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="balance-area" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Saldo Acumulado (Área)
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="category-hbar" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Receitas vs Despesas por Categoria
-            </label>
-            <label class="flex items-center gap-2.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input type="checkbox" data-chart-toggle="top-expenses" class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700"> Top 5 Maiores Despesas
-            </label>
-        </div>
-    </div>
+    <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+        <form method="get" action="{% url 'core_http:index' %}" class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+            <div class="grid gap-3 md:grid-cols-2 xl:flex xl:flex-wrap xl:items-end">
+                <div>
+                    <p class="pf-kicker">Filtro de período</p>
+                    <label class="mt-2 block text-sm font-semibold text-[color:var(--pf-text)]">
+                        De
+                        <input type="date" name="date_from" data-e2e-selector="core-dashboard-date-from-input" value="{{ current_filters.date_from }}" class="pf-input mt-2 w-full min-w-[16rem] text-sm">
+                    </label>
+                </div>
+                <div>
+                    <p class="pf-kicker">&nbsp;</p>
+                    <label class="mt-2 block text-sm font-semibold text-[color:var(--pf-text)]">
+                        Até
+                        <input type="date" name="date_to" data-e2e-selector="core-dashboard-date-to-input" value="{{ current_filters.date_to }}" class="pf-input mt-2 w-full min-w-[16rem] text-sm">
+                    </label>
+                </div>
+            </div>
 
-    <!-- Date Range Filter -->
-    <section class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-        <form method="get" action="{% url 'core_http:index' %}" class="flex flex-wrap items-center gap-3">
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Período</span>
-
-            <label class="flex items-center gap-2">
-                <span class="text-sm text-gray-500 dark:text-gray-400">De</span>
-                <input type="date" name="date_from" data-e2e-selector="core-dashboard-date-from-input" value="{{ current_filters.date_from }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-            </label>
-
-            <label class="flex items-center gap-2">
-                <span class="text-sm text-gray-500 dark:text-gray-400">Até</span>
-                <input type="date" name="date_to" data-e2e-selector="core-dashboard-date-to-input" value="{{ current_filters.date_to }}" class="rounded-xl border border-gray-200 bg-gray-50/90 px-3.5 py-2.5 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200">
-            </label>
-
-            <button type="submit" data-e2e-selector="core-dashboard-filter-submit-click" class="inline-flex items-center gap-2 h-[39px] rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                Filtrar
-            </button>
-
-            {% if current_filters.date_from or current_filters.date_to %}
-                <a href="{% url 'core_http:index' %}" data-e2e-selector="core-dashboard-clear-link-click" class="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">Limpar</a>
-            {% endif %}
+            <div class="flex flex-wrap items-center gap-2">
+                <button type="submit" data-e2e-selector="core-dashboard-filter-submit-click" class="pf-btn pf-btn-primary">Aplicar filtro</button>
+                {% if current_filters.date_from or current_filters.date_to %}
+                    <a href="{% url 'core_http:index' %}" data-e2e-selector="core-dashboard-clear-link-click" class="pf-btn pf-btn-ghost">Limpar</a>
+                {% endif %}
+            </div>
         </form>
     </section>
 
-    <!-- Summary Cards -->
-    <div class="grid gap-5 sm:grid-cols-3">
-        <!-- Receitas -->
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Receitas</span>
-                <svg viewBox="0 0 24 24" class="h-5 w-5 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                    <polyline points="16 7 22 7 22 13"></polyline>
-                </svg>
+    <section class="grid gap-4 xl:grid-cols-4">
+        <article class="pf-card pf-metric-card pf-metric-card--brand pf-reveal pf-reveal-delay-2">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Saldo atual</p>
+                <p class="pf-metric-value {% if balance >= 0 %}is-positive{% else %}is-negative{% endif %}">R$ {{ balance|floatformat:2 }}</p>
+                <p class="pf-metric-footnote">Recorte analisado: {{ selected_period_label }}.</p>
             </div>
-            <p class="mt-2 text-2xl font-bold text-emerald-600 dark:text-emerald-400">R$ {{ total_income|floatformat:2 }}</p>
-        </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--mint pf-reveal pf-reveal-delay-3">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Receitas</p>
+                <p class="pf-metric-value is-positive">R$ {{ total_income|floatformat:2 }}</p>
+                <p class="pf-metric-footnote">Base principal para medir fôlego e taxa de poupança.</p>
+            </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--rose pf-reveal pf-reveal-delay-4">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Despesas</p>
+                <p class="pf-metric-value is-negative">R$ {{ total_expense|floatformat:2 }}</p>
+                <p class="pf-metric-footnote">Compare visualmente com as receitas nas visões mensal e acumulada.</p>
+            </div>
+        </article>
+        <article class="pf-card pf-metric-card pf-metric-card--amber pf-reveal pf-reveal-delay-5">
+            <div class="pf-card-section">
+                <p class="pf-kicker">Taxa de poupança</p>
+                <p class="pf-metric-value">
+                    {% if dashboard_highlights.savings_rate != None %}
+                        {{ dashboard_highlights.savings_rate|floatformat:1 }}%
+                    {% else %}
+                        --
+                    {% endif %}
+                </p>
+                <p class="pf-metric-footnote">Saldo dividido pela receita do período. Sem base quando não houver entradas.</p>
+            </div>
+        </article>
+    </section>
 
-        <!-- Despesas -->
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Despesas</span>
-                <svg viewBox="0 0 24 24" class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline>
-                    <polyline points="16 17 22 17 22 11"></polyline>
-                </svg>
-            </div>
-            <p class="mt-2 text-2xl font-bold text-red-600 dark:text-red-400">R$ {{ total_expense|floatformat:2 }}</p>
-        </div>
-
-        <!-- Saldo -->
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Saldo</span>
-                <svg viewBox="0 0 24 24" class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="5" y="2" width="14" height="20" rx="2"></rect>
-                    <path d="M9 10h6"></path>
-                    <path d="M9 14h6"></path>
-                    <path d="M9 18h6"></path>
-                </svg>
-            </div>
-            <p class="mt-2 text-2xl font-bold {% if balance >= 0 %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                R$ {{ balance|floatformat:2 }}
+    <section class="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <p class="pf-kicker">Transações</p>
+            <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">{{ dashboard_highlights.transaction_count }}</p>
+            <p class="mt-2 text-sm pf-text-muted">Quantidade total de lançamentos considerados no recorte atual.</p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <p class="pf-kicker">Ticket médio</p>
+            <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">R$ {{ dashboard_highlights.average_ticket|floatformat:2 }}</p>
+            <p class="mt-2 text-sm pf-text-muted">Média dos valores registrados para ajudar a calibrar ritmo e escala.</p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+            <p class="pf-kicker">Categorias ativas</p>
+            <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">{{ dashboard_highlights.active_categories }}</p>
+            <p class="mt-2 text-sm pf-text-muted">Categorias que realmente movimentaram o período filtrado.</p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-4">
+            <p class="pf-kicker">Maior despesa</p>
+            <p class="mt-3 text-xl font-black tracking-tight text-[color:var(--pf-text)]">{{ dashboard_highlights.biggest_expense_label|default:'Nenhuma despesa no período' }}</p>
+            <p class="mt-2 text-sm font-semibold text-[color:var(--pf-rose-strong)]">
+                {% if dashboard_highlights.biggest_expense_amount %}
+                    R$ {{ dashboard_highlights.biggest_expense_amount|floatformat:2 }}
+                {% else %}
+                    Sem valor relevante
+                {% endif %}
             </p>
-        </div>
-    </div>
+        </article>
+    </section>
 
-    <!-- Line Chart: Evolução de Receitas e Despesas -->
-    <div data-chart-section="evolution-line" class="chart-section">
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas</h2>
-            <div class="mt-4" style="position: relative; height: 300px;">
-                <canvas id="evolutionLineChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bar Chart: Evolução de Receitas e Despesas (Barras) -->
-    <div data-chart-section="evolution-bar" class="chart-section chart-hidden">
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução de Receitas e Despesas (Barras)</h2>
-            <div class="mt-4" style="position: relative; height: 300px;">
-                <canvas id="evolutionBarChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Balance Area Chart -->
-    <div data-chart-section="balance-area" class="chart-section chart-hidden">
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Evolução do Saldo Acumulado</h2>
-            <div class="mt-4" style="position: relative; height: 300px;">
-                <canvas id="balanceAreaChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Donut Charts -->
-    <div id="doughnut-grid" class="grid gap-5 lg:grid-cols-2">
-        <!-- Despesas por Categoria -->
-        <div data-chart-section="expense-doughnut" class="chart-section">
-            <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Despesas por Categoria</h2>
-                <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
-                    <canvas id="expenseDoughnutChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Receitas por Categoria -->
-        <div data-chart-section="income-doughnut" class="chart-section">
-            <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas por Categoria</h2>
-                <div class="mt-4 flex justify-center" style="position: relative; height: 250px;">
-                    <canvas id="incomeDoughnutChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Category Horizontal Bar Chart -->
-    <div data-chart-section="category-hbar" class="chart-section chart-hidden">
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Receitas vs Despesas por Categoria</h2>
-            <div class="mt-4" style="position: relative; height: 300px;">
-                <canvas id="categoryHBarChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Top 5 Expenses -->
-    <div data-chart-section="top-expenses" class="chart-section chart-hidden">
-        <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Top 5 Maiores Despesas</h2>
-            <div id="top-expenses-container" class="mt-4 divide-y divide-gray-200/70 dark:divide-gray-700/70"></div>
-        </div>
-    </div>
-
-    <!-- Últimos Lançamentos -->
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Últimos Lançamentos</h2>
-        <div class="mt-4 divide-y divide-gray-200/70 dark:divide-gray-700/70">
-            {% for transaction in recent_transactions %}
-                <div class="flex items-center justify-between py-3.5">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ transaction.description|default:"Sem descrição" }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ transaction.category.name }}</p>
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(0,0.95fr)]">
+        <div class="space-y-6">
+            <section data-chart-section="evolution-line" class="pf-chart-section pf-reveal pf-reveal-delay-1">
+                <div class="pf-card pf-card-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="pf-kicker">Evolução</p>
+                            <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Receitas e despesas por mês</h2>
+                        </div>
+                        <span class="pf-pill pf-pill-brand">Linha principal</span>
                     </div>
-                    <span class="text-sm font-semibold {% if transaction.kind == 'income' %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                        {% if transaction.kind == 'income' %}+ {% else %}- {% endif %}R$ {{ transaction.amount|floatformat:2 }}
-                    </span>
+                    <div class="pf-chart-frame mt-5">
+                        <canvas id="evolutionLineChart"></canvas>
+                    </div>
                 </div>
-            {% empty %}
-                <p class="py-8 text-center text-sm text-gray-500 dark:text-gray-400">Nenhum lançamento registrado ainda.</p>
-            {% endfor %}
+            </section>
+
+            <section data-chart-section="evolution-bar" class="pf-chart-section chart-hidden">
+                <div class="pf-card pf-card-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="pf-kicker">Comparativo</p>
+                            <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Barras mensais</h2>
+                        </div>
+                        <span class="pf-pill">Leitura rápida</span>
+                    </div>
+                    <div class="pf-chart-frame mt-5">
+                        <canvas id="evolutionBarChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section data-chart-section="balance-area" class="pf-chart-section pf-reveal pf-reveal-delay-2">
+                <div class="pf-card pf-card-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="pf-kicker">Saldo</p>
+                            <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Acumulado do período</h2>
+                        </div>
+                        <span class="pf-pill pf-pill-mint">Acúmulo</span>
+                    </div>
+                    <div class="pf-chart-frame mt-5">
+                        <canvas id="balanceAreaChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid gap-6 lg:grid-cols-2">
+                <section data-chart-section="expense-doughnut" class="pf-chart-section pf-reveal pf-reveal-delay-3">
+                    <div class="pf-card pf-card-section h-full">
+                        <p class="pf-kicker">Mix de despesas</p>
+                        <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Despesas por categoria</h2>
+                        <div class="pf-chart-frame-sm mt-5">
+                            <canvas id="expenseDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <section data-chart-section="income-doughnut" class="pf-chart-section pf-reveal pf-reveal-delay-4">
+                    <div class="pf-card pf-card-section h-full">
+                        <p class="pf-kicker">Mix de receitas</p>
+                        <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Receitas por categoria</h2>
+                        <div class="pf-chart-frame-sm mt-5">
+                            <canvas id="incomeDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section data-chart-section="category-hbar" class="pf-chart-section chart-hidden">
+                <div class="pf-card pf-card-section">
+                    <p class="pf-kicker">Categorias em confronto</p>
+                    <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Receitas versus despesas</h2>
+                    <div class="pf-chart-frame mt-5">
+                        <canvas id="categoryHBarChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="space-y-6">
+            <section data-chart-section="top-expenses" class="pf-chart-section pf-reveal pf-reveal-delay-2">
+                <div class="pf-card pf-card-section">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="pf-kicker">Radar</p>
+                            <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Maiores despesas</h2>
+                        </div>
+                        <span class="pf-pill pf-pill-rose">Top 5</span>
+                    </div>
+                    <div id="top-expenses-container" class="mt-4 divide-y divide-[color:var(--pf-border)]"></div>
+                </div>
+            </section>
+
+            <section class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="pf-kicker">Recentes</p>
+                        <h2 class="mt-1 text-lg font-semibold text-[color:var(--pf-text)]">Últimos lançamentos</h2>
+                    </div>
+                    <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-ghost">Ver tudo</a>
+                </div>
+                <div class="mt-4 space-y-3">
+                    {% for transaction in recent_transactions %}
+                        <article class="pf-transaction-item">
+                            <div class="min-w-0">
+                                <div class="mb-3 flex flex-wrap items-center gap-2">
+                                    <span class="pf-transaction-date">{{ transaction.transaction_date|date:'d/m/Y' }}</span>
+                                    {% if transaction.kind == 'income' %}
+                                        <span class="pf-pill pf-pill-mint">{{ transaction.get_kind_display }}</span>
+                                    {% else %}
+                                        <span class="pf-pill pf-pill-rose">{{ transaction.get_kind_display }}</span>
+                                    {% endif %}
+                                </div>
+                                <p class="truncate text-base font-semibold text-[color:var(--pf-text)]">{{ transaction.description|default:'Sem descrição' }}</p>
+                                <p class="mt-1 text-sm pf-text-muted">
+                                    {{ transaction.category.name }}
+                                    {% if transaction.notes %}
+                                        · {{ transaction.notes|truncatechars:72 }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <span class="pf-amount-chip {% if transaction.kind == 'income' %}pf-amount-chip--income{% else %}pf-amount-chip--expense{% endif %}">
+                                {% if transaction.kind == 'income' %}+{% else %}-{% endif %}
+                                R$ {{ transaction.amount|floatformat:2 }}
+                            </span>
+                        </article>
+                    {% empty %}
+                        <div class="rounded-[1.4rem] border border-dashed border-[color:var(--pf-border)] px-4 py-10 text-center">
+                            <p class="text-sm font-semibold text-[color:var(--pf-text)]">Nenhum lançamento registrado ainda.</p>
+                            <p class="mt-2 text-sm pf-text-muted">Cadastre receitas ou despesas para alimentar o painel.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
         </div>
     </div>
 </div>
 
-{{ chart_labels|json_script:"chart-labels-data" }}
-{{ chart_income|json_script:"chart-income-data" }}
-{{ chart_expense|json_script:"chart-expense-data" }}
-{{ expense_categories_labels|json_script:"expense-categories-labels-data" }}
-{{ expense_categories_data|json_script:"expense-categories-data" }}
-{{ income_categories_labels|json_script:"income-categories-labels-data" }}
-{{ income_categories_data|json_script:"income-categories-data" }}
-{{ top_expenses|json_script:"top-expenses-data" }}
+{{ chart_labels|json_script:'chart-labels-data' }}
+{{ chart_income|json_script:'chart-income-data' }}
+{{ chart_expense|json_script:'chart-expense-data' }}
+{{ expense_categories_labels|json_script:'expense-categories-labels-data' }}
+{{ expense_categories_data|json_script:'expense-categories-data' }}
+{{ income_categories_labels|json_script:'income-categories-labels-data' }}
+{{ income_categories_data|json_script:'income-categories-data' }}
+{{ top_expenses|json_script:'top-expenses-data' }}
 
 <script src="{% static 'core/js/dashboard-charts.js' %}"></script>
 {% endblock content %}

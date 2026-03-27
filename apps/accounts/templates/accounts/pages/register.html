@@ -3,81 +3,134 @@
 {% block title %}Criar conta - Personal Financie{% endblock title %}
 
 {% block content %}
-<div class="mx-auto w-full max-w-2xl space-y-7">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                Criar conta
-            </h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Cadastre-se para começar a gerenciar suas finanças.
-            </p>
+<div class="mx-auto max-w-6xl space-y-6">
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-stretch">
+        <div class="space-y-6">
+            <div class="pf-card pf-card-section pf-reveal overflow-hidden">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="pf-pill pf-pill-brand">Nova conta</span>
+                    <span class="pf-pill pf-pill-amber">Onboarding enxuto</span>
+                </div>
+                <h1 class="pf-heading pf-hero-title">Criar conta</h1>
+                <p class="pf-hero-copy">
+                    Abra seu espaço de controle financeiro com uma entrada mais premium e alinhada ao dashboard,
+                    preservando o mesmo cadastro simples pensado para o MVP local do hackathon.
+                </p>
+
+                <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                    <article class="rounded-[1.5rem] border border-[color:var(--pf-border)] bg-white/45 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:bg-white/5">
+                        <p class="pf-kicker">Sem atrito</p>
+                        <p class="mt-3 text-lg font-black tracking-tight text-[color:var(--pf-text)]">Cadastro direto para começar</p>
+                        <p class="mt-2 text-sm pf-text-muted">Usuário, e-mail e senha continuam sendo o núcleo do fluxo de entrada.</p>
+                    </article>
+                    <article class="rounded-[1.5rem] border border-[color:var(--pf-border)] bg-[color:var(--pf-mint-soft)] p-4 dark:bg-[color:var(--pf-mint-soft)]/30">
+                        <p class="pf-kicker">Compatibilidade</p>
+                        <p class="mt-3 text-lg font-black tracking-tight text-[color:var(--pf-text)]">Seletores e comportamento preservados</p>
+                        <p class="mt-2 text-sm pf-text-muted">O redesign não muda o contrato usado pelos testes de autenticação.</p>
+                    </article>
+                </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+                <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+                    <p class="pf-kicker">Identidade</p>
+                    <p class="mt-3 text-2xl font-black tracking-tight text-[color:var(--pf-text)]">01</p>
+                    <p class="mt-2 text-sm pf-text-muted">Crie o acesso inicial sem depender de integrações externas.</p>
+                </article>
+                <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+                    <p class="pf-kicker">Design</p>
+                    <p class="mt-3 text-2xl font-black tracking-tight text-[color:var(--pf-text)]">02</p>
+                    <p class="mt-2 text-sm pf-text-muted">Mesma linguagem azul, vidro e profundidade usada no core.</p>
+                </article>
+                <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+                    <p class="pf-kicker">MVP</p>
+                    <p class="mt-3 text-2xl font-black tracking-tight text-[color:var(--pf-text)]">03</p>
+                    <p class="mt-2 text-sm pf-text-muted">Fluxo confiável para demonstrar a aplicação funcionando localmente.</p>
+                </article>
+            </div>
         </div>
-    </div>
 
-    <div class="rounded-2xl border border-gray-200/90 bg-white/95 p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800/70 sm:p-6">
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
-
-            {% if form.non_field_errors %}
-                <div class="rounded-xl border border-red-200 bg-red-50/90 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-200">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
+        <div class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <p class="pf-kicker">Cadastro</p>
+                    <h2 class="mt-1 text-2xl font-semibold tracking-tight text-[color:var(--pf-text)]">Comece sua conta</h2>
                 </div>
-            {% endif %}
+                <span class="pf-pill pf-pill-mint">Pronto para o MVP</span>
+            </div>
 
-            <div class="space-y-1.5">
-                <label for="id_username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Usuário</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.username }}
-                </div>
-                {% if form.username.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.username.errors.0 }}</p>
+            <form method="post" class="mt-6 space-y-5">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="rounded-[1.35rem] border border-[color:var(--pf-rose-strong)]/25 bg-[color:var(--pf-rose-soft)] px-4 py-3 text-sm text-[color:var(--pf-rose-strong)]">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.email }}
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="space-y-2 sm:col-span-2">
+                        <label for="id_username" class="block text-sm font-semibold text-[color:var(--pf-text)]">Usuário</label>
+                        <div class="[&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-[color:var(--pf-border)] [&_input]:bg-white/80 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-[color:var(--pf-text)] [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-[color:var(--pf-text-muted)] [&_input]:hover:border-[color:var(--pf-brand)]/30 [&_input]:focus:border-[color:var(--pf-brand)]/45 [&_input]:focus:bg-white [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-[color:var(--pf-brand)]/10 dark:[&_input]:bg-slate-950/40 dark:[&_input]:focus:bg-slate-950/70">
+                            {{ form.username }}
+                        </div>
+                        {% if form.username.errors %}
+                            <p class="text-sm font-semibold text-[color:var(--pf-rose-strong)]">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="space-y-2 sm:col-span-2">
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">E-mail</label>
+                        <div class="[&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-[color:var(--pf-border)] [&_input]:bg-white/80 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-[color:var(--pf-text)] [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-[color:var(--pf-text-muted)] [&_input]:hover:border-[color:var(--pf-brand)]/30 [&_input]:focus:border-[color:var(--pf-brand)]/45 [&_input]:focus:bg-white [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-[color:var(--pf-brand)]/10 dark:[&_input]:bg-slate-950/40 dark:[&_input]:focus:bg-slate-950/70">
+                            {{ form.email }}
+                        </div>
+                        {% if form.email.errors %}
+                            <p class="text-sm font-semibold text-[color:var(--pf-rose-strong)]">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="id_password1" class="block text-sm font-semibold text-[color:var(--pf-text)]">Senha</label>
+                        <div class="[&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-[color:var(--pf-border)] [&_input]:bg-white/80 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-[color:var(--pf-text)] [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-[color:var(--pf-text-muted)] [&_input]:hover:border-[color:var(--pf-brand)]/30 [&_input]:focus:border-[color:var(--pf-brand)]/45 [&_input]:focus:bg-white [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-[color:var(--pf-brand)]/10 dark:[&_input]:bg-slate-950/40 dark:[&_input]:focus:bg-slate-950/70">
+                            {{ form.password1 }}
+                        </div>
+                        {% if form.password1.help_text %}
+                            <div class="rounded-[1.2rem] border border-[color:var(--pf-border)] bg-[color:var(--pf-background-alt)]/65 px-4 py-3 text-sm pf-text-muted">
+                                {{ form.password1.help_text|safe }}
+                            </div>
+                        {% endif %}
+                        {% if form.password1.errors %}
+                            <p class="text-sm font-semibold text-[color:var(--pf-rose-strong)]">{{ form.password1.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="id_password2" class="block text-sm font-semibold text-[color:var(--pf-text)]">Confirmar senha</label>
+                        <div class="[&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-[color:var(--pf-border)] [&_input]:bg-white/80 [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-[color:var(--pf-text)] [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-[color:var(--pf-text-muted)] [&_input]:hover:border-[color:var(--pf-brand)]/30 [&_input]:focus:border-[color:var(--pf-brand)]/45 [&_input]:focus:bg-white [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-[color:var(--pf-brand)]/10 dark:[&_input]:bg-slate-950/40 dark:[&_input]:focus:bg-slate-950/70">
+                            {{ form.password2 }}
+                        </div>
+                        <p class="text-sm pf-text-muted">Repita a senha para confirmar o cadastro antes do primeiro acesso.</p>
+                        {% if form.password2.errors %}
+                            <p class="text-sm font-semibold text-[color:var(--pf-rose-strong)]">{{ form.password2.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if form.email.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.email.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <div class="space-y-1.5">
-                <label for="id_password1" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.password1 }}
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <button type="submit" data-e2e-selector="accounts-register-submit-click" class="pf-btn pf-btn-primary min-w-[10rem]">
+                        Cadastrar
+                    </button>
+                    <p class="text-sm pf-text-muted">
+                        Já tem conta?
+                        <a href="{% url 'accounts_http:login' %}" data-e2e-selector="accounts-register-login-link-click" class="font-semibold text-[color:var(--pf-brand-strong)] underline decoration-[color:var(--pf-brand)]/35 underline-offset-4">
+                            Entrar
+                        </a>
+                    </p>
                 </div>
-                {% if form.password1.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.password1.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div class="space-y-1.5">
-                <label for="id_password2" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar senha</label>
-                <div class="[&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:px-3 [&_input]:py-2.5 [&_input]:text-sm [&_input]:text-gray-900 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-gray-400 [&_input]:hover:border-gray-400 [&_input]:focus:border-gray-500 [&_input]:focus:outline-none [&_input]:focus:ring-2 [&_input]:focus:ring-gray-400/30 dark:[&_input]:border-gray-600 dark:[&_input]:bg-gray-900/70 dark:[&_input]:text-gray-100 dark:[&_input]:placeholder:text-gray-500 dark:[&_input]:hover:border-gray-500 dark:[&_input]:focus:border-gray-400 dark:[&_input]:focus:ring-gray-500/30">
-                    {{ form.password2 }}
-                </div>
-                {% if form.password2.errors %}
-                    <p class="text-sm font-medium text-red-600 dark:text-red-400">{{ form.password2.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit" data-e2e-selector="accounts-register-submit-click" class="inline-flex items-center rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
-                    Cadastrar
-                </button>
-            </div>
-
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Já tem conta?
-                <a href="{% url 'accounts_http:login' %}" data-e2e-selector="accounts-register-login-link-click" class="font-medium text-gray-900 underline dark:text-gray-100">Entrar</a>
-            </p>
-        </form>
-    </div>
+            </form>
+        </div>
+    </section>
 </div>
 {% endblock content %}
