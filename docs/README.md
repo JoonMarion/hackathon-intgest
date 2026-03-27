@@ -20,6 +20,7 @@ When there is any conflict between documents, use this precedence:
 - `features-frontend.md` — frontend flows and template expectations
 - `frontend-guide.md` — practical template and UI conventions
 - `testing-guide.md` — lean testing strategy for MVP
+- `e2e-playwright-guide.md` — Playwright E2E standards and Copilot prompt patterns
 - `mocking-guide.md` — generic mocking patterns for tests
 - `development-guide.md` — common implementation tasks
 - `ai-assisted-workflow.md` — Copilot-assisted workflow and evidence checklist

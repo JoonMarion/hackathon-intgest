@@ -39,6 +39,19 @@ Notes:
 - Keep checks focused and fast; this is not a full E2E suite.
 - If browser interaction is unavailable, report explicit skip reason and continue with test gates.
 
+## Copilot + E2E test requests
+
+When asking Copilot to add browser tests, always include an explicit selector contract:
+
+- Use `data-e2e-selector` in every interaction.
+- Keep scenarios isolated and deterministic.
+- Avoid fixed sleeps; prefer assertion-based waiting.
+- Keep one file focused on a small set of critical journeys.
+
+Suggested request:
+
+"Create Playwright E2E tests for <flow> using only data-e2e-selector, with isolated data per test and no arbitrary waits."
+
 ## Prompt examples
 
 - "Use Feature Builder to implement transaction edit flow end-to-end (view, template partial, tests)."
