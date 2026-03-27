@@ -8,14 +8,50 @@ Create short, deterministic browser tests that validate critical user journeys w
 
 ## Current suite
 
-- `apps/core/tests/e2e/test_playwright_flows.py`
+- `apps/core/tests/e2e/base.py`
+- `apps/core/tests/e2e/test_auth_navigation_flows.py`
+- `apps/core/tests/e2e/test_accounts_flows.py`
+- `apps/core/tests/e2e/test_categories_flows.py`
+- `apps/core/tests/e2e/test_transactions_flows.py`
+- `apps/core/tests/e2e/test_dashboard_flows.py`
 
 Covered journeys:
 
+- Protected routes redirect to login (unauthenticated)
+- Cross-page navigation smoke flow
+- Login using e-mail credential
 - Login and logout via topbar menu
+- Registration then login
+- Profile edit
+- Password change with re-login
 - Category creation + transaction creation
+- Category edit
+- Category delete
+- Category delete cancel
+- Transaction edit
+- Transaction delete
+- Transaction delete cancel
 - Transaction filter flow
+- Transaction pagination + ordering
 - Dashboard date filters + theme toggle
+- Dashboard summary/recent/ranking + placeholder visibility
+
+## Coverage matrix by flow
+
+Covered now:
+
+- Authentication: login (username/email), logout, register
+- Account management: profile edit, password change
+- Categories: create, edit, delete, cancel delete
+- Transactions: create, edit, delete, cancel delete, filters, ordering, pagination
+- Dashboard: summary visibility, date filter, clear filter, theme toggle, rankings
+- Route protection: authenticated access guard redirects
+
+Remaining gaps (next iteration):
+
+- Form cancel/back flows (`categories-form-cancel-link-click`, `transactions-form-cancel-link-click`)
+- Toast dismissal interaction (`core-toasts-dismiss-click`)
+- Pagination boundary assertions for categories (if pagination is introduced later)
 
 ## Standard commands
 
@@ -28,7 +64,7 @@ $ uv run pytest apps/core/tests/e2e -q
 Run specific scenario:
 
 ```bash
-$ uv run pytest apps/core/tests/e2e/test_playwright_flows.py -k dashboard -q
+$ uv run pytest apps/core/tests/e2e/test_dashboard_flows.py -k dashboard -q
 ```
 
 ## Selector standard

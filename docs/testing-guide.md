@@ -43,7 +43,7 @@ $ uv run manage.py test <app_name>.tests
 
 The project now includes browser E2E coverage with Playwright in:
 
-- `apps/core/tests/e2e/test_playwright_flows.py`
+- `apps/core/tests/e2e/` (modular files by domain)
 
 Run only E2E tests:
 
@@ -54,7 +54,7 @@ $ uv run pytest apps/core/tests/e2e -q
 Run one scenario:
 
 ```bash
-$ uv run pytest apps/core/tests/e2e/test_playwright_flows.py -k login -q
+$ uv run pytest apps/core/tests/e2e/test_auth_navigation_flows.py -k login -q
 ```
 
 ### Selector contract
