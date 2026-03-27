@@ -4,7 +4,7 @@ import factory
 from django.contrib.auth import get_user_model
 
 from apps.categories.models import Category
-from apps.transactions.models import Transaction
+from apps.transactions.models import FinancialAccount, Transaction
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -25,13 +25,23 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     kind = Category.Kind.EXPENSE
 
 
+class FinancialAccountFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = FinancialAccount
+
+    user = factory.SubFactory(UserFactory)
+    name = factory.Sequence(lambda index: f"Conta {index}")
+
+
 class TransactionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Transaction
 
     user = factory.SubFactory(UserFactory)
+    account = factory.SubFactory(FinancialAccountFactory, user=factory.SelfAttribute("..user"))
     category = factory.SubFactory(CategoryFactory, user=factory.SelfAttribute("..user"))
     kind = Transaction.Kind.EXPENSE
     amount = "10.00"
     transaction_date = date(2026, 3, 25)
+    payee = factory.Faker("company")
     description = factory.Faker("sentence", nb_words=3)

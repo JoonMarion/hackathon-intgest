@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Importar lançamentos - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-6">
+    <section class="pf-card pf-card-section">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <span class="pf-pill pf-pill-brand">Importação</span>
+                <h1 class="pf-heading pf-hero-title">Upload de arquivo CSV ou XLSX</h1>
+                <p class="pf-hero-copy">Envie o arquivo bruto para iniciar o fluxo de mapeamento de colunas, preview e confirmação em background.</p>
+            </div>
+            <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-secondary">Voltar</a>
+        </div>
+    </section>
+
+    <section class="pf-card pf-card-section">
+        <form method="post" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.source_file.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Arquivo de origem</label>
+                <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm">
+                    {{ form.source_file }}
+                </div>
+                {% if form.source_file.errors %}<p class="mt-2 text-sm text-[color:var(--pf-rose-strong)]">{{ form.source_file.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="pf-btn pf-btn-primary">Enviar e mapear</button>
+                <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-ghost">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock content %}

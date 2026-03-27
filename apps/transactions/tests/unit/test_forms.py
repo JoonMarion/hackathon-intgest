@@ -2,7 +2,7 @@ from django import forms
 
 from apps.categories.models import Category
 from apps.core.tests.base import BaseIntegrationTestCase
-from apps.core.tests.factories import CategoryFactory, UserFactory
+from apps.core.tests.factories import CategoryFactory, FinancialAccountFactory, UserFactory
 from apps.transactions.http.forms import TransactionForm
 from apps.transactions.models import Transaction
 
@@ -14,6 +14,8 @@ class TransactionFormTests(BaseIntegrationTestCase):
             username="transaction-form-other-user",
             email="transaction-form-other-user@example.com",
         )
+        self.account = FinancialAccountFactory(user=self.user, name="Conta principal")
+        self.other_account = FinancialAccountFactory(user=self.other_user, name="Conta externa")
 
     def test_amount_must_be_greater_than_zero(self):
         category = CategoryFactory(
@@ -23,6 +25,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "0.00",
@@ -34,6 +37,24 @@ class TransactionFormTests(BaseIntegrationTestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["amount"], ["Informe um valor maior que zero."])
 
+    def test_account_from_another_user_is_invalid(self):
+        category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
+
+        form = TransactionForm(
+            user=self.user,
+            data={
+                "account": self.other_account.pk,
+                "category": category.pk,
+                "kind": Transaction.Kind.EXPENSE,
+                "amount": "10.00",
+                "transaction_date": "2026-03-25",
+                "description": "Compra",
+            },
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("account", form.errors)
+
     def test_category_from_another_user_is_invalid(self):
         other_user_category = CategoryFactory(
             user=self.other_user,
@@ -43,6 +64,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": other_user_category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",
@@ -63,6 +85,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": income_category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",
@@ -89,6 +112,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "25.00",
@@ -99,15 +123,29 @@ class TransactionFormTests(BaseIntegrationTestCase):
 
         self.assertTrue(form.is_valid())
 
+    def test_account_queryset_filtered_by_user(self):
+        form = TransactionForm(user=self.user)
+
+        queryset = form.fields["account"].queryset
+        self.assertIn(self.account, queryset)
+        self.assertNotIn(self.other_account, queryset)
+
+    def test_account_queryset_empty_without_user(self):
+        FinancialAccountFactory(user=self.user)
+
+        form = TransactionForm()
+
+        self.assertEqual(form.fields["account"].queryset.count(), 0)
+
     def test_category_queryset_filtered_by_user(self):
         own_category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
         other_category = CategoryFactory(user=self.other_user, kind=Category.Kind.EXPENSE)
 
         form = TransactionForm(user=self.user)
 
-        qs = form.fields["category"].queryset
-        self.assertIn(own_category, qs)
-        self.assertNotIn(other_category, qs)
+        queryset = form.fields["category"].queryset
+        self.assertIn(own_category, queryset)
+        self.assertNotIn(other_category, queryset)
 
     def test_category_queryset_empty_without_user(self):
         CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE)
@@ -122,6 +160,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",
@@ -138,6 +177,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",
@@ -154,6 +194,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",
@@ -171,6 +212,7 @@ class TransactionFormTests(BaseIntegrationTestCase):
         form = TransactionForm(
             user=self.user,
             data={
+                "account": self.account.pk,
                 "category": category.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "10.00",

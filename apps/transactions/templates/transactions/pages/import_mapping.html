@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Mapeamento de importação - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6">
+    <section class="pf-card pf-card-section">
+        <span class="pf-pill pf-pill-brand">Passo 2 de 4</span>
+        <h1 class="pf-heading pf-hero-title">Mapeie as colunas obrigatórias e opcionais</h1>
+        <p class="pf-hero-copy">Arquivo: {{ import_job.source_file.original_name }}. As colunas mínimas são Data, Valor, Favorecido e Conta.</p>
+    </section>
+
+    <section class="pf-card pf-card-section">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="rounded-[1.2rem] border border-[color:var(--pf-rose-strong)]/25 bg-[color:var(--pf-rose-soft)] px-4 py-3 text-sm text-[color:var(--pf-rose-strong)]">{{ form.non_field_errors.0 }}</div>
+            {% endif %}
+
+            <div class="grid gap-5 md:grid-cols-2">
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">{{ field.label }}</label>
+                        <div class="mt-2 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm">{{ field }}</div>
+                        {% if field.errors %}<p class="mt-2 text-sm text-[color:var(--pf-rose-strong)]">{{ field.errors.0 }}</p>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="pf-btn pf-btn-primary">Gerar preview</button>
+                <a href="{% url 'transactions_http:import_upload' %}" class="pf-btn pf-btn-ghost">Trocar arquivo</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="pf-card pf-card-section">
+        <p class="pf-kicker">Cabeçalhos encontrados</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+            {% for header in headers %}
+                <span class="pf-pill">{{ header }}</span>
+            {% empty %}
+                <span class="pf-pill pf-pill-rose">Nenhum cabeçalho disponível</span>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock content %}

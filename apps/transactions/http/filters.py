@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 
 from apps.categories.models import Category
 from apps.transactions.models import Transaction
@@ -24,6 +25,10 @@ class TransactionFilterSet(django_filters.FilterSet):
         del name
         if not value:
             return queryset
-        from django.db.models import Q
 
-        return queryset.filter(Q(description__icontains=value) | Q(notes__icontains=value))
+        return queryset.filter(
+            Q(description__icontains=value)
+            | Q(notes__icontains=value)
+            | Q(payee__icontains=value)
+            | Q(account__name__icontains=value)
+        )

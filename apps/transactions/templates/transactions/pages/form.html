@@ -18,15 +18,9 @@
                     {% endif %}
                 </div>
                 <h1 class="pf-heading pf-hero-title">
-                    {% if object %}Edite o lançamento com conforto e clareza.{% else %}Registre uma nova movimentação sem atrito.{% endif %}
+                    {% if object %}Atualize conta, favorecido e categoria com contexto completo.{% else %}Registre uma movimentação com conta e favorecido explícitos.{% endif %}
                 </h1>
-                <p class="pf-hero-copy">
-                    {% if object %}
-                        Ajuste categoria, tipo, valor e contexto sem perder o ritmo da operação. As alterações refletem na listagem e nos resumos do período.
-                    {% else %}
-                        Preencha apenas o essencial, mantenha a categoria coerente com o tipo e deixe o restante pronto para acompanhar dashboard e filtros.
-                    {% endif %}
-                </p>
+                <p class="pf-hero-copy">A modelagem de lançamentos agora considera conta financeira, favorecido e descrição separadamente para apoiar importação, exportação e deduplicação com rastreabilidade.</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
@@ -40,7 +34,7 @@
             <div class="mb-5">
                 <p class="pf-kicker">Formulário principal</p>
                 <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Dados do lançamento</h2>
-                <p class="mt-2 text-sm pf-text-muted">Campos objetivos, validação próxima ao campo e organização pensada para desktop e mobile.</p>
+                <p class="mt-2 text-sm pf-text-muted">Campos objetivos com validação explícita por conta, categoria e tipo.</p>
             </div>
 
             <form method="post" class="space-y-6">
@@ -56,80 +50,76 @@
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
-                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Categoria</label>
-                        <p class="mt-1 text-sm pf-text-muted">Escolha uma categoria da sua conta.</p>
-                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm [&_select]:transition [&_select]:focus:border-slate-400 [&_select]:focus:outline-none [&_select]:focus:ring-4 [&_select]:focus:ring-slate-200/70 dark:[&_select]:border-slate-700 dark:[&_select]:bg-slate-950/60 dark:[&_select]:text-slate-100 dark:[&_select]:focus:border-slate-500 dark:[&_select]:focus:ring-slate-800">
-                            {{ form.category }}
+                        <label for="{{ form.account.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Conta</label>
+                        <p class="mt-1 text-sm pf-text-muted">Conta financeira associada ao lançamento.</p>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm">
+                            {{ form.account }}
                         </div>
-                        {% if form.category.errors %}
-                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.category.errors.0 }}</p>
-                        {% endif %}
+                        {% if form.account.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.account.errors.0 }}</p>{% endif %}
                     </div>
 
                     <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
-                        <label for="{{ form.kind.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Tipo</label>
-                        <p class="mt-1 text-sm pf-text-muted">Receita ou despesa, compatível com a categoria.</p>
-                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm [&_select]:transition [&_select]:focus:border-slate-400 [&_select]:focus:outline-none [&_select]:focus:ring-4 [&_select]:focus:ring-slate-200/70 dark:[&_select]:border-slate-700 dark:[&_select]:bg-slate-950/60 dark:[&_select]:text-slate-100 dark:[&_select]:focus:border-slate-500 dark:[&_select]:focus:ring-slate-800">
-                            {{ form.kind }}
+                        <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Categoria</label>
+                        <p class="mt-1 text-sm pf-text-muted">Categoria coerente com o tipo.</p>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm">
+                            {{ form.category }}
                         </div>
-                        {% if form.kind.errors %}
-                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.kind.errors.0 }}</p>
-                        {% endif %}
+                        {% if form.category.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.category.errors.0 }}</p>{% endif %}
                     </div>
                 </div>
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
-                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Valor</label>
-                        <p class="mt-1 text-sm pf-text-muted">Use um valor maior que zero.</p>
-                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-slate-400 [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
-                            {{ form.amount }}
+                        <label for="{{ form.kind.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Tipo</label>
+                        <div class="mt-3 [&_select]:w-full [&_select]:rounded-2xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-white [&_select]:px-4 [&_select]:py-3 [&_select]:text-sm [&_select]:text-slate-700 [&_select]:shadow-sm">
+                            {{ form.kind }}
                         </div>
-                        {% if form.amount.errors %}
-                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.amount.errors.0 }}</p>
-                        {% endif %}
+                        {% if form.kind.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.kind.errors.0 }}</p>{% endif %}
                     </div>
 
                     <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Valor</label>
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm">
+                            {{ form.amount }}
+                        </div>
+                        {% if form.amount.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.amount.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
                         <label for="{{ form.transaction_date.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Data</label>
-                        <p class="mt-1 text-sm pf-text-muted">A data alimenta filtros, ordem e resumos.</p>
-                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm">
                             {{ form.transaction_date }}
                         </div>
-                        {% if form.transaction_date.errors %}
-                            <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.transaction_date.errors.0 }}</p>
-                        {% endif %}
+                        {% if form.transaction_date.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.transaction_date.errors.0 }}</p>{% endif %}
+                    </div>
+
+                    <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
+                        <label for="{{ form.payee.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Favorecido</label>
+                        <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm">
+                            {{ form.payee }}
+                        </div>
+                        {% if form.payee.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.payee.errors.0 }}</p>{% endif %}
                     </div>
                 </div>
 
                 <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
                     <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Descrição</label>
-                    <p class="mt-1 text-sm pf-text-muted">Nome curto para localizar o lançamento depois.</p>
-                    <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm [&_input]:transition [&_input]:placeholder:text-slate-400 [&_input]:focus:border-slate-400 [&_input]:focus:outline-none [&_input]:focus:ring-4 [&_input]:focus:ring-slate-200/70 dark:[&_input]:border-slate-700 dark:[&_input]:bg-slate-950/60 dark:[&_input]:text-slate-100 dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus:border-slate-500 dark:[&_input]:focus:ring-slate-800">
-                        {{ form.description }}
-                    </div>
-                    {% if form.description.errors %}
-                        <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.description.errors.0 }}</p>
-                    {% endif %}
+                    <div class="mt-3 [&_input]:w-full [&_input]:rounded-2xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-white [&_input]:px-4 [&_input]:py-3 [&_input]:text-sm [&_input]:text-slate-700 [&_input]:shadow-sm">{{ form.description }}</div>
+                    {% if form.description.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.description.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="rounded-[1.4rem] border border-slate-200/80 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-950/35">
                     <label for="{{ form.notes.id_for_label }}" class="block text-sm font-semibold text-[color:var(--pf-text)]">Observação</label>
-                    <p class="mt-1 text-sm pf-text-muted">Contexto opcional para enriquecer a busca e a revisão futura.</p>
-                    <div class="mt-3 [&_textarea]:w-full [&_textarea]:rounded-2xl [&_textarea]:border [&_textarea]:border-slate-200 [&_textarea]:bg-white [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:text-sm [&_textarea]:text-slate-700 [&_textarea]:shadow-sm [&_textarea]:transition [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus:border-slate-400 [&_textarea]:focus:outline-none [&_textarea]:focus:ring-4 [&_textarea]:focus:ring-slate-200/70 dark:[&_textarea]:border-slate-700 dark:[&_textarea]:bg-slate-950/60 dark:[&_textarea]:text-slate-100 dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus:border-slate-500 dark:[&_textarea]:focus:ring-slate-800">
-                        {{ form.notes }}
-                    </div>
-                    {% if form.notes.errors %}
-                        <p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.notes.errors.0 }}</p>
-                    {% endif %}
+                    <div class="mt-3 [&_textarea]:w-full [&_textarea]:rounded-2xl [&_textarea]:border [&_textarea]:border-slate-200 [&_textarea]:bg-white [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:text-sm [&_textarea]:text-slate-700 [&_textarea]:shadow-sm">{{ form.notes }}</div>
+                    {% if form.notes.errors %}<p class="mt-2 text-sm font-medium text-[color:var(--pf-rose-strong)]">{{ form.notes.errors.0 }}</p>{% endif %}
                 </div>
 
                 <div class="flex flex-col gap-3 border-t border-[color:var(--pf-border)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-sm pf-text-muted">Ao salvar, o lançamento volta para a listagem e passa a compor os resumos e filtros do período.</p>
+                    <p class="text-sm pf-text-muted">Ao salvar, o lançamento fica pronto para filtros, exportação e deduplicação por ImportId ou chave composta.</p>
                     <div class="flex flex-wrap items-center gap-3">
-                        <button type="submit" data-e2e-selector="transactions-form-submit-click" class="pf-btn pf-btn-primary">
-                            Salvar
-                        </button>
+                        <button type="submit" data-e2e-selector="transactions-form-submit-click" class="pf-btn pf-btn-primary">Salvar</button>
                         <a href="{% url 'transactions_http:index' %}" data-e2e-selector="transactions-form-cancel-link-click" class="pf-btn pf-btn-ghost">Cancelar</a>
                     </div>
                 </div>
@@ -139,21 +129,21 @@
         <aside class="space-y-4 pf-reveal pf-reveal-delay-2">
             <article class="pf-card pf-card-section">
                 <p class="pf-kicker">Guia rápido</p>
-                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Preenchimento confortável</h2>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Campos com responsabilidade única</h2>
                 <div class="mt-4 space-y-3 text-sm pf-text-muted">
-                    <p>Categoria e tipo devem conversar entre si para evitar inconsistência na classificação.</p>
-                    <p>Descrição curta ajuda na leitura da listagem. Observação é melhor para detalhes longos.</p>
-                    <p>O valor e a data impactam ordenação, saldo e leitura do dashboard imediatamente após salvar.</p>
+                    <p>Conta identifica onde a movimentação ocorreu.</p>
+                    <p>Favorecido identifica pessoa/empresa e não depende mais da descrição.</p>
+                    <p>Descrição e observação permanecem para contexto livre e busca.</p>
                 </div>
             </article>
 
             <article class="pf-card pf-card-section">
-                <p class="pf-kicker">Próxima evolução</p>
-                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Importar e exportar</h2>
-                <p class="mt-3 text-sm pf-text-muted">A base visual já prepara a futura entrada de CSV e a exportação em Excel sem alterar o fluxo principal de cadastro.</p>
+                <p class="pf-kicker">Importação e exportação</p>
+                <h2 class="mt-1 text-xl font-semibold text-[color:var(--pf-text)]">Fluxos ativos</h2>
+                <p class="mt-3 text-sm pf-text-muted">Use CSV/XLSX com mapeamento e preview por linha, depois exporte o recorte atual com rastreabilidade por job.</p>
                 <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="pf-pill">CSV em breve</span>
-                    <span class="pf-pill">Excel em breve</span>
+                    <a href="{% url 'transactions_http:import_upload' %}" class="pf-btn pf-btn-secondary">Importar</a>
+                    <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-ghost">Voltar para filtros</a>
                 </div>
             </article>
         </aside>

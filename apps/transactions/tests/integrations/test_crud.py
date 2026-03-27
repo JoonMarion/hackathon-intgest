@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from apps.categories.models import Category
 from apps.core.tests.base import BaseIntegrationTestCase
-from apps.core.tests.factories import CategoryFactory, TransactionFactory, UserFactory
+from apps.core.tests.factories import CategoryFactory, FinancialAccountFactory, TransactionFactory, UserFactory
 from apps.transactions.models import Transaction
 
 
@@ -18,6 +18,8 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
         self.category = CategoryFactory(user=self.user, name="Alimentação", kind=Category.Kind.EXPENSE)
         self.income_category = CategoryFactory(user=self.user, name="Salário", kind=Category.Kind.INCOME)
         self.other_category = CategoryFactory(user=self.other_user, name="Outra", kind=Category.Kind.EXPENSE)
+        self.account = FinancialAccountFactory(user=self.user, name="Conta principal")
+        self.other_account = FinancialAccountFactory(user=self.other_user, name="Conta externa")
 
     def test_list_requires_authentication(self):
         url = reverse("transactions_http:index")
@@ -164,6 +166,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:create"),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "75.50",
                 "transaction_date": "2026-03-15",
@@ -194,6 +197,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:update", args=[own_transaction.pk]),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "80.00",
                 "transaction_date": "2026-03-20",
@@ -236,6 +240,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:update", args=[other_transaction.pk]),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "999.00",
                 "transaction_date": "2026-03-20",
@@ -271,6 +276,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:create"),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "0",
                 "transaction_date": "2026-03-25",
@@ -304,6 +310,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:update", args=[transaction.pk]),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "-5",
                 "transaction_date": "2026-03-20",
@@ -321,6 +328,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:create"),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "50.00",
                 "transaction_date": "2026-03-15",
@@ -346,6 +354,7 @@ class TransactionCRUDIntegrationTests(BaseIntegrationTestCase):
             reverse("transactions_http:update", args=[transaction.pk]),
             data={
                 "category": self.category.pk,
+                "account": self.account.pk,
                 "kind": Transaction.Kind.EXPENSE,
                 "amount": "50.00",
                 "transaction_date": "2026-03-10",

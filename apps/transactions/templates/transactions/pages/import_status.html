@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Status da importação - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-6">
+    <section class="pf-card pf-card-section">
+        <span class="pf-pill pf-pill-brand">Passo 4 de 4</span>
+        <h1 class="pf-heading pf-hero-title">Status do lote de importação</h1>
+        <p class="pf-hero-copy">Acompanhe os totais e o resultado de cada linha após o processamento em background.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+            {% if import_job.status == 'completed' %}<span class="pf-pill pf-pill-mint">Concluído</span>{% endif %}
+            {% if import_job.status == 'queued' %}<span class="pf-pill pf-pill-amber">Na fila</span>{% endif %}
+            {% if import_job.status == 'processing' %}<span class="pf-pill pf-pill-brand">Processando</span>{% endif %}
+            {% if import_job.status == 'failed' %}<span class="pf-pill pf-pill-rose">Falhou</span>{% endif %}
+        </div>
+    </section>
+
+    <section class="grid gap-4 md:grid-cols-3">
+        <article class="pf-card pf-card-section"><p class="pf-kicker">Importadas</p><p class="mt-2 text-3xl font-black text-[color:var(--pf-mint-strong)]">{{ import_job.imported_rows }}</p></article>
+        <article class="pf-card pf-card-section"><p class="pf-kicker">Puladas</p><p class="mt-2 text-3xl font-black text-[color:var(--pf-amber-strong)]">{{ import_job.skipped_rows }}</p></article>
+        <article class="pf-card pf-card-section"><p class="pf-kicker">Falhas</p><p class="mt-2 text-3xl font-black text-[color:var(--pf-rose-strong)]">{{ import_job.failed_rows }}</p></article>
+    </section>
+
+    {% if import_job.error_message %}
+        <section class="pf-card pf-card-section">
+            <p class="text-sm text-[color:var(--pf-rose-strong)]">{{ import_job.error_message }}</p>
+        </section>
+    {% endif %}
+
+    <section class="pf-card pf-card-section">
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{% url 'transactions_http:import_status' import_job.pk %}" class="pf-btn pf-btn-secondary">Atualizar status</a>
+            <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-primary">Voltar para lançamentos</a>
+            <a href="{% url 'transactions_http:import_upload' %}" class="pf-btn pf-btn-ghost">Nova importação</a>
+        </div>
+    </section>
+
+    <section class="pf-card pf-card-section">
+        <h2 class="text-lg font-semibold text-[color:var(--pf-text)]">Resultado por linha</h2>
+        <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="border-b border-[color:var(--pf-border)] text-left">
+                        <th class="px-2 py-2">Linha</th>
+                        <th class="px-2 py-2">Status</th>
+                        <th class="px-2 py-2">Motivo</th>
+                        <th class="px-2 py-2">Transação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr class="border-b border-[color:var(--pf-border)]/60">
+                            <td class="px-2 py-2">{{ row.row_number }}</td>
+                            <td class="px-2 py-2">
+                                {% if row.status == 'imported' %}<span class="pf-pill pf-pill-mint">Importada</span>{% endif %}
+                                {% if row.status == 'skipped' %}<span class="pf-pill pf-pill-amber">Pulada</span>{% endif %}
+                                {% if row.status == 'failed' %}<span class="pf-pill pf-pill-rose">Falha</span>{% endif %}
+                            </td>
+                            <td class="px-2 py-2">{{ row.message|default:'-' }}</td>
+                            <td class="px-2 py-2">
+                                {% if row.transaction %}
+                                    <a href="{% url 'transactions_http:update' row.transaction.pk %}" class="pf-btn pf-btn-ghost">Abrir transação</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="px-2 py-4 text-center pf-text-muted">Sem linhas processadas ainda.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock content %}

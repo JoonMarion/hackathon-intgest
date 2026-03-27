@@ -14,10 +14,10 @@
                         <span class="pf-pill pf-pill-amber">Recorte filtrado</span>
                     {% endif %}
                 </div>
-                <h1 class="pf-heading pf-hero-title">Movimente receitas e despesas com leitura rápida, filtros fortes e ações preparadas para a próxima evolução.</h1>
+                <h1 class="pf-heading pf-hero-title">Movimente receitas e despesas com leitura rápida, filtros fortes e importação/exportação prontas para uso.</h1>
                 <p class="pf-hero-copy">
                     Esta página concentra o trabalho diário da gestão financeira: aplicar recortes, conferir saldo líquido,
-                    revisar contexto da categoria e agir rápido em cada lançamento sem perder legibilidade no mobile.
+                    importar lotes de lançamentos e exportar o conjunto filtrado em CSV ou XLSX sem sair do fluxo principal.
                 </p>
                 <div class="mt-5 flex flex-wrap gap-2">
                     <span class="pf-pill pf-pill-mint">{{ filtered_summary.transaction_count }} lançamentos no recorte</span>
@@ -27,8 +27,29 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-start gap-3 lg:justify-end">
-                <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Importar CSV em breve</button>
-                <button type="button" class="pf-btn pf-btn-secondary" disabled aria-disabled="true">Exportar Excel em breve</button>
+                <a href="{% url 'transactions_http:import_upload' %}" class="pf-btn pf-btn-secondary">Importar CSV/XLSX</a>
+                <form method="post" action="{% url 'transactions_http:export_create' %}" class="inline-flex">
+                    {% csrf_token %}
+                    <input type="hidden" name="format" value="csv">
+                    <input type="hidden" name="q" value="{{ export_filter_payload.q }}">
+                    <input type="hidden" name="category" value="{{ export_filter_payload.category }}">
+                    <input type="hidden" name="kind" value="{{ export_filter_payload.kind }}">
+                    <input type="hidden" name="date_from" value="{{ export_filter_payload.date_from }}">
+                    <input type="hidden" name="date_to" value="{{ export_filter_payload.date_to }}">
+                    <input type="hidden" name="ordering" value="{{ export_filter_payload.ordering }}">
+                    <button type="submit" class="pf-btn pf-btn-secondary">Exportar CSV</button>
+                </form>
+                <form method="post" action="{% url 'transactions_http:export_create' %}" class="inline-flex">
+                    {% csrf_token %}
+                    <input type="hidden" name="format" value="xlsx">
+                    <input type="hidden" name="q" value="{{ export_filter_payload.q }}">
+                    <input type="hidden" name="category" value="{{ export_filter_payload.category }}">
+                    <input type="hidden" name="kind" value="{{ export_filter_payload.kind }}">
+                    <input type="hidden" name="date_from" value="{{ export_filter_payload.date_from }}">
+                    <input type="hidden" name="date_to" value="{{ export_filter_payload.date_to }}">
+                    <input type="hidden" name="ordering" value="{{ export_filter_payload.ordering }}">
+                    <button type="submit" class="pf-btn pf-btn-secondary">Exportar XLSX</button>
+                </form>
                 <a href="{% url 'transactions_http:create' %}" data-e2e-selector="transactions-index-create-link-click" class="pf-btn pf-btn-primary">
                     <span aria-hidden="true">+</span>
                     <span>Novo lançamento</span>
@@ -90,7 +111,7 @@
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
                             </svg>
-                            <input type="search" name="q" value="{{ current_filters.q }}" data-e2e-selector="transactions-index-search-input" placeholder="Buscar por descrição ou observação" class="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500 dark:focus:ring-slate-800">
+                            <input type="search" name="q" value="{{ current_filters.q }}" data-e2e-selector="transactions-index-search-input" placeholder="Buscar por favorecido, descrição, observação ou conta" class="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 shadow-sm transition focus:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-200/70 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500 dark:focus:ring-slate-800">
                         </span>
                     </label>
                 </div>
@@ -198,8 +219,8 @@
                 </div>
                 <div class="rounded-[1.4rem] border border-[color:var(--pf-border)] px-4 py-4">
                     <p class="pf-kicker">Próximos passos</p>
-                    <p class="mt-3 text-base font-semibold text-[color:var(--pf-text)]">Importação e exportação já reservadas</p>
-                    <p class="mt-2 text-sm pf-text-muted">Os botões futuros já aparecem no shell para facilitar a demo da evolução do produto.</p>
+                    <p class="mt-3 text-base font-semibold text-[color:var(--pf-text)]">Importação e exportação ativas</p>
+                    <p class="mt-2 text-sm pf-text-muted">Importe em lote com preview por linha e exporte o recorte atual em CSV ou XLSX.</p>
                 </div>
             </div>
         </aside>
@@ -226,8 +247,8 @@
                 <thead>
                     <tr class="text-left text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--pf-text-muted)]">
                         <th scope="col" class="px-4 py-2">Data</th>
-                        <th scope="col" class="px-4 py-2">Descrição</th>
-                        <th scope="col" class="px-4 py-2">Categoria</th>
+                        <th scope="col" class="px-4 py-2">Favorecido</th>
+                        <th scope="col" class="px-4 py-2">Conta / Categoria</th>
                         <th scope="col" class="px-4 py-2">Tipo</th>
                         <th scope="col" class="px-4 py-2 text-right">Valor</th>
                         <th scope="col" class="px-4 py-2 text-right">Ações</th>
@@ -240,13 +261,17 @@
                                 {{ transaction.transaction_date|date:"d/m/Y" }}
                             </td>
                             <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
-                                <p class="text-base font-semibold text-[color:var(--pf-text)]">{{ transaction.description|default:"Sem descrição" }}</p>
+                                <p class="text-base font-semibold text-[color:var(--pf-text)]">{{ transaction.payee|default:"Sem favorecido" }}</p>
+                                {% if transaction.description %}
+                                    <p class="mt-1 text-sm pf-text-muted">{{ transaction.description }}</p>
+                                {% endif %}
                                 {% if transaction.notes %}
                                     <p class="mt-1 text-sm pf-text-muted">{{ transaction.notes|truncatechars:110 }}</p>
                                 {% endif %}
                             </td>
                             <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
-                                <p class="font-medium text-[color:var(--pf-text)]">{{ transaction.category.name }}</p>
+                                <p class="font-medium text-[color:var(--pf-text)]">{{ transaction.account.name }}</p>
+                                <p class="mt-1 text-sm pf-text-muted">{{ transaction.category.name }}</p>
                             </td>
                             <td class="border-y border-[color:var(--pf-border)] bg-white/80 px-4 py-4 shadow-sm dark:bg-slate-950/35">
                                 {% if transaction.kind == 'income' %}

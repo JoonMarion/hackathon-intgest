@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Status da exportação - Personal Financie{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-5xl space-y-6">
+    <section class="pf-card pf-card-section">
+        <span class="pf-pill pf-pill-brand">Exportação</span>
+        <h1 class="pf-heading pf-hero-title">Status do job de exportação</h1>
+        <p class="pf-hero-copy">Formato: {{ export_job.export_format|upper }}. Linhas geradas: {{ export_job.row_count }}.</p>
+        <div class="mt-4 flex flex-wrap gap-2">
+            {% if export_job.status == 'completed' %}<span class="pf-pill pf-pill-mint">Concluído</span>{% endif %}
+            {% if export_job.status == 'queued' %}<span class="pf-pill pf-pill-amber">Na fila</span>{% endif %}
+            {% if export_job.status == 'processing' %}<span class="pf-pill pf-pill-brand">Processando</span>{% endif %}
+            {% if export_job.status == 'failed' %}<span class="pf-pill pf-pill-rose">Falhou</span>{% endif %}
+        </div>
+    </section>
+
+    {% if export_job.error_message %}
+        <section class="pf-card pf-card-section">
+            <p class="text-sm text-[color:var(--pf-rose-strong)]">{{ export_job.error_message }}</p>
+        </section>
+    {% endif %}
+
+    <section class="pf-card pf-card-section">
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{% url 'transactions_http:export_status' export_job.pk %}" class="pf-btn pf-btn-secondary">Atualizar</a>
+            {% if export_job.status == 'completed' %}
+                <a href="{% url 'transactions_http:export_download' export_job.pk %}" class="pf-btn pf-btn-primary">Baixar arquivo</a>
+            {% endif %}
+            <a href="{% url 'transactions_http:index' %}" class="pf-btn pf-btn-ghost">Voltar para lançamentos</a>
+        </div>
+    </section>
+</div>
+{% endblock content %}
