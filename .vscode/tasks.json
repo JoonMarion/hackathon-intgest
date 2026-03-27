@@ -29,11 +29,11 @@
       "group": "build"
     },
     {
-      "label": "Django: Migrate",
+      "label": "Django: Migrate (Plan)",
       "type": "shell",
       "command": "uv",
-      "args": ["run", "manage.py", "migrate"],
-      "group": "build"
+      "args": ["run", "manage.py", "migrate", "--plan"],
+      "group": "test"
     },
   ],
   "inputs": [

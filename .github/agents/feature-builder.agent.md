@@ -54,7 +54,7 @@ Do not advance a phase unless each required check appears in `checks_run` with p
 When VS Code tasks are available, prefer task-based execution for Django command checks:
 - `Django: Check`
 - `Django: Makemigrations (Check)`
-- `Django: Migrate`
+- `Django: Migrate (Plan)`
 
 Tests are intentionally executed via `execute/runTests`; if temporarily unavailable, run `execute/runTask` task `sleep` and retry `execute/runTests`.
 
