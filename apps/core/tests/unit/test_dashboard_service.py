@@ -140,6 +140,146 @@ class DashboardServiceHighlightsTests(BaseIntegrationTestCase):
         self.assertIsNone(highlights.savings_rate)
 
 
+class DashboardServiceComparisonTests(BaseIntegrationTestCase):
+    def setUp(self):
+        self.user = UserFactory(username='comparison-user', email='comparison-user@example.com')
+        self.income_cat = CategoryFactory(user=self.user, kind=Category.Kind.INCOME, name='Salário')
+        self.home_cat = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE, name='Moradia')
+        self.food_cat = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE, name='Alimentação')
+        self.date_range = DateRange(date_from=date(2026, 3, 11), date_to=date(2026, 3, 20))
+
+    def test_get_period_comparison_computes_delta_absolute_and_percent(self):
+        TransactionFactory(
+            user=self.user,
+            category=self.income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='1000.00',
+            transaction_date=date(2026, 3, 12),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.home_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='400.00',
+            transaction_date=date(2026, 3, 12),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.food_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='100.00',
+            transaction_date=date(2026, 3, 14),
+        )
+
+        TransactionFactory(
+            user=self.user,
+            category=self.income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='800.00',
+            transaction_date=date(2026, 3, 2),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.home_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='300.00',
+            transaction_date=date(2026, 3, 3),
+        )
+
+        service = DashboardService(user=self.user, date_range=self.date_range)
+        comparison = service.get_period_comparison()
+
+        self.assertEqual(comparison.income.current, Decimal('1000.00'))
+        self.assertEqual(comparison.income.previous, Decimal('800.00'))
+        self.assertEqual(comparison.income.delta_absolute, Decimal('200.00'))
+        self.assertEqual(comparison.income.delta_percent, Decimal('25.0'))
+
+        self.assertEqual(comparison.expense.current, Decimal('500.00'))
+        self.assertEqual(comparison.expense.previous, Decimal('300.00'))
+        self.assertEqual(comparison.expense.delta_absolute, Decimal('200.00'))
+        self.assertEqual(comparison.expense.delta_percent, Decimal('66.7'))
+
+        self.assertEqual(comparison.balance.current, Decimal('500.00'))
+        self.assertEqual(comparison.balance.previous, Decimal('500.00'))
+        self.assertEqual(comparison.balance.delta_absolute, Decimal('0.00'))
+        self.assertEqual(comparison.balance.delta_percent, Decimal('0.0'))
+
+    def test_get_period_comparison_handles_previous_zero(self):
+        TransactionFactory(
+            user=self.user,
+            category=self.income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='900.00',
+            transaction_date=date(2026, 3, 12),
+        )
+
+        service = DashboardService(user=self.user, date_range=self.date_range)
+        comparison = service.get_period_comparison()
+
+        self.assertEqual(comparison.income.delta_absolute, Decimal('900.00'))
+        self.assertIsNone(comparison.income.delta_percent)
+
+
+class DashboardServiceAdvancedInsightsTests(BaseIntegrationTestCase):
+    def setUp(self):
+        self.user = UserFactory(username='advanced-user', email='advanced-user@example.com')
+        self.income_cat = CategoryFactory(user=self.user, kind=Category.Kind.INCOME, name='Salário')
+        self.home_cat = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE, name='Moradia')
+        self.food_cat = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE, name='Alimentação')
+        self.date_range = DateRange(date_from=date(2026, 3, 11), date_to=date(2026, 3, 20))
+
+    def test_get_advanced_insights_returns_burn_runway_and_concentration(self):
+        TransactionFactory(
+            user=self.user,
+            category=self.income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='1000.00',
+            transaction_date=date(2026, 3, 12),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.home_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='400.00',
+            transaction_date=date(2026, 3, 12),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=self.food_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='100.00',
+            transaction_date=date(2026, 3, 14),
+        )
+
+        service = DashboardService(user=self.user, date_range=self.date_range)
+        summary = service.get_summary()
+        comparison = service.get_period_comparison()
+        advanced = service.get_advanced_insights(summary=summary, comparison=comparison)
+
+        self.assertEqual(advanced.burn_rate_daily, Decimal('50.00'))
+        self.assertEqual(advanced.runway_days, Decimal('10.0'))
+        self.assertEqual(advanced.top_expense_category, 'Moradia')
+        self.assertEqual(advanced.top_expense_share_percent, Decimal('80.0'))
+        self.assertIn('cobre aproximadamente', advanced.period_insight)
+
+    def test_get_advanced_insights_with_no_expense(self):
+        TransactionFactory(
+            user=self.user,
+            category=self.income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='700.00',
+            transaction_date=date(2026, 3, 12),
+        )
+
+        service = DashboardService(user=self.user, date_range=self.date_range)
+        advanced = service.get_advanced_insights(summary=service.get_summary())
+
+        self.assertEqual(advanced.burn_rate_daily, Decimal('0.00'))
+        self.assertIsNone(advanced.runway_days)
+        self.assertIsNone(advanced.top_expense_category)
+        self.assertIsNone(advanced.top_expense_share_percent)
+
+
 class DashboardServiceChartTests(BaseIntegrationTestCase):
     def setUp(self):
         self.user = UserFactory(username='chart-user', email='chart-user@example.com')
@@ -288,6 +428,8 @@ class DashboardServiceOrchestratorTests(BaseIntegrationTestCase):
         data = service.get_dashboard_data()
         self.assertIsNotNone(data.summary)
         self.assertIsNotNone(data.highlights)
+        self.assertIsNotNone(data.comparison)
+        self.assertIsNotNone(data.advanced_insights)
         self.assertIsNotNone(data.chart)
         self.assertIsNotNone(data.expense_breakdown)
         self.assertIsNotNone(data.income_breakdown)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.db.models import Avg, Count, Sum
@@ -52,6 +52,32 @@ class DashboardHighlights:
 
 
 @dataclass(frozen=True)
+class MetricDelta:
+    current: Decimal
+    previous: Decimal
+    delta_absolute: Decimal
+    delta_percent: Decimal | None
+
+
+@dataclass(frozen=True)
+class DashboardComparison:
+    current_period_label: str
+    previous_period_label: str
+    income: MetricDelta
+    expense: MetricDelta
+    balance: MetricDelta
+
+
+@dataclass(frozen=True)
+class DashboardAdvancedInsights:
+    burn_rate_daily: Decimal
+    runway_days: Decimal | None
+    top_expense_category: str | None
+    top_expense_share_percent: Decimal | None
+    period_insight: str
+
+
+@dataclass(frozen=True)
 class ChartData:
     labels: list[str]
     income: list[float]
@@ -76,6 +102,8 @@ class TopExpense:
 class DashboardData:
     summary: DashboardSummary
     highlights: DashboardHighlights
+    comparison: DashboardComparison
+    advanced_insights: DashboardAdvancedInsights
     chart: ChartData
     expense_breakdown: CategoryBreakdown
     income_breakdown: CategoryBreakdown
@@ -95,6 +123,13 @@ class DashboardService:
         if self._date_range.date_to:
             qs = qs.filter(transaction_date__lte=self._date_range.date_to)
         return qs
+
+    def _queryset_for_window(self, start: date, end: date):
+        return Transaction.objects.filter(
+            user=self._user,
+            transaction_date__gte=start,
+            transaction_date__lte=end,
+        )
 
     def get_summary(self) -> DashboardSummary:
         qs = self._base_queryset()
@@ -154,6 +189,181 @@ class DashboardService:
             savings_rate=savings_rate,
             biggest_expense_label=biggest_expense_label,
             biggest_expense_amount=biggest_expense_amount,
+        )
+
+    def _resolve_comparison_window(self) -> tuple[date, date]:
+        today = date.today()
+        date_from = self._date_range.date_from
+        date_to = self._date_range.date_to
+
+        if date_from and date_to and date_to < date_from:
+            date_from, date_to = date_to, date_from
+
+        if date_from and date_to:
+            return date_from, date_to
+        if date_from:
+            return date_from, today
+        if date_to:
+            return date_to - timedelta(days=29), date_to
+        return today - timedelta(days=29), today
+
+    def _build_previous_window(self, start: date, end: date) -> tuple[date, date]:
+        period_days = (end - start).days + 1
+        previous_end = start - timedelta(days=1)
+        previous_start = previous_end - timedelta(days=period_days - 1)
+        return previous_start, previous_end
+
+    def _aggregate_window_totals(self, start: date, end: date) -> DashboardSummary:
+        window_qs = self._queryset_for_window(start, end)
+        totals_by_kind = {
+            row['kind']: row['total']
+            for row in window_qs.values('kind').annotate(total=Sum('amount'))
+        }
+        income_total = totals_by_kind.get('income', Decimal('0'))
+        expense_total = totals_by_kind.get('expense', Decimal('0'))
+        return DashboardSummary(
+            total_income=income_total,
+            total_expense=expense_total,
+            balance=income_total - expense_total,
+        )
+
+    def _metric_delta(self, current: Decimal, previous: Decimal) -> MetricDelta:
+        delta_absolute = (current - previous).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        delta_percent = None
+        if previous != 0:
+            delta_percent = ((delta_absolute / previous) * Decimal('100')).quantize(
+                Decimal('0.1'),
+                rounding=ROUND_HALF_UP,
+            )
+        return MetricDelta(
+            current=current.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            previous=previous.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            delta_absolute=delta_absolute,
+            delta_percent=delta_percent,
+        )
+
+    def _format_period_label(self, start: date, end: date) -> str:
+        return f'{start:%d/%m/%Y} - {end:%d/%m/%Y}'
+
+    def get_period_comparison(self) -> DashboardComparison:
+        current_start, current_end = self._resolve_comparison_window()
+        previous_start, previous_end = self._build_previous_window(current_start, current_end)
+
+        current_summary = self._aggregate_window_totals(current_start, current_end)
+        previous_summary = self._aggregate_window_totals(previous_start, previous_end)
+
+        return DashboardComparison(
+            current_period_label=self._format_period_label(current_start, current_end),
+            previous_period_label=self._format_period_label(previous_start, previous_end),
+            income=self._metric_delta(current_summary.total_income, previous_summary.total_income),
+            expense=self._metric_delta(current_summary.total_expense, previous_summary.total_expense),
+            balance=self._metric_delta(current_summary.balance, previous_summary.balance),
+        )
+
+    def _build_period_insight(
+        self,
+        *,
+        summary: DashboardSummary,
+        comparison: DashboardComparison,
+        burn_rate_daily: Decimal,
+        runway_days: Decimal | None,
+        top_expense_category: str | None,
+        top_expense_share_percent: Decimal | None,
+    ) -> str:
+        if summary.total_income == 0 and summary.total_expense == 0:
+            return 'Sem movimentacoes no periodo. Registre receitas ou despesas para gerar insights.'
+
+        if runway_days is not None and runway_days < Decimal('30'):
+            return (
+                'Atencao: no ritmo atual de despesas, o saldo cobre '
+                f'aproximadamente {runway_days} dias.'
+            )
+
+        if (
+            top_expense_category
+            and top_expense_share_percent is not None
+            and top_expense_share_percent >= Decimal('50')
+        ):
+            return (
+                f'A categoria {top_expense_category} concentra '
+                f'{top_expense_share_percent}% das despesas do recorte.'
+            )
+
+        if comparison.balance.delta_absolute > 0:
+            return (
+                'Saldo em melhora versus periodo anterior '
+                f'e burn rate medio de R$ {burn_rate_daily} por dia.'
+            )
+        if comparison.balance.delta_absolute < 0:
+            return (
+                'Saldo abaixo do periodo anterior; '
+                f'burn rate medio em R$ {burn_rate_daily} por dia pede atencao.'
+            )
+
+        return f'Periodo estavel, com burn rate medio de R$ {burn_rate_daily} por dia.'
+
+    def get_advanced_insights(
+        self,
+        *,
+        summary: DashboardSummary | None = None,
+        comparison: DashboardComparison | None = None,
+    ) -> DashboardAdvancedInsights:
+        summary = summary or self.get_summary()
+        comparison = comparison or self.get_period_comparison()
+
+        current_start, current_end = self._resolve_comparison_window()
+        period_days = max((current_end - current_start).days + 1, 1)
+
+        window_expense_total = (
+            self._queryset_for_window(current_start, current_end)
+            .filter(kind='expense')
+            .aggregate(total=Sum('amount'))['total']
+            or Decimal('0')
+        )
+        burn_rate_daily = (window_expense_total / Decimal(period_days)).quantize(
+            Decimal('0.01'),
+            rounding=ROUND_HALF_UP,
+        )
+
+        runway_days = None
+        if burn_rate_daily > 0 and summary.balance > 0:
+            runway_days = (summary.balance / burn_rate_daily).quantize(
+                Decimal('0.1'),
+                rounding=ROUND_HALF_UP,
+            )
+
+        top_expense_category = None
+        top_expense_share_percent = None
+        if summary.total_expense > 0:
+            top_expense = (
+                self._base_queryset()
+                .filter(kind='expense')
+                .values('category__name')
+                .annotate(total=Sum('amount'))
+                .order_by('-total')
+                .first()
+            )
+            if top_expense is not None:
+                top_expense_category = top_expense['category__name']
+                top_expense_share_percent = (
+                    (top_expense['total'] / summary.total_expense) * Decimal('100')
+                ).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)
+
+        period_insight = self._build_period_insight(
+            summary=summary,
+            comparison=comparison,
+            burn_rate_daily=burn_rate_daily,
+            runway_days=runway_days,
+            top_expense_category=top_expense_category,
+            top_expense_share_percent=top_expense_share_percent,
+        )
+
+        return DashboardAdvancedInsights(
+            burn_rate_daily=burn_rate_daily,
+            runway_days=runway_days,
+            top_expense_category=top_expense_category,
+            top_expense_share_percent=top_expense_share_percent,
+            period_insight=period_insight,
         )
 
     def _get_chart_range(self) -> tuple[date, date]:
@@ -236,7 +446,7 @@ class DashboardService:
         )
         return [
             TopExpense(
-                description=t.description or 'Sem descrição',
+                description=t.description or 'Sem descricao',
                 amount=float(t.amount),
                 category_name=t.category.name,
                 date=t.transaction_date.isoformat(),
@@ -246,9 +456,12 @@ class DashboardService:
 
     def get_dashboard_data(self) -> DashboardData:
         summary = self.get_summary()
+        comparison = self.get_period_comparison()
         return DashboardData(
             summary=summary,
             highlights=self.get_highlights(summary=summary),
+            comparison=comparison,
+            advanced_insights=self.get_advanced_insights(summary=summary, comparison=comparison),
             chart=self.get_chart_data(),
             expense_breakdown=self.get_category_breakdown('expense'),
             income_breakdown=self.get_category_breakdown('income'),

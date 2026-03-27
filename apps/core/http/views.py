@@ -39,10 +39,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         service = DashboardService(user=self.request.user, date_range=date_range)
         data = service.get_dashboard_data()
 
+        current_filters = {
+            'date_from': date_from.isoformat() if date_from else '',
+            'date_to': date_to.isoformat() if date_to else '',
+        }
+
         context['total_income'] = data.summary.total_income
         context['total_expense'] = data.summary.total_expense
         context['balance'] = data.summary.balance
         context['dashboard_highlights'] = data.highlights
+        context['dashboard_comparison'] = data.comparison
+        context['dashboard_advanced'] = data.advanced_insights
         context['chart_labels'] = json.dumps(data.chart.labels)
         context['chart_income'] = json.dumps(data.chart.income)
         context['chart_expense'] = json.dumps(data.chart.expense)
@@ -51,12 +58,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['income_categories_labels'] = json.dumps(data.income_breakdown.labels)
         context['income_categories_data'] = json.dumps(data.income_breakdown.data)
         context['recent_transactions'] = data.recent_transactions
-        context['current_filters'] = {
-            'date_from': date_from.isoformat() if date_from else '',
-            'date_to': date_to.isoformat() if date_to else '',
-        }
+        context['current_filters'] = current_filters
         context['has_active_filters'] = bool(date_from or date_to)
         context['selected_period_label'] = self._build_period_label(date_from, date_to)
         context['top_expenses'] = json.dumps([asdict(expense) for expense in data.top_expenses])
+        context['export_filter_payload'] = {
+            'q': '',
+            'category': '',
+            'kind': '',
+            'date_from': current_filters['date_from'],
+            'date_to': current_filters['date_to'],
+            'ordering': '-transaction_date,-created_at',
+        }
 
         return context

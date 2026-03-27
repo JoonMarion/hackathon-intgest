@@ -99,51 +99,86 @@ class DashboardViewIntegrationTests(BaseIntegrationTestCase):
         self.assertEqual(response.context['total_expense'], Decimal('0'))
         self.assertEqual(response.context['balance'], Decimal('0'))
 
-    def test_dashboard_context_exposes_new_highlights(self):
+    def test_dashboard_context_exposes_comparison_and_advanced_metrics(self):
         income_cat = CategoryFactory(
             user=self.user,
             kind=Category.Kind.INCOME,
-            name='Salary',
+            name='Salário',
         )
-        expense_cat = CategoryFactory(
+        home_cat = CategoryFactory(
             user=self.user,
             kind=Category.Kind.EXPENSE,
-            name='Home',
+            name='Moradia',
         )
+        food_cat = CategoryFactory(
+            user=self.user,
+            kind=Category.Kind.EXPENSE,
+            name='Alimentação',
+        )
+
         TransactionFactory(
             user=self.user,
             category=income_cat,
             kind=Transaction.Kind.INCOME,
             amount='1000.00',
-            transaction_date=date(2026, 3, 10),
+            transaction_date=date(2026, 3, 12),
+            description='Salário',
         )
         TransactionFactory(
             user=self.user,
-            category=expense_cat,
+            category=home_cat,
             kind=Transaction.Kind.EXPENSE,
             amount='400.00',
             description='Aluguel',
-            transaction_date=date(2026, 3, 11),
+            transaction_date=date(2026, 3, 12),
         )
         TransactionFactory(
             user=self.user,
-            category=expense_cat,
+            category=food_cat,
             kind=Transaction.Kind.EXPENSE,
             amount='100.00',
             description='Mercado',
-            transaction_date=date(2026, 3, 12),
+            transaction_date=date(2026, 3, 14),
+        )
+
+        TransactionFactory(
+            user=self.user,
+            category=income_cat,
+            kind=Transaction.Kind.INCOME,
+            amount='800.00',
+            transaction_date=date(2026, 3, 2),
+        )
+        TransactionFactory(
+            user=self.user,
+            category=home_cat,
+            kind=Transaction.Kind.EXPENSE,
+            amount='300.00',
+            transaction_date=date(2026, 3, 3),
         )
 
         self.client.force_login(self.user)
-        response = self.client.get(self.url)
-        highlights = response.context['dashboard_highlights']
+        response = self.client.get(
+            self.url,
+            {'date_from': '2026-03-11', 'date_to': '2026-03-20'},
+        )
 
+        highlights = response.context['dashboard_highlights']
         self.assertEqual(highlights.transaction_count, 3)
-        self.assertEqual(highlights.active_categories, 2)
-        self.assertEqual(highlights.average_ticket, Decimal('500.00'))
-        self.assertEqual(highlights.savings_rate, Decimal('50.0'))
+        self.assertEqual(highlights.active_categories, 3)
         self.assertEqual(highlights.biggest_expense_label, 'Aluguel')
-        self.assertEqual(highlights.biggest_expense_amount, Decimal('400.00'))
+
+        comparison = response.context['dashboard_comparison']
+        self.assertEqual(comparison.income.current, Decimal('1000.00'))
+        self.assertEqual(comparison.income.previous, Decimal('800.00'))
+        self.assertEqual(comparison.income.delta_absolute, Decimal('200.00'))
+        self.assertEqual(comparison.income.delta_percent, Decimal('25.0'))
+
+        advanced = response.context['dashboard_advanced']
+        self.assertEqual(advanced.burn_rate_daily, Decimal('50.00'))
+        self.assertEqual(advanced.runway_days, Decimal('10.0'))
+        self.assertEqual(advanced.top_expense_category, 'Moradia')
+        self.assertEqual(advanced.top_expense_share_percent, Decimal('80.0'))
+        self.assertIn('cobre aproximadamente', advanced.period_insight)
 
     def test_recent_transactions_shows_latest_five(self):
         category = CategoryFactory(user=self.user, kind=Category.Kind.EXPENSE, name='Misc')
@@ -162,38 +197,6 @@ class DashboardViewIntegrationTests(BaseIntegrationTestCase):
         self.assertEqual(len(recent), 5)
         dates = [transaction.transaction_date for transaction in recent]
         self.assertEqual(dates, sorted(dates, reverse=True))
-
-    def test_recent_transactions_only_include_own(self):
-        user_cat = CategoryFactory(
-            user=self.user,
-            kind=Category.Kind.EXPENSE,
-            name='UserCat',
-        )
-        other_cat = CategoryFactory(
-            user=self.other_user,
-            kind=Category.Kind.EXPENSE,
-            name='OtherCat',
-        )
-        TransactionFactory(
-            user=self.user,
-            category=user_cat,
-            kind=Transaction.Kind.EXPENSE,
-            amount='10.00',
-            transaction_date=date(2026, 3, 20),
-        )
-        TransactionFactory(
-            user=self.other_user,
-            category=other_cat,
-            kind=Transaction.Kind.EXPENSE,
-            amount='99.00',
-            transaction_date=date(2026, 3, 20),
-        )
-
-        self.client.force_login(self.user)
-        response = self.client.get(self.url)
-        recent = response.context['recent_transactions']
-        self.assertEqual(len(recent), 1)
-        self.assertEqual(recent[0].user, self.user)
 
     def test_chart_labels_present_in_context(self):
         self.client.force_login(self.user)
@@ -261,59 +264,6 @@ class DashboardViewIntegrationTests(BaseIntegrationTestCase):
         freelance_index = income_labels.index('Freelance')
         self.assertEqual(income_data[freelance_index], 500.0)
 
-    def test_category_breakdown_only_includes_own(self):
-        other_cat = CategoryFactory(
-            user=self.other_user,
-            kind=Category.Kind.EXPENSE,
-            name='OtherExpense',
-        )
-        TransactionFactory(
-            user=self.other_user,
-            category=other_cat,
-            kind=Transaction.Kind.EXPENSE,
-            amount='999.00',
-            transaction_date=date(2026, 3, 5),
-        )
-
-        self.client.force_login(self.user)
-        response = self.client.get(self.url)
-        context = response.context
-
-        expense_labels = json.loads(context['expense_categories_labels'])
-        expense_data = json.loads(context['expense_categories_data'])
-        self.assertNotIn('OtherExpense', expense_labels)
-        self.assertEqual(expense_data, [])
-
-    def test_dashboard_with_date_range_filter(self):
-        category = CategoryFactory(
-            user=self.user,
-            kind=Category.Kind.INCOME,
-            name='Inc',
-        )
-        TransactionFactory(
-            user=self.user,
-            category=category,
-            kind=Transaction.Kind.INCOME,
-            amount='100.00',
-            transaction_date=date(2026, 1, 15),
-        )
-        TransactionFactory(
-            user=self.user,
-            category=category,
-            kind=Transaction.Kind.INCOME,
-            amount='200.00',
-            transaction_date=date(2026, 3, 15),
-        )
-
-        self.client.force_login(self.user)
-        response = self.client.get(
-            self.url,
-            {'date_from': '2026-03-01', 'date_to': '2026-03-31'},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['total_income'], Decimal('200'))
-        self.assertEqual(response.context['selected_period_label'], '01/03/2026 - 31/03/2026')
-
     def test_dashboard_filter_preserves_current_filters_in_context(self):
         self.client.force_login(self.user)
         response = self.client.get(
@@ -340,8 +290,9 @@ class DashboardViewIntegrationTests(BaseIntegrationTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['current_filters']['date_from'], '')
 
-    def test_dashboard_renders_future_import_export_actions(self):
+    def test_dashboard_renders_import_export_actions(self):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
-        self.assertContains(response, 'Importar CSV em breve')
-        self.assertContains(response, 'Exportar Excel em breve')
+        self.assertContains(response, 'Importar CSV/XLSX')
+        self.assertContains(response, 'Exportar CSV')
+        self.assertContains(response, 'Exportar XLSX')

@@ -14,8 +14,8 @@
                 </div>
                 <h1 class="pf-heading pf-hero-title">Dashboard com profundidade visual e leitura rápida do seu caixa.</h1>
                 <p class="pf-hero-copy">
-                    Acompanhe receitas, despesas e o ritmo das categorias em uma interface mais sólida para demo local,
-                    com cartões de contexto, gráficos ajustáveis e ações reais de importação/exportação no mesmo fluxo.
+                    Acompanhe receitas, despesas e ritmo de consumo com comparação de períodos,
+                    indicadores de fôlego e ações de importação/exportação no mesmo fluxo da demo.
                 </p>
                 <div class="mt-5 flex flex-wrap gap-2">
                     <span class="pf-pill pf-pill-mint">{{ dashboard_highlights.transaction_count }} transações</span>
@@ -30,23 +30,23 @@
                     <form method="post" action="{% url 'transactions_http:export_create' %}" class="inline-flex">
                         {% csrf_token %}
                         <input type="hidden" name="format" value="csv">
-                        <input type="hidden" name="date_from" value="{{ current_filters.date_from }}">
-                        <input type="hidden" name="date_to" value="{{ current_filters.date_to }}">
-                        <input type="hidden" name="q" value="">
-                        <input type="hidden" name="category" value="">
-                        <input type="hidden" name="kind" value="">
-                        <input type="hidden" name="ordering" value="-transaction_date,-created_at">
+                        <input type="hidden" name="q" value="{{ export_filter_payload.q }}">
+                        <input type="hidden" name="category" value="{{ export_filter_payload.category }}">
+                        <input type="hidden" name="kind" value="{{ export_filter_payload.kind }}">
+                        <input type="hidden" name="date_from" value="{{ export_filter_payload.date_from }}">
+                        <input type="hidden" name="date_to" value="{{ export_filter_payload.date_to }}">
+                        <input type="hidden" name="ordering" value="{{ export_filter_payload.ordering }}">
                         <button type="submit" class="pf-btn pf-btn-secondary">Exportar CSV</button>
                     </form>
                     <form method="post" action="{% url 'transactions_http:export_create' %}" class="inline-flex">
                         {% csrf_token %}
                         <input type="hidden" name="format" value="xlsx">
-                        <input type="hidden" name="date_from" value="{{ current_filters.date_from }}">
-                        <input type="hidden" name="date_to" value="{{ current_filters.date_to }}">
-                        <input type="hidden" name="q" value="">
-                        <input type="hidden" name="category" value="">
-                        <input type="hidden" name="kind" value="">
-                        <input type="hidden" name="ordering" value="-transaction_date,-created_at">
+                        <input type="hidden" name="q" value="{{ export_filter_payload.q }}">
+                        <input type="hidden" name="category" value="{{ export_filter_payload.category }}">
+                        <input type="hidden" name="kind" value="{{ export_filter_payload.kind }}">
+                        <input type="hidden" name="date_from" value="{{ export_filter_payload.date_from }}">
+                        <input type="hidden" name="date_to" value="{{ export_filter_payload.date_to }}">
+                        <input type="hidden" name="ordering" value="{{ export_filter_payload.ordering }}">
                         <button type="submit" class="pf-btn pf-btn-secondary">Exportar XLSX</button>
                     </form>
                     <button id="chart-settings-btn" type="button" class="pf-icon-button" aria-label="Configurar gráficos" aria-controls="chart-settings-popup" aria-expanded="false">
@@ -63,7 +63,7 @@
                             <p class="pf-kicker">Configurações</p>
                             <h2 id="chart-settings-title" class="mt-1 text-base font-semibold text-[color:var(--pf-text)]">Escolha os blocos visíveis</h2>
                         </div>
-                            <button id="chart-settings-close" type="button" class="pf-icon-button !h-9 !w-9" aria-label="Fechar configurações de gráficos">
+                        <button id="chart-settings-close" type="button" class="pf-icon-button !h-9 !w-9" aria-label="Fechar configurações de gráficos">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -144,14 +144,14 @@
             <div class="pf-card-section">
                 <p class="pf-kicker">Receitas</p>
                 <p class="pf-metric-value is-positive">R$ {{ total_income|floatformat:2 }}</p>
-                <p class="pf-metric-footnote">Base principal para medir fôlego e taxa de poupança.</p>
+                <p class="pf-metric-footnote">Base para comparar evolução e capacidade de fôlego.</p>
             </div>
         </article>
         <article class="pf-card pf-metric-card pf-metric-card--rose pf-reveal pf-reveal-delay-4">
             <div class="pf-card-section">
                 <p class="pf-kicker">Despesas</p>
                 <p class="pf-metric-value is-negative">R$ {{ total_expense|floatformat:2 }}</p>
-                <p class="pf-metric-footnote">Compare visualmente com as receitas nas visões mensal e acumulada.</p>
+                <p class="pf-metric-footnote">Use com burn rate e concentração para ajustar o ritmo.</p>
             </div>
         </article>
         <article class="pf-card pf-metric-card pf-metric-card--amber pf-reveal pf-reveal-delay-5">
@@ -164,8 +164,92 @@
                         --
                     {% endif %}
                 </p>
-                <p class="pf-metric-footnote">Saldo dividido pela receita do período. Sem base quando não houver entradas.</p>
+                <p class="pf-metric-footnote">Saldo dividido pela receita do período.</p>
             </div>
+        </article>
+    </section>
+
+    <section class="grid gap-4 lg:grid-cols-3">
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <p class="pf-kicker">Receita: atual x anterior</p>
+            <p class="mt-2 text-sm pf-text-muted">{{ dashboard_comparison.current_period_label }}</p>
+            <p class="mt-2 text-2xl font-black text-[color:var(--pf-text)]">R$ {{ dashboard_comparison.income.current|floatformat:2 }}</p>
+            <p class="mt-1 text-sm font-semibold {% if dashboard_comparison.income.delta_absolute >= 0 %}text-[color:var(--pf-mint-strong)]{% else %}text-[color:var(--pf-rose-strong)]{% endif %}">
+                {% if dashboard_comparison.income.delta_absolute > 0 %}+{% endif %}R$ {{ dashboard_comparison.income.delta_absolute|floatformat:2 }}
+                {% if dashboard_comparison.income.delta_percent != None %}
+                    ({{ dashboard_comparison.income.delta_percent|floatformat:1 }}%)
+                {% else %}
+                    (sem base no período anterior)
+                {% endif %}
+            </p>
+            <p class="mt-1 text-xs pf-text-muted">Período anterior: {{ dashboard_comparison.previous_period_label }}</p>
+        </article>
+
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <p class="pf-kicker">Despesa: atual x anterior</p>
+            <p class="mt-2 text-sm pf-text-muted">{{ dashboard_comparison.current_period_label }}</p>
+            <p class="mt-2 text-2xl font-black text-[color:var(--pf-text)]">R$ {{ dashboard_comparison.expense.current|floatformat:2 }}</p>
+            <p class="mt-1 text-sm font-semibold {% if dashboard_comparison.expense.delta_absolute <= 0 %}text-[color:var(--pf-mint-strong)]{% else %}text-[color:var(--pf-rose-strong)]{% endif %}">
+                {% if dashboard_comparison.expense.delta_absolute > 0 %}+{% endif %}R$ {{ dashboard_comparison.expense.delta_absolute|floatformat:2 }}
+                {% if dashboard_comparison.expense.delta_percent != None %}
+                    ({{ dashboard_comparison.expense.delta_percent|floatformat:1 }}%)
+                {% else %}
+                    (sem base no período anterior)
+                {% endif %}
+            </p>
+            <p class="mt-1 text-xs pf-text-muted">Período anterior: {{ dashboard_comparison.previous_period_label }}</p>
+        </article>
+
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+            <p class="pf-kicker">Saldo: atual x anterior</p>
+            <p class="mt-2 text-sm pf-text-muted">{{ dashboard_comparison.current_period_label }}</p>
+            <p class="mt-2 text-2xl font-black {% if dashboard_comparison.balance.current >= 0 %}text-[color:var(--pf-mint-strong)]{% else %}text-[color:var(--pf-rose-strong)]{% endif %}">
+                R$ {{ dashboard_comparison.balance.current|floatformat:2 }}
+            </p>
+            <p class="mt-1 text-sm font-semibold {% if dashboard_comparison.balance.delta_absolute >= 0 %}text-[color:var(--pf-mint-strong)]{% else %}text-[color:var(--pf-rose-strong)]{% endif %}">
+                {% if dashboard_comparison.balance.delta_absolute > 0 %}+{% endif %}R$ {{ dashboard_comparison.balance.delta_absolute|floatformat:2 }}
+                {% if dashboard_comparison.balance.delta_percent != None %}
+                    ({{ dashboard_comparison.balance.delta_percent|floatformat:1 }}%)
+                {% else %}
+                    (sem base no período anterior)
+                {% endif %}
+            </p>
+            <p class="mt-1 text-xs pf-text-muted">Período anterior: {{ dashboard_comparison.previous_period_label }}</p>
+        </article>
+    </section>
+
+    <section class="grid gap-4 lg:grid-cols-4">
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-1">
+            <p class="pf-kicker">Burn rate</p>
+            <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">R$ {{ dashboard_advanced.burn_rate_daily|floatformat:2 }}</p>
+            <p class="mt-2 text-sm pf-text-muted">Despesa média diária no período filtrado.</p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-2">
+            <p class="pf-kicker">Runway estimado</p>
+            <p class="mt-3 text-3xl font-black tracking-tight text-[color:var(--pf-text)]">
+                {% if dashboard_advanced.runway_days != None %}
+                    {{ dashboard_advanced.runway_days|floatformat:1 }} dias
+                {% else %}
+                    --
+                {% endif %}
+            </p>
+            <p class="mt-2 text-sm pf-text-muted">Dias que o saldo atual sustenta no ritmo de gasto atual.</p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-3">
+            <p class="pf-kicker">Concentração de gastos</p>
+            <p class="mt-3 text-xl font-black tracking-tight text-[color:var(--pf-text)]">{{ dashboard_advanced.top_expense_category|default:'Sem categoria dominante' }}</p>
+            <p class="mt-2 text-sm font-semibold text-[color:var(--pf-rose-strong)]">
+                {% if dashboard_advanced.top_expense_share_percent != None %}
+                    {{ dashboard_advanced.top_expense_share_percent|floatformat:1 }}% das despesas
+                {% else %}
+                    Sem despesas no período
+                {% endif %}
+            </p>
+        </article>
+        <article class="pf-card pf-card-section pf-reveal pf-reveal-delay-4">
+            <p class="pf-kicker">Insight do período</p>
+            <p class="mt-3 text-sm font-semibold text-[color:var(--pf-text)]">{{ dashboard_advanced.period_insight }}</p>
+            <p class="mt-3 text-xs pf-text-muted">Resumo rápido para orientar a tomada de decisão no MVP.</p>
         </article>
     </section>
 

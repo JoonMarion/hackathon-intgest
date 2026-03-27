@@ -110,5 +110,6 @@ class PlaywrightDashboardE2ETests(PlaywrightE2EBaseTestCase):
         expect(self.page.get_by_text("Maiores despesas", exact=True)).to_be_visible()
         expect(self.page.get_by_text("Top 5", exact=True)).to_be_visible()
 
-        expect(self.page.get_by_text("Importar CSV em breve", exact=True)).to_be_visible()
-        expect(self.page.get_by_text("Exportar Excel em breve", exact=True)).to_be_visible()
+        expect(self.page.get_by_text("Importar CSV/XLSX", exact=True)).to_be_visible()
+        expect(self.page.get_by_text("Exportar CSV", exact=True)).to_be_visible()
+        expect(self.page.get_by_text("Exportar XLSX", exact=True)).to_be_visible()
